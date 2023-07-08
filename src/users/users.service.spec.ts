@@ -6,16 +6,16 @@ import { UserEntity } from './user.entity';
 import { BadRequestException } from '@nestjs/common';
 
 describe('UsersService', () => {
-  let service: UsersService;
-  let repository: UsersRepository;
+  let usersService: UsersService;
+  let usersRepository: UsersRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [UsersService, UsersRepository],
     }).compile();
 
-    service = module.get<UsersService>(UsersService);
-    repository = module.get<UsersRepository>(UsersRepository);
+    usersService = module.get<UsersService>(UsersService);
+    usersRepository = module.get<UsersRepository>(UsersRepository);
   });
 
   it('회원가입 성공', async () => {
@@ -31,11 +31,11 @@ describe('UsersService', () => {
       dto.nickname,
       dto.password,
     );
-    jest.spyOn(repository, 'findOneBy').mockResolvedValue(null);
-    jest.spyOn(repository, 'save').mockResolvedValue(findUser);
+    jest.spyOn(usersRepository, 'findOneBy').mockResolvedValue(null);
+    jest.spyOn(usersRepository, 'save').mockResolvedValue(findUser);
 
     // when
-    const user = await service.createUser(dto);
+    const user = await usersService.createUser(dto);
 
     // then
     expect(user.name).toEqual('NAME');
@@ -54,12 +54,12 @@ describe('UsersService', () => {
       dto.nickname,
       dto.password,
     );
-    jest.spyOn(repository, 'findOneBy').mockResolvedValue(findUser);
-    jest.spyOn(repository, 'save').mockResolvedValue(findUser);
+    jest.spyOn(usersRepository, 'findOneBy').mockResolvedValue(findUser);
+    jest.spyOn(usersRepository, 'save').mockResolvedValue(findUser);
 
     // when
     await expect(async () => {
-      await service.createUser(dto);
+      await usersService.createUser(dto);
     }).rejects.toThrowError(
       new BadRequestException('이미 존재하는 이메일입니다.'),
     );
