@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from '../users/users.repository';
+import { comparePassword } from '../utils/password';
 
 interface UserInfo {
   email: string;
@@ -21,7 +21,7 @@ export class AuthService {
       email: email,
     });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (user && (await comparePassword(password, user.password))) {
       const { email, name, nickname } = user;
       return {
         email: email,
