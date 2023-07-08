@@ -7,15 +7,11 @@ import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './user.entity';
 import * as bcrypt from 'bcrypt';
-import generateHashKey from 'src/auth/generate-hash-key';
-import { InjectRepository } from '@nestjs/typeorm';
+import generateHashKey from '../auth/generate-hash-key';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(UserEntity)
-    private readonly usersRepository: UsersRepository,
-  ) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   /**
    *
@@ -38,22 +34,5 @@ export class UsersService {
     return this.usersRepository.save(
       UserEntity.of(email, name, nickname, await bcrypt.hash(password, 10)),
     );
-  }
-
-  /**
-   *
-   * @param email 회원 이메일
-   * @returns email로 검색한 회원
-   */
-  async findOne(email: string): Promise<UserEntity> {
-    const foundUser = this.usersRepository.findOneBy({
-      email: email,
-    });
-
-    if (!foundUser) {
-      throw new NotFoundException('존재하지 않는 회원입니다.');
-    }
-
-    return foundUser;
   }
 }
