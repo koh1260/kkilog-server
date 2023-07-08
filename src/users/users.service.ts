@@ -1,13 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './user.entity';
 import * as bcrypt from 'bcrypt';
-import generateHashKey from '../auth/generate-hash-key';
+import { hashPassword } from '../util/password';
 
 @Injectable()
 export class UsersService {
@@ -29,10 +25,8 @@ export class UsersService {
       throw new BadRequestException('이미 존재하는 이메일입니다.');
     }
 
-    const key = await generateHashKey();
-
     return this.usersRepository.save(
-      UserEntity.of(email, name, nickname, await bcrypt.hash(password, 10)),
+      UserEntity.of(email, name, nickname, await hashPassword(password)),
     );
   }
 }
