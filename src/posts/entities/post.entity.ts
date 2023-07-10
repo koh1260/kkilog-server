@@ -1,12 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { User } from '../../users/user.entity';
 import { PublicScope } from '../enumerate/public-scope';
+import { BaseModel } from '../../common/base.entity';
 
-@Entity()
-export class Post {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+@Entity('posts')
+export class Post extends BaseModel {
   @Column({ length: 30 })
   title: string;
 
