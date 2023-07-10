@@ -26,7 +26,7 @@ export class PostsServiceImp implements PostsService {
       Post.create(
         createPostDto.title,
         createPostDto.content,
-        createPostDto.introdution,
+        createPostDto.introduction,
         createPostDto.thumbnail,
         user,
       ),
