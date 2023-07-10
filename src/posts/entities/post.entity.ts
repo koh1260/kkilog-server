@@ -9,7 +9,7 @@ export class Post extends BaseModel {
   @Column({ length: 30 })
   title: string;
 
-  @Column({ type: 'longtext' })
+  @Column({ type: 'text' })
   content: string;
 
   @Column({
@@ -22,7 +22,7 @@ export class Post extends BaseModel {
   @Column()
   introduction: string;
 
-  @Column()
+  @Column({ type: 'text' })
   thumbnail: string;
 
   @ManyToOne(() => User, (user) => user.posts)
