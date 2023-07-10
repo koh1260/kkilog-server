@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 import { BadRequestException } from '@nestjs/common';
 
 describe('UsersService', () => {
@@ -25,7 +25,7 @@ describe('UsersService', () => {
     dto.name = 'NAME';
     dto.nickname = 'NICKNAME';
     dto.password = 'PASSWORD';
-    const findUser = UserEntity.of(
+    const findUser = User.create(
       dto.email,
       dto.name,
       dto.nickname,
@@ -48,7 +48,7 @@ describe('UsersService', () => {
     dto.name = 'NAME';
     dto.nickname = 'NICKNAME';
     dto.password = 'PASSWORD';
-    const findUser = UserEntity.of(
+    const findUser = User.create(
       dto.email,
       dto.name,
       dto.nickname,

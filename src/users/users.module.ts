@@ -4,12 +4,12 @@ import { UsersRepository } from './users.repository';
 import { UsersController } from './users.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 import { CustomTypeOrmModule } from 'src/common/custom-typeorm-module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([User]),
     CustomTypeOrmModule.forCustomRepository([UsersRepository]),
     AuthModule,
   ],

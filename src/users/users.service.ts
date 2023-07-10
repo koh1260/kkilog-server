@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 import { hashPassword } from '../utils/password';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class UsersService {
    * @param dto 회원 생성 dto
    * @returns 생성된 회원 정보
    */
-  async createUser(dto: CreateUserDto): Promise<UserEntity> {
+  async createUser(dto: CreateUserDto): Promise<User> {
     const { email, name, nickname, password } = dto;
 
     const findUser = await this.usersRepository.findOneBy({
@@ -25,7 +25,7 @@ export class UsersService {
     }
 
     return this.usersRepository.save(
-      UserEntity.of(email, name, nickname, await hashPassword(password)),
+      User.create(email, name, nickname, await hashPassword(password)),
     );
   }
 }

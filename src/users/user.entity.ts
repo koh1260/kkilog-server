@@ -1,8 +1,9 @@
 import { IsEmail } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Post } from '../posts/entities/post.entity';
 
 @Entity('users')
-export class UserEntity {
+export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -22,8 +23,16 @@ export class UserEntity {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   createAt: Date;
 
-  static of(email: string, name: string, nickname: string, password: string) {
-    const userEntity = new UserEntity();
+  @OneToMany(() => Post, (posts) => posts.user)
+  posts: Post;
+
+  static create(
+    email: string,
+    name: string,
+    nickname: string,
+    password: string,
+  ) {
+    const userEntity = new User();
     userEntity.email = email;
     userEntity.name = name;
     userEntity.nickname = nickname;
