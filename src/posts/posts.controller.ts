@@ -8,26 +8,34 @@ import {
   Delete,
   UseGuards,
   Request,
+  Inject,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { PostsServiceImp } from './posts-impl.service';
+import { PostsService } from './posts.service';
+import { Post as PostEntity } from './entities/post.entity';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    @Inject(PostsService)
+    private readonly postsService: PostsServiceImp,
+  ) {}
 
   @Post()
-  createPost(@Body() createPostDto: CreatePostDto, @Request() req: any) {
-    return this.postsService.createPost(createPostDto, req.user.email);
+  async createPost(
+    @Body() createPostDto: CreatePostDto,
+    @Request() req: any,
+  ): Promise<void> {
+    await this.postsService.createPost(createPostDto, req.user.email);
   }
 
   @Get()
-  findAll(@Request() req) {
-    console.log(req.user);
-    return this.postsService.findAll();
+  async findAll(): Promise<PostEntity[]> {
+    return await this.postsService.findAll();
   }
 
   @Get(':id')
