@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { PostsServiceImp } from './posts-impl.service';
 import { PostsController } from './posts.controller';
 import { CustomTypeOrmModule } from '../common/custom-typeorm-module';
@@ -15,6 +15,7 @@ import { Category } from '../categorys/entities/category.entity';
   ],
   controllers: [PostsController],
   providers: [
+    Logger,
     {
       provide: PostsService,
       useClass: PostsServiceImp,
