@@ -19,7 +19,7 @@ export class Post extends BaseModel {
   publicScope: PublicScope;
 
   @Column()
-  introdution: string;
+  introduction: string;
 
   @Column()
   thumbnail: string;
@@ -38,7 +38,7 @@ export class Post extends BaseModel {
     const post = new Post();
     post.title = title;
     post.content = content;
-    post.introdution = introdution;
+    post.introduction = introdution;
     post.publicScope = publicScope;
     post.thumbnail = thumbnail;
     post.user = user;
