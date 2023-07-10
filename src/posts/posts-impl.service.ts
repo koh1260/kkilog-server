@@ -7,12 +7,15 @@ import { User } from '../users/user.entity';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { PostsService } from './posts.service';
+import { Category } from '../categorys/entities/category.entity';
 
 @Injectable()
 export class PostsServiceImp implements PostsService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
     private readonly postsRepository: PostsRepository,
   ) {}
 
@@ -22,6 +25,11 @@ export class PostsServiceImp implements PostsService {
     });
     this.existUser(user);
 
+    const category = await this.categoryRepository.findOneBy({
+      name: createPostDto.categoryName,
+    });
+    this.existCategory(category);
+
     this.postsRepository.save(
       Post.create(
         createPostDto.title,
@@ -29,6 +37,7 @@ export class PostsServiceImp implements PostsService {
         createPostDto.introduction,
         createPostDto.thumbnail,
         user,
+        category,
       ),
     );
   }
@@ -36,6 +45,12 @@ export class PostsServiceImp implements PostsService {
   private existUser(user: User) {
     if (!user) {
       throw new NotFoundException('존재하지 않는 회원입니다.');
+    }
+  }
+
+  private existCategory(category: Category) {
+    if (!category) {
+      throw new NotFoundException('존재하지 않는 카테고리입니다.');
     }
   }
 

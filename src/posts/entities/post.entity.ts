@@ -37,6 +37,7 @@ export class Post extends BaseModel {
     introdution: string,
     thumbnail: string,
     user: User,
+    category: Category,
     publicScope?: PublicScope,
   ) {
     const post = new Post();
@@ -46,6 +47,7 @@ export class Post extends BaseModel {
     post.publicScope = publicScope;
     post.thumbnail = thumbnail;
     post.user = user;
+    post.category = category;
 
     return post;
   }
