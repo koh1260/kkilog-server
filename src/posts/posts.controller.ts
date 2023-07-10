@@ -9,6 +9,7 @@ import {
   UseGuards,
   Request,
   Inject,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -39,7 +40,7 @@ export class PostsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.postsService.findOne(+id);
   }
 

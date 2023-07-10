@@ -33,7 +33,7 @@ export class PostsServiceImp implements PostsService {
     );
   }
 
-  existUser(user: User) {
+  private existUser(user: User) {
     if (!user) {
       throw new NotFoundException('존재하지 않는 회원입니다.');
     }
@@ -52,8 +52,26 @@ export class PostsServiceImp implements PostsService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findOne(id: number): Promise<Post> {
+    const findPost = await this.postsRepository.findOne({
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        thumbnail: true,
+        createAt: true,
+      },
+      where: { id: id },
+    });
+    this.existPost(findPost);
+
+    return findPost;
+  }
+
+  private existPost(post: Post): void {
+    if (!post) {
+      throw new NotFoundException('존재하지 않는 게시물입니다.');
+    }
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {
