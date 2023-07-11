@@ -67,7 +67,9 @@ export class PostsController {
    * @returns 해당 카테고리의 게시글
    */
   @Get('category/:categoryId')
-  async findByCategory(@Param('categoryId', ParseIntPipe) categoryId: number) {
+  async findByCategory(
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+  ): Promise<PostEntity[]> {
     return this.postsService.findByCategory(categoryId);
   }
 
@@ -77,7 +79,7 @@ export class PostsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number): void {
+    this.postsService.remove(id);
   }
 }
