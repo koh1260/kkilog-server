@@ -10,8 +10,6 @@ import {
   Request,
   Inject,
   ParseIntPipe,
-  Logger,
-  LoggerService,
   UseFilters,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -23,7 +21,7 @@ import { Post as PostEntity } from './entities/post.entity';
 import { HttpExceptionFilter } from '../exception/http-exception.filter';
 
 @UseFilters(HttpExceptionFilter)
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostsController {
   constructor(
@@ -33,8 +31,8 @@ export class PostsController {
 
   /**
    *
-   * @param createPostDto post 생성을 위한 dto
-   * @param req user 정보를 얻기 위한 req 객체
+   * @param createPostDto 게시글 생성을 위한 dto
+   * @param req 회원 정보를 얻기 위한 Request 객체
    */
   @Post()
   async createPost(
@@ -46,7 +44,7 @@ export class PostsController {
 
   /**
    *
-   * @returns 조회한 post 목록
+   * @returns 조회한 게시글 목록
    */
   @Get()
   async findAll(): Promise<PostEntity[]> {
@@ -55,12 +53,22 @@ export class PostsController {
 
   /**
    *
-   * @param id 상세 조회를 위한 post id
-   * @returns 조회한 post 정보
+   * @param id 게시글 번호
+   * @returns 조회한 게시글 정보
    */
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: string) {
-    return this.postsService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.postsService.findOne(id);
+  }
+
+  /**
+   *
+   * @param categoryId 카테고리 번호
+   * @returns 해당 카테고리의 게시글
+   */
+  @Get('category/:categoryId')
+  async findByCategory(@Param('categoryId', ParseIntPipe) categoryId: number) {
+    return this.postsService.findByCategory(categoryId);
   }
 
   @Patch(':id')

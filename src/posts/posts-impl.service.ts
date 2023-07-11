@@ -83,6 +83,10 @@ export class PostsServiceImp implements PostsService {
     return findPost;
   }
 
+  async findByCategory(categoryId: number): Promise<Post[]> {
+    return await this.postsRepository.findByCategory(categoryId);
+  }
+
   private existPost(post: Post): void {
     if (!post) {
       throw new NotFoundException('존재하지 않는 게시물입니다.');
