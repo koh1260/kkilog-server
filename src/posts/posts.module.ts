@@ -1,7 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { PostsServiceImp } from './posts-impl.service';
 import { PostsController } from './posts.controller';
-import { CustomTypeOrmModule } from '../common/custom-typeorm-module';
+import { CustomTypeOrmModule } from '../common/custom-repository/custom-typeorm-module';
 import { PostsRepository } from './posts.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';

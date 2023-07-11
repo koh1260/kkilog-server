@@ -5,7 +5,7 @@ import { UsersController } from './users.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { CustomTypeOrmModule } from 'src/common/custom-typeorm-module';
+import { CustomTypeOrmModule } from 'src/common/custom-repository/custom-typeorm-module';
 
 @Module({
   imports: [

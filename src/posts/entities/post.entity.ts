@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { User } from '../../users/user.entity';
 import { PublicScope } from '../enumerate/public-scope';
-import { BaseModel } from '../../common/base.entity';
+import { BaseModel } from '../../common/base-enttity/base.entity';
 import { Category } from '../../categorys/entities/category.entity';
 
 @Entity('posts')
