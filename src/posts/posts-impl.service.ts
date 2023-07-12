@@ -55,7 +55,6 @@ export class PostsServiceImp implements PostsService {
   }
 
   async findAll(): Promise<Post[]> {
-    console.log('post service');
     return await this.postsRepository.find({
       select: {
         id: true,
@@ -93,11 +92,19 @@ export class PostsServiceImp implements PostsService {
     }
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async update(id: number, updatePostDto: UpdatePostDto): Promise<void> {
+    let post = await this.postsRepository.findOneBy({
+      id: id,
+    });
+    post = {
+      ...post,
+      ...updatePostDto,
+    };
+
+    this.postsRepository.save(post);
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<void> {
     await this.postsRepository.delete(id);
   }
 }

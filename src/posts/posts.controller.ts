@@ -89,9 +89,20 @@ export class PostsController {
     );
   }
 
+  /**
+   *
+   * @param id 게시글 번호
+   * @param updatePostDto 변경할 데이터
+   * @returns 수정 완료 메시지를 담은 응답 객체
+   */
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePostDto: Partial<UpdatePostDto>,
+  ): Promise<CustomResponse<never>> {
+    await this.postsService.update(id, updatePostDto);
+
+    return CustomResponse.create(HttpStatus.NO_CONTENT, '게시글 수정 완료.');
   }
 
   @Delete(':id')
