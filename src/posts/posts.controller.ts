@@ -11,6 +11,7 @@ import {
   Inject,
   ParseIntPipe,
   UseFilters,
+  HttpStatus,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -19,6 +20,7 @@ import { PostsServiceImp } from './posts-impl.service';
 import { PostsService } from './posts.service';
 import { Post as PostEntity } from './entities/post.entity';
 import { HttpExceptionFilter } from '../exception/http-exception.filter';
+import { CustomResponse } from '../common/response/custom-reponse';
 
 @UseFilters(HttpExceptionFilter)
 // @UseGuards(JwtAuthGuard)
@@ -38,8 +40,10 @@ export class PostsController {
   async createPost(
     @Body() createPostDto: CreatePostDto,
     @Request() req: any,
-  ): Promise<void> {
+  ): Promise<CustomResponse<never>> {
     await this.postsService.createPost(createPostDto, req.user.email);
+
+    return CustomResponse.create(HttpStatus.CREATED, '게시글 작성 완료.');
   }
 
   /**
@@ -47,8 +51,10 @@ export class PostsController {
    * @returns 조회한 게시글 목록
    */
   @Get()
-  async findAll(): Promise<PostEntity[]> {
-    return await this.postsService.findAll();
+  async findAll(): Promise<CustomResponse<PostEntity[]>> {
+    const posts = await this.postsService.findAll();
+
+    return CustomResponse.create(HttpStatus.OK, '게시글 전체 조회.', posts);
   }
 
   /**
@@ -57,8 +63,12 @@ export class PostsController {
    * @returns 조회한 게시글 정보
    */
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.postsService.findOne(id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<CustomResponse<PostEntity>> {
+    const post = await this.postsService.findOne(id);
+
+    return CustomResponse.create(HttpStatus.OK, '게시글 상세 조회', post);
   }
 
   /**
@@ -69,8 +79,14 @@ export class PostsController {
   @Get('category/:categoryId')
   async findByCategory(
     @Param('categoryId', ParseIntPipe) categoryId: number,
-  ): Promise<PostEntity[]> {
-    return this.postsService.findByCategory(categoryId);
+  ): Promise<CustomResponse<PostEntity[]>> {
+    const posts = await this.postsService.findByCategory(categoryId);
+
+    return CustomResponse.create(
+      HttpStatus.OK,
+      '카테고리별 게시글 조회.',
+      posts,
+    );
   }
 
   @Patch(':id')
@@ -79,7 +95,11 @@ export class PostsController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number): void {
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<CustomResponse<never>> {
     this.postsService.remove(id);
+
+    return CustomResponse.create(HttpStatus.NO_CONTENT, '게시글 삭제 완료.');
   }
 }
