@@ -73,6 +73,7 @@ export class PostsServiceImp implements PostsService {
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
     let post = await this.postsRepository.findOneById(id);
+    this.existPost(post);
     post = {
       ...post,
       ...updatePostDto,
@@ -82,6 +83,9 @@ export class PostsServiceImp implements PostsService {
   }
 
   async remove(id: number): Promise<void> {
+    const post = await this.postsRepository.findOneById(id);
+    this.existPost(post);
+
     await this.postsRepository.delete(id);
   }
 }

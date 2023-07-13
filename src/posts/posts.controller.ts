@@ -10,7 +10,6 @@ import {
   Request,
   Inject,
   ParseIntPipe,
-  UseFilters,
   HttpStatus,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -19,10 +18,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PostsServiceImp } from './posts-impl.service';
 import { PostsService } from './posts.service';
 import { Post as PostEntity } from './entities/post.entity';
-import { HttpExceptionFilter } from '../exception/http-exception.filter';
 import { CustomResponse } from '../common/response/custom-reponse';
 
-@UseFilters(HttpExceptionFilter)
 // @UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostsController {
@@ -109,7 +106,7 @@ export class PostsController {
   async remove(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CustomResponse<never>> {
-    this.postsService.remove(id);
+    await this.postsService.remove(id);
 
     return CustomResponse.create(HttpStatus.NO_CONTENT, '게시글 삭제 완료.');
   }
