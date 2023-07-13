@@ -7,11 +7,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
 import { PostsService } from './posts.service';
 import { Category } from '../categorys/entities/category.entity';
+import { UsersRepository } from '../users/users.repository';
+import { CategorysRepository } from '../categorys/categorys.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Category]),
-    CustomTypeOrmModule.forCustomRepository([PostsRepository]),
+    CustomTypeOrmModule.forCustomRepository([
+      PostsRepository,
+      UsersRepository,
+      CategorysRepository,
+    ]),
   ],
   controllers: [PostsController],
   providers: [

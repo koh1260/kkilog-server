@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './posts/posts.module';
 import { ExceptionModule } from './exception/exception.module';
+import { CategorysModule } from './categorys/categorys.module';
 import jwtConfig from './config/jwtConfig';
 
 @Module({
@@ -30,6 +31,7 @@ import jwtConfig from './config/jwtConfig';
     UsersModule,
     PostsModule,
     ExceptionModule,
+    CategorysModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],

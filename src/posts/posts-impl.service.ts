@@ -2,35 +2,31 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsRepository } from './posts.repository';
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
-import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { PostsService } from './posts.service';
 import { Category } from '../categorys/entities/category.entity';
+import { UsersRepository } from '../users/users.repository';
+import { CategorysRepository } from '../categorys/categorys.repository';
 
 @Injectable()
 export class PostsServiceImp implements PostsService {
   constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-    @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>,
+    private readonly usersRepository: UsersRepository,
+    private readonly categoryRepository: CategorysRepository,
     private readonly postsRepository: PostsRepository,
   ) {}
 
-  async createPost(createPostDto: CreatePostDto, email: string): Promise<void> {
-    const user = await this.usersRepository.findOneBy({
-      email: email,
-    });
+  async createPost(createPostDto: CreatePostDto, email: string): Promise<Post> {
+    const user = await this.usersRepository.findOneByEmail(email);
     this.existUser(user);
 
-    const category = await this.categoryRepository.findOneBy({
-      name: createPostDto.categoryName,
-    });
+    const category = await this.categoryRepository.findOneByName(
+      createPostDto.categoryName,
+    );
     this.existCategory(category);
 
-    this.postsRepository.save(
+    return this.postsRepository.save(
       Post.create(
         createPostDto.title,
         createPostDto.content,
@@ -55,28 +51,11 @@ export class PostsServiceImp implements PostsService {
   }
 
   async findAll(): Promise<Post[]> {
-    return await this.postsRepository.find({
-      select: {
-        id: true,
-        title: true,
-        introduction: true,
-        thumbnail: true,
-        createAt: true,
-      },
-    });
+    return await this.postsRepository.findAll();
   }
 
   async findOne(id: number): Promise<Post> {
-    const findPost = await this.postsRepository.findOne({
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        thumbnail: true,
-        createAt: true,
-      },
-      where: { id: id },
-    });
+    const findPost = await this.postsRepository.findOneById(id);
     this.existPost(findPost);
 
     return findPost;
@@ -92,16 +71,14 @@ export class PostsServiceImp implements PostsService {
     }
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto): Promise<void> {
-    let post = await this.postsRepository.findOneBy({
-      id: id,
-    });
+  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
+    let post = await this.postsRepository.findOneById(id);
     post = {
       ...post,
       ...updatePostDto,
     };
 
-    this.postsRepository.save(post);
+    return this.postsRepository.save(post);
   }
 
   async remove(id: number): Promise<void> {

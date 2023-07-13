@@ -16,4 +16,29 @@ export class PostsRepository extends Repository<Post> {
       .where('posts.categoryId = :categoryId', { categoryId: categoryId })
       .getMany();
   }
+
+  async findAll() {
+    return await this.find({
+      select: {
+        id: true,
+        title: true,
+        introduction: true,
+        thumbnail: true,
+        createAt: true,
+      },
+    });
+  }
+
+  async findOneById(id: number) {
+    return await this.findOne({
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        thumbnail: true,
+        createAt: true,
+      },
+      where: { id: id },
+    });
+  }
 }
