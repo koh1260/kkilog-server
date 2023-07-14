@@ -5,13 +5,21 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { BadRequestException } from '@nestjs/common';
 
+const mockUsersRepository = {
+  findOneByEmail: jest.fn(),
+  save: jest.fn((value) => value),
+};
+
 describe('UsersService', () => {
   let usersService: UsersService;
   let usersRepository: UsersRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService, UsersRepository],
+      providers: [
+        UsersService,
+        { provide: UsersRepository, useValue: mockUsersRepository },
+      ],
     }).compile();
 
     usersService = module.get<UsersService>(UsersService);
@@ -20,22 +28,16 @@ describe('UsersService', () => {
 
   it('회원가입 성공', async () => {
     // given
-    const dto = new CreateUserDto();
-    dto.email = 'test@eaxmple.com';
-    dto.name = 'NAME';
-    dto.nickname = 'NICKNAME';
-    dto.password = 'PASSWORD';
-    const findUser = User.create(
-      dto.email,
-      dto.name,
-      dto.nickname,
-      dto.password,
+    const createUserDto = createUserDtoFactory.create(
+      'test@eaxmple.com',
+      'NAME',
+      'NICKNAME',
+      'PASSWORD',
     );
-    jest.spyOn(usersRepository, 'findOneBy').mockResolvedValue(null);
-    jest.spyOn(usersRepository, 'save').mockResolvedValue(findUser);
+    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(null);
 
     // when
-    const user = await usersService.createUser(dto);
+    const user = await usersService.createUser(createUserDto);
 
     // then
     expect(user.name).toEqual('NAME');
@@ -43,25 +45,36 @@ describe('UsersService', () => {
 
   it('회원가입 이메일 중복', async () => {
     // given
-    const dto = new CreateUserDto();
-    dto.email = 'test@eaxmple.com';
-    dto.name = 'NAME';
-    dto.nickname = 'NICKNAME';
-    dto.password = 'PASSWORD';
-    const findUser = User.create(
-      dto.email,
-      dto.name,
-      dto.nickname,
-      dto.password,
+    const createUserDto = createUserDtoFactory.create(
+      'test@eaxmple.com',
+      'NAME',
+      'NICKNAME',
+      'PASSWORD',
     );
-    jest.spyOn(usersRepository, 'findOneBy').mockResolvedValue(findUser);
-    jest.spyOn(usersRepository, 'save').mockResolvedValue(findUser);
+    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(new User());
 
     // when
     await expect(async () => {
-      await usersService.createUser(dto);
+      await usersService.createUser(createUserDto);
     }).rejects.toThrowError(
       new BadRequestException('이미 존재하는 이메일입니다.'),
     );
   });
 });
+
+class createUserDtoFactory {
+  static create(
+    email: string,
+    name: string,
+    nickname: string,
+    password: string,
+  ) {
+    const dto = new CreateUserDto();
+    dto.email = email;
+    dto.name = name;
+    dto.nickname = nickname;
+    dto.password = password;
+
+    return dto;
+  }
+}
