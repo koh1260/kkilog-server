@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../users/user.entity';
 import { PublicScope } from '../enumerate/public-scope';
 import { BaseModel } from '../../common/base-enttity/base.entity';
 import { Category } from '../../categorys/entities/category.entity';
+import { Comment } from '../../comments/entities/comment.entity';
 
 @Entity('posts')
 export class Post extends BaseModel {
@@ -30,6 +31,9 @@ export class Post extends BaseModel {
 
   @ManyToOne(() => Category, (category) => category.posts)
   category: Category;
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 
   static create(
     title: string,
