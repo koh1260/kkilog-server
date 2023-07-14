@@ -16,9 +16,7 @@ export class UsersService {
   async createUser(dto: CreateUserDto): Promise<User> {
     const { email, name, nickname, password } = dto;
 
-    const findUser = await this.usersRepository.findOneBy({
-      email: email,
-    });
+    const findUser = await this.usersRepository.findOneByEmail(email);
 
     if (findUser) {
       throw new BadRequestException('이미 존재하는 이메일입니다.');
