@@ -52,11 +52,12 @@ describe('PostsService', () => {
 
   it('createPost 정상 작동', async () => {
     // given
-    const createPostDto = new CreatePostDto();
-    createPostDto.title = 'TITLE';
-    createPostDto.content = 'CONTENT';
-    createPostDto.introduction = 'INTRO';
-    createPostDto.thumbnail = 'THUMBNAIL';
+    const createPostDto = CreatePostDtoFactory.create(
+      'TITLE',
+      'CONTENT',
+      'INTRO',
+      'THUMBNAIL',
+    );
 
     jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(new User());
     jest
@@ -72,11 +73,12 @@ describe('PostsService', () => {
 
   it('createPost 존재하지 않는 회원', async () => {
     // given
-    const createPostDto = new CreatePostDto();
-    createPostDto.title = 'TITLE';
-    createPostDto.content = 'CONTENT';
-    createPostDto.introduction = 'INTRO';
-    createPostDto.thumbnail = 'THUMBNAIL';
+    const createPostDto = CreatePostDtoFactory.create(
+      'TITLE',
+      'CONTENT',
+      'INTRO',
+      'THUMBNAIL',
+    );
 
     jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(null);
 
@@ -88,11 +90,12 @@ describe('PostsService', () => {
 
   it('createPost 존재하지 않는 카테고리', async () => {
     // given
-    const createPostDto = new CreatePostDto();
-    createPostDto.title = 'TITLE';
-    createPostDto.content = 'CONTENT';
-    createPostDto.introduction = 'INTRO';
-    createPostDto.thumbnail = 'THUMBNAIL';
+    const createPostDto = CreatePostDtoFactory.create(
+      'TITLE',
+      'CONTENT',
+      'INTRO',
+      'THUMBNAIL',
+    );
 
     jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(new User());
     jest.spyOn(categorysRepository, 'findOneByName').mockResolvedValue(null);
@@ -160,3 +163,20 @@ describe('PostsService', () => {
     expect(updatedPost.title).toEqual('TITLE');
   });
 });
+
+class CreatePostDtoFactory {
+  static create(
+    title: string,
+    content: string,
+    introduction: string,
+    thumbnail: string,
+  ) {
+    const dto = new CreatePostDto();
+    dto.title = title;
+    dto.content = content;
+    dto.introduction = introduction;
+    dto.thumbnail = thumbnail;
+
+    return dto;
+  }
+}
