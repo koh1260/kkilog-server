@@ -52,7 +52,7 @@ describe('PostsService', () => {
 
   it('createPost 정상 작동', async () => {
     // given
-    const createPostDto = CreatePostDtoFactory.create(
+    const createPostDto = createPostDtoFactory(
       'TITLE',
       'CONTENT',
       'INTRO',
@@ -73,7 +73,7 @@ describe('PostsService', () => {
 
   it('createPost 존재하지 않는 회원', async () => {
     // given
-    const createPostDto = CreatePostDtoFactory.create(
+    const createPostDto = createPostDtoFactory(
       'TITLE',
       'CONTENT',
       'INTRO',
@@ -90,7 +90,7 @@ describe('PostsService', () => {
 
   it('createPost 존재하지 않는 카테고리', async () => {
     // given
-    const createPostDto = CreatePostDtoFactory.create(
+    const createPostDto = createPostDtoFactory(
       'TITLE',
       'CONTENT',
       'INTRO',
@@ -164,19 +164,17 @@ describe('PostsService', () => {
   });
 });
 
-class CreatePostDtoFactory {
-  static create(
-    title: string,
-    content: string,
-    introduction: string,
-    thumbnail: string,
-  ) {
-    const dto = new CreatePostDto();
-    dto.title = title;
-    dto.content = content;
-    dto.introduction = introduction;
-    dto.thumbnail = thumbnail;
+const createPostDtoFactory = (
+  title: string,
+  content: string,
+  introduction: string,
+  thumbnail: string,
+) => {
+  const dto = new CreatePostDto();
+  dto.title = title;
+  dto.content = content;
+  dto.introduction = introduction;
+  dto.thumbnail = thumbnail;
 
-    return dto;
-  }
-}
+  return dto;
+};
