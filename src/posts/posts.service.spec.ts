@@ -16,14 +16,6 @@ const mockPostsRepository = {
   findOneById: jest.fn(),
 };
 
-const mockUsersRepository = {
-  findOneByEmail: jest.fn(),
-};
-
-const mockCategorysRepository = {
-  findOneByName: jest.fn(),
-};
-
 describe('PostsService', () => {
   let postsService: PostsService;
   let postsRepository: PostsRepository;
@@ -33,9 +25,9 @@ describe('PostsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: UsersRepository, useValue: mockUsersRepository },
+        UsersRepository,
+        CategorysRepository,
         { provide: PostsRepository, useValue: mockPostsRepository },
-        { provide: CategorysRepository, useValue: mockCategorysRepository },
         { provide: PostsService, useClass: PostsServiceImp },
       ],
     }).compile();
