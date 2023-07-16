@@ -6,6 +6,8 @@ import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
+import { Request } from 'express';
+import { UserInfo } from '../auth/jwt.strategy';
 
 describe('UsersController', () => {
   let usersController: UsersController;
@@ -53,23 +55,19 @@ describe('UsersController', () => {
 
   it('login', async () => {
     // given
-    const request = {
-      user: {
-        email: 'EMAIL@example.com',
-        name: 'NAME',
-        nickname: 'NICKNAME',
-      },
+    const logindUser: UserInfo = {
+      email: 'EMAIL@exampl.com',
+      name: 'NAME',
+      nickname: 'NICKNAME',
     };
     const token = {
       accessToken: 'TOKEN',
     };
     jest.spyOn(authService, 'login').mockResolvedValue(token);
-
     // when
-    const tokenObj = await usersController.login(request);
-
+    const tokenObj = await usersController.login(logindUser);
     // then
-    expect(authService.login).toHaveBeenCalledWith(request.user);
+    expect(authService.login).toHaveBeenCalledWith(logindUser);
     expect(tokenObj.accessToken).toEqual(token.accessToken);
   });
 });
