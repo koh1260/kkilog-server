@@ -12,6 +12,9 @@ import { User } from './user.entity';
 import { HttpExceptionFilter } from '../exception/http-exception.filter';
 import { AuthService } from '../auth/auth.service';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
+import { Request as ExpressRequest } from 'express';
+import { UserInfo } from '../auth/jwt.strategy';
+import { LoginUser } from '../common/decorator/user.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -27,7 +30,7 @@ export class UsersController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Request() req: any) {
-    return await this.authService.login(req.user);
+  async login(@LoginUser() user: UserInfo) {
+    return await this.authService.login(user);
   }
 }
