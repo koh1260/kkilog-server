@@ -6,7 +6,6 @@ import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
-import { Request } from 'express';
 import { UserInfo } from '../auth/jwt.strategy';
 
 describe('UsersController', () => {

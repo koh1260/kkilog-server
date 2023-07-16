@@ -1,5 +1,5 @@
 import { IsEmail } from 'class-validator';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { Post } from '../posts/entities/post.entity';
 import { BaseModel } from '../common/base-enttity/base.entity';
 
