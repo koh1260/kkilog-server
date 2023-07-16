@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from '../users/users.repository';
 import { comparePassword } from '../utils/password';
+import { User } from '../users/user.entity';
 
 interface UserInfo {
   email: string;
@@ -17,9 +18,7 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<UserInfo> {
-    const user = await this.usersRepository.findOneBy({
-      email: email,
-    });
+    const user = await this.usersRepository.findOneByEmail(email);
 
     if (user && (await comparePassword(password, user.password))) {
       const { email, name, nickname } = user;
