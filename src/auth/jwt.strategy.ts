@@ -3,12 +3,9 @@ import { ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import jwtConfig from 'src/config/jwtConfig';
+import { User } from '../users/user.entity';
 
-export interface UserInfo {
-  email: string;
-  name: string;
-  nickname: string;
-}
+export type UserInfo = Pick<User, 'email' | 'name' | 'nickname'>;
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
