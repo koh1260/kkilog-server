@@ -18,7 +18,7 @@ export class Post extends BaseModel {
     enum: PublicScope.values(),
     default: PublicScope.PUBLIC.visible,
   })
-  publicScope: PublicScope;
+  publicScope?: PublicScope;
 
   @Column()
   introduction: string;
@@ -33,7 +33,24 @@ export class Post extends BaseModel {
   category: Category;
 
   @OneToMany(() => Comment, (comment) => comment.post)
-  comments: Comment[];
+  comments?: Comment[];
+
+  constructor(
+    title: string,
+    content: string,
+    introduction: string,
+    thumbnail: string,
+    user: User,
+    category: Category,
+  ) {
+    super();
+    this.title = title;
+    this.content = content;
+    this.introduction = introduction;
+    this.thumbnail = thumbnail;
+    this.user = user;
+    this.category = category;
+  }
 
   static create(
     title: string,
@@ -42,17 +59,7 @@ export class Post extends BaseModel {
     thumbnail: string,
     user: User,
     category: Category,
-    publicScope?: PublicScope,
   ) {
-    const post = new Post();
-    post.title = title;
-    post.content = content;
-    post.introduction = introdution;
-    post.publicScope = publicScope;
-    post.thumbnail = thumbnail;
-    post.user = user;
-    post.category = category;
-
-    return post;
+    return new Post(title, content, introdution, thumbnail, user, category);
   }
 }

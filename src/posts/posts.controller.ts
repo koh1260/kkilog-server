@@ -19,6 +19,8 @@ import { PostsServiceImp } from './posts-impl.service';
 import { PostsService } from './posts.service';
 import { Post as PostEntity } from './entities/post.entity';
 import { CustomResponse } from '../common/response/custom-reponse';
+import { LoginUser } from '../common/decorator/user.decorator';
+import { UserInfo } from '../auth/jwt.strategy';
 
 // @UseGuards(JwtAuthGuard)
 @Controller('posts')
@@ -29,23 +31,24 @@ export class PostsController {
   ) {}
 
   /**
-   *
-   * @param createPostDto 게시글 생성을 위한 dto
-   * @param req 회원 정보를 얻기 위한 Request 객체
+   * 게시글을 생성하는 기능.
+   * @param createPostDto 게시글 생성을 위한 정보
+   * @param user 로그인 시에 요청 객체에 저장된 회원 정보
+   * @returns 게시글 작성 완료 메시지가 담긴 응답 객체
    */
   @Post()
   async createPost(
     @Body() createPostDto: CreatePostDto,
-    @Request() req: any,
+    @LoginUser() user: UserInfo,
   ): Promise<CustomResponse<never>> {
-    await this.postsService.createPost(createPostDto, req.user.email);
+    await this.postsService.createPost(createPostDto, user.email);
 
     return CustomResponse.create(HttpStatus.CREATED, '게시글 작성 완료.');
   }
 
   /**
-   *
-   * @returns 조회한 게시글 목록
+   * 모든 게시글을 조회하는 기능.
+   * @returns 조회한 게시글 목록을 담은 응답 객체
    */
   @Get()
   async findAll(): Promise<CustomResponse<PostEntity[]>> {
@@ -55,9 +58,9 @@ export class PostsController {
   }
 
   /**
-   *
+   * 하나의 게시글 정보를 조회하는 기능.
    * @param id 게시글 번호
-   * @returns 조회한 게시글 정보
+   * @returns 조회한 게시글 정보를 담은 응답 객체
    */
   @Get(':id')
   async findOne(
@@ -69,9 +72,9 @@ export class PostsController {
   }
 
   /**
-   *
+   * 카테고리 번호로 게시글을 조회하는 기능.
    * @param categoryId 카테고리 번호
-   * @returns 해당 카테고리의 게시글
+   * @returns 해당 카테고리의 게시글 목록을 담은 응답 객체
    */
   @Get('category/:categoryId')
   async findByCategory(
@@ -87,7 +90,7 @@ export class PostsController {
   }
 
   /**
-   *
+   * 게시글의 정보를 업데이트하는 기능.
    * @param id 게시글 번호
    * @param updatePostDto 변경할 데이터
    * @returns 수정 완료 메시지를 담은 응답 객체
@@ -102,6 +105,11 @@ export class PostsController {
     return CustomResponse.create(HttpStatus.NO_CONTENT, '게시글 수정 완료.');
   }
 
+  /**
+   * 게시글을 삭제하는 기능.
+   * @param id 게시글 번호
+   * @returns 게시글 삭제 완료 메시지를 담은 응답 객체
+   */
   @Delete(':id')
   async remove(
     @Param('id', ParseIntPipe) id: number,

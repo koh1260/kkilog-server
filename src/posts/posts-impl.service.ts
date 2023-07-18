@@ -38,13 +38,15 @@ export class PostsServiceImp implements PostsService {
     );
   }
 
-  private existUser(user: User) {
+  private existUser(user: User | null): asserts user is User {
     if (!user) {
       throw new NotFoundException('존재하지 않는 회원입니다.');
     }
   }
 
-  private existCategory(category: Category) {
+  private existCategory(
+    category: Category | null,
+  ): asserts category is Category {
     if (!category) {
       throw new NotFoundException('존재하지 않는 카테고리입니다.');
     }
@@ -65,7 +67,7 @@ export class PostsServiceImp implements PostsService {
     return await this.postsRepository.findByCategory(categoryId);
   }
 
-  private existPost(post: Post): void {
+  private existPost(post: Post | null): asserts post is Post {
     if (!post) {
       throw new NotFoundException('존재하지 않는 게시물입니다.');
     }

@@ -19,7 +19,15 @@ export class User extends BaseModel {
   password: string;
 
   @OneToMany(() => Post, (posts) => posts.user)
-  posts: Post;
+  posts?: Post;
+
+  constructor(email: string, name: string, nickname: string, password: string) {
+    super();
+    this.email = email;
+    this.name = name;
+    this.nickname = nickname;
+    this.password = password;
+  }
 
   static create(
     email: string,
@@ -27,12 +35,6 @@ export class User extends BaseModel {
     nickname: string,
     password: string,
   ) {
-    const userEntity = new User();
-    userEntity.email = email;
-    userEntity.name = name;
-    userEntity.nickname = nickname;
-    userEntity.password = password;
-
-    return userEntity;
+    return new User(email, name, nickname, password);
   }
 }

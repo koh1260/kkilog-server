@@ -51,7 +51,13 @@ describe('UsersService', () => {
       'NICKNAME',
       'PASSWORD',
     );
-    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(new User());
+    const user = new User(
+      createUserDto.email,
+      createUserDto.name,
+      createUserDto.nickname,
+      createUserDto.password,
+    );
+    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(user);
 
     // when
     await expect(async () => {

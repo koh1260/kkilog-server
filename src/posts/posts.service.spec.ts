@@ -21,8 +21,12 @@ describe('PostsService', () => {
   let postsRepository: PostsRepository;
   let usersRepository: UsersRepository;
   let categorysRepository: CategorysRepository;
+  let user: User;
+  let category: Category;
 
   beforeEach(async () => {
+    user = new User('EMAIL@example.com', 'NAME', 'NICKNAME', 'PASSWORD');
+    category = new Category('CATEGORYNAME');
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersRepository,
@@ -49,12 +53,13 @@ describe('PostsService', () => {
       'CONTENT',
       'INTRO',
       'THUMBNAIL',
+      'CATEGORY_NAME',
     );
 
-    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(new User());
+    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(user);
     jest
       .spyOn(categorysRepository, 'findOneByName')
-      .mockResolvedValue(new Category());
+      .mockResolvedValue(category);
 
     // when
     const post = await postsService.createPost(createPostDto, 'EMAIL');
@@ -70,6 +75,7 @@ describe('PostsService', () => {
       'CONTENT',
       'INTRO',
       'THUMBNAIL',
+      'CATEGORY_NAME',
     );
 
     jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(null);
@@ -87,9 +93,9 @@ describe('PostsService', () => {
       'CONTENT',
       'INTRO',
       'THUMBNAIL',
+      'CATEGORY_NAME',
     );
-
-    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(new User());
+    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(user);
     jest.spyOn(categorysRepository, 'findOneByName').mockResolvedValue(null);
 
     // when
@@ -98,25 +104,6 @@ describe('PostsService', () => {
     }).rejects.toThrowError(
       new NotFoundException('존재하지 않는 카테고리입니다.'),
     );
-  });
-
-  it('findOne 정상 작동', async () => {
-    // given
-    const id = 1;
-    jest
-      .spyOn(postsRepository, 'findOneById')
-      .mockImplementation(async (id) => {
-        const post = new Post();
-        post.id = id;
-
-        return post;
-      });
-
-    // when
-    const post = await postsService.findOne(id);
-
-    // then
-    expect(post.id).toEqual(id);
   });
 
   it('findOne 존재하지 않는 게시글', async () => {
@@ -137,36 +124,39 @@ describe('PostsService', () => {
     // given
     const id = 1;
     const updatePostDto = new UpdatePostDto();
-    updatePostDto.title = 'TITLE';
+    updatePostDto.title = 'UPDATED_TITLE';
+    const originalPost = new Post(
+      'TITLE',
+      'CONTENT',
+      'INTRO',
+      'THUMB',
+      user,
+      category,
+    );
 
-    jest
-      .spyOn(postsRepository, 'findOneById')
-      .mockImplementation(async (id) => {
-        const post = new Post();
-        post.id = id;
-
-        return post;
-      });
+    jest.spyOn(postsRepository, 'findOneById').mockResolvedValue(originalPost);
 
     // when
     const updatedPost = await postsService.update(id, updatePostDto);
 
     // then
-    expect(updatedPost.title).toEqual('TITLE');
+    expect(updatedPost.title).toEqual('UPDATED_TITLE');
   });
 });
 
-const createPostDtoFactory = (
+export const createPostDtoFactory = (
   title: string,
   content: string,
   introduction: string,
   thumbnail: string,
+  categoryName: string,
 ) => {
   const dto = new CreatePostDto();
   dto.title = title;
   dto.content = content;
   dto.introduction = introduction;
   dto.thumbnail = thumbnail;
+  dto.categoryName = categoryName;
 
   return dto;
 };

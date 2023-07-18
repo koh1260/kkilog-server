@@ -3,21 +3,21 @@ import { MaxLength, MinLength } from 'class-validator';
 export class CreatePostDto {
   @MinLength(1)
   @MaxLength(30)
-  title: string;
+  title!: string;
 
   @MinLength(1)
   @MaxLength(30000)
-  content: string;
+  content!: string;
 
   @MinLength(1)
   @MaxLength(255)
-  introduction: string;
+  introduction!: string;
 
   @MinLength(1)
   @MaxLength(3000)
-  thumbnail: string;
+  thumbnail!: string;
 
   @MinLength(1)
   @MaxLength(15)
-  categoryName: string;
+  categoryName!: string;
 }

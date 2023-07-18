@@ -8,11 +8,16 @@ export class Category extends BaseModel {
   name: string;
 
   @ManyToOne(() => Category, (category) => category.childCategories)
-  parentCategory: Category;
+  parentCategory?: Category;
 
   @OneToMany(() => Category, (category) => category.parentCategory)
-  childCategories: Category[];
+  childCategories?: Category[];
 
   @OneToMany(() => Post, (post) => post.category)
-  posts: Post[];
+  posts?: Post[];
+
+  constructor(name: string) {
+    super();
+    this.name = name;
+  }
 }

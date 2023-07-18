@@ -5,12 +5,13 @@ export class CustomResponse<T> {
   message: string;
   result?: T;
 
-  static create<T>(statusCode: HttpStatus, message: string, result?: T) {
-    const response = new CustomResponse<T>();
-    response.statusCode = statusCode;
-    response.message = message;
-    response.result = result;
+  constructor(statusCode: HttpStatus, message: string, result?: T) {
+    this.statusCode = statusCode;
+    this.message = message;
+    this.result = result;
+  }
 
-    return response;
+  static create<T>(statusCode: HttpStatus, message: string, result?: T) {
+    return new CustomResponse<T>(statusCode, message, result);
   }
 }

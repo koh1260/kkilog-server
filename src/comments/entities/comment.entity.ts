@@ -5,9 +5,6 @@ import { Post } from '../../posts/entities/post.entity';
 
 @Entity()
 export class Comment extends BaseModel {
-  @PrimaryGeneratedColumn()
-  id: number;
-
   @Column()
   content: string;
 
@@ -16,4 +13,11 @@ export class Comment extends BaseModel {
 
   @ManyToOne(() => Post, (post) => post.comments)
   post: Post;
+
+  constructor(content: string, user: User, post: Post) {
+    super();
+    this.content = content;
+    this.user = user;
+    this.post = post;
+  }
 }

@@ -30,10 +30,7 @@ describe('AuthService', () => {
     // given
     const email = 'EMAIL@example.com';
     const password = 'PASSWORD';
-    const findUser = new User();
-    findUser.email = email;
-    findUser.name = 'NAME';
-    findUser.nickname = 'NICKNAME';
+    const findUser = new User(email, 'NAME', 'NICKNAME', password);
 
     jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(findUser);
     (comparePassword as jest.Mock).mockResolvedValue(true);
@@ -42,7 +39,7 @@ describe('AuthService', () => {
     const logiendUserInfo = await authService.validateUser(email, password);
 
     // then
-    expect(logiendUserInfo.email).toEqual(email);
+    expect(logiendUserInfo!.email).toEqual(email);
   });
 
   it('validateUser 인증 실패', async () => {

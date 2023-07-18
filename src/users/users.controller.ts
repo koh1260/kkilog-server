@@ -14,11 +14,21 @@ export class UsersController {
     private usersService: UsersService,
   ) {}
 
+  /**
+   * 회원가입.
+   * @param dto 회원 가입에 필요한 정보
+   * @returns 가입된 회원 객체
+   */
   @Post()
   async createUser(@Body() dto: CreateUserDto): Promise<User> {
     return this.usersService.createUser(dto);
   }
 
+  /**
+   * 로그인.
+   * @param user jwt strategy에서 입력한 로그인 회원 정보
+   * @returns accessToken이 담긴 객체
+   */
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   async login(@LoginUser() user: UserInfo) {
