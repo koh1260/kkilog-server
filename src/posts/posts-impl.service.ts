@@ -18,13 +18,12 @@ export class PostsServiceImp implements PostsService {
   ) {}
 
   async createPost(createPostDto: CreatePostDto, email: string): Promise<Post> {
-    const user = await this.usersRepository.findOneByEmail(email);
-    this.existUser(user);
-
-    const category = await this.categoryRepository.findOneByName(
-      createPostDto.categoryName,
+    const user = this.existUser(
+      await this.usersRepository.findOneByEmail(email),
     );
-    this.existCategory(category);
+    const category = this.existCategory(
+      await this.categoryRepository.findOneByName(createPostDto.categoryName),
+    );
 
     return this.postsRepository.save(
       Post.create(
@@ -38,18 +37,18 @@ export class PostsServiceImp implements PostsService {
     );
   }
 
-  private existUser(user: User | null): asserts user is User {
+  private existUser(user: User | null): User {
     if (!user) {
       throw new NotFoundException('존재하지 않는 회원입니다.');
     }
+    return user;
   }
 
-  private existCategory(
-    category: Category | null,
-  ): asserts category is Category {
+  private existCategory(category: Category | null): Category {
     if (!category) {
       throw new NotFoundException('존재하지 않는 카테고리입니다.');
     }
+    return category;
   }
 
   async findAll(): Promise<Post[]> {
