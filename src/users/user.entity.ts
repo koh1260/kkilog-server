@@ -15,18 +15,28 @@ export class User extends BaseModel {
   @Column({ nullable: false })
   nickname: string;
 
+  @Column()
+  profileImage?: string;
+
   @Column({ nullable: false })
   password: string;
 
-  @OneToMany(() => Post, (posts) => posts.user)
+  @OneToMany(() => Post, (posts) => posts.writer)
   posts?: Post;
 
-  constructor(email: string, name: string, nickname: string, password: string) {
+  constructor(
+    email: string,
+    name: string,
+    nickname: string,
+    password: string,
+    profileImage?: string,
+  ) {
     super();
     this.email = email;
     this.name = name;
     this.nickname = nickname;
     this.password = password;
+    this.profileImage = profileImage;
   }
 
   static create(
@@ -34,7 +44,8 @@ export class User extends BaseModel {
     name: string,
     nickname: string,
     password: string,
+    profileImage?: string,
   ) {
-    return new User(email, name, nickname, password);
+    return new User(email, name, nickname, password, profileImage);
   }
 }
