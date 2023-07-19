@@ -56,8 +56,7 @@ export class PostsServiceImp implements PostsService {
   }
 
   async findOne(id: number): Promise<Post> {
-    const findPost = await this.postsRepository.findOneById(id);
-    this.existPost(findPost);
+    const findPost = this.existPost(await this.postsRepository.findOneById(id));
 
     return findPost;
   }
@@ -66,15 +65,15 @@ export class PostsServiceImp implements PostsService {
     return await this.postsRepository.findByCategory(categoryId);
   }
 
-  private existPost(post: Post | null): asserts post is Post {
+  private existPost(post: Post | null): Post {
     if (!post) {
       throw new NotFoundException('존재하지 않는 게시물입니다.');
     }
+    return post;
   }
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
-    let post = await this.postsRepository.findOneById(id);
-    this.existPost(post);
+    let post = this.existPost(await this.postsRepository.findOneById(id));
     post = {
       ...post,
       ...updatePostDto,
@@ -84,9 +83,7 @@ export class PostsServiceImp implements PostsService {
   }
 
   async remove(id: number): Promise<void> {
-    const post = await this.postsRepository.findOneById(id);
-    this.existPost(post);
-
+    this.existPost(await this.postsRepository.findOneById(id));
     await this.postsRepository.delete(id);
   }
 }
