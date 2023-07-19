@@ -4,6 +4,7 @@ import { PublicScope } from '../enumerate/public-scope';
 import { BaseModel } from '../../common/base-enttity/base.entity';
 import { Category } from '../../categorys/entities/category.entity';
 import { Comment } from '../../comments/entities/comment.entity';
+import { PostImage } from './post-images.entity';
 
 @Entity('posts')
 export class Post extends BaseModel {
@@ -27,7 +28,7 @@ export class Post extends BaseModel {
   thumbnail: string;
 
   @ManyToOne(() => User, (user) => user.posts)
-  user: User;
+  writer: User;
 
   @ManyToOne(() => Category, (category) => category.posts)
   category: Category;
@@ -35,12 +36,15 @@ export class Post extends BaseModel {
   @OneToMany(() => Comment, (comment) => comment.post)
   comments?: Comment[];
 
+  @OneToMany(() => PostImage, (postImage) => postImage.post)
+  images?: PostImage[];
+
   constructor(
     title: string,
     content: string,
     introduction: string,
     thumbnail: string,
-    user: User,
+    writer: User,
     category: Category,
   ) {
     super();
@@ -48,7 +52,7 @@ export class Post extends BaseModel {
     this.content = content;
     this.introduction = introduction;
     this.thumbnail = thumbnail;
-    this.user = user;
+    this.writer = writer;
     this.category = category;
   }
 
@@ -57,9 +61,9 @@ export class Post extends BaseModel {
     content: string,
     introdution: string,
     thumbnail: string,
-    user: User,
+    writer: User,
     category: Category,
   ) {
-    return new Post(title, content, introdution, thumbnail, user, category);
+    return new Post(title, content, introdution, thumbnail, writer, category);
   }
 }
