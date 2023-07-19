@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Request,
   Inject,
   ParseIntPipe,
   HttpStatus,
@@ -30,12 +29,6 @@ export class PostsController {
     private readonly postsService: PostsServiceImp,
   ) {}
 
-  /**
-   * 게시글을 생성하는 기능.
-   * @param createPostDto 게시글 생성을 위한 정보
-   * @param user 로그인 시에 요청 객체에 저장된 회원 정보
-   * @returns 게시글 작성 완료 메시지가 담긴 응답 객체
-   */
   @Post()
   async createPost(
     @Body() createPostDto: CreatePostDto,
@@ -46,10 +39,6 @@ export class PostsController {
     return CustomResponse.create(HttpStatus.CREATED, '게시글 작성 완료.');
   }
 
-  /**
-   * 모든 게시글을 조회하는 기능.
-   * @returns 조회한 게시글 목록을 담은 응답 객체
-   */
   @Get()
   async findAll(): Promise<CustomResponse<PostEntity[]>> {
     const posts = await this.postsService.findAll();
@@ -57,11 +46,6 @@ export class PostsController {
     return CustomResponse.create(HttpStatus.OK, '게시글 전체 조회.', posts);
   }
 
-  /**
-   * 하나의 게시글 정보를 조회하는 기능.
-   * @param id 게시글 번호
-   * @returns 조회한 게시글 정보를 담은 응답 객체
-   */
   @Get(':id')
   async findOne(
     @Param('id', ParseIntPipe) id: number,
@@ -71,11 +55,6 @@ export class PostsController {
     return CustomResponse.create(HttpStatus.OK, '게시글 상세 조회', post);
   }
 
-  /**
-   * 카테고리 번호로 게시글을 조회하는 기능.
-   * @param categoryId 카테고리 번호
-   * @returns 해당 카테고리의 게시글 목록을 담은 응답 객체
-   */
   @Get('category/:categoryId')
   async findByCategory(
     @Param('categoryId', ParseIntPipe) categoryId: number,
@@ -89,12 +68,6 @@ export class PostsController {
     );
   }
 
-  /**
-   * 게시글의 정보를 업데이트하는 기능.
-   * @param id 게시글 번호
-   * @param updatePostDto 변경할 데이터
-   * @returns 수정 완료 메시지를 담은 응답 객체
-   */
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -105,11 +78,6 @@ export class PostsController {
     return CustomResponse.create(HttpStatus.NO_CONTENT, '게시글 수정 완료.');
   }
 
-  /**
-   * 게시글을 삭제하는 기능.
-   * @param id 게시글 번호
-   * @returns 게시글 삭제 완료 메시지를 담은 응답 객체
-   */
   @Delete(':id')
   async remove(
     @Param('id', ParseIntPipe) id: number,
