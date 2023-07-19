@@ -6,8 +6,8 @@ export interface CommentsService {
   /**
    * 댓글 생성 기능.
    * @param createCommentDto 댓글 생성에 필요한 데이터
-   * @param user accessToken으로 얻은 회원 정보
-   * @return 생성한 댓글 객체
+   * @param email accessToken으로 얻은 회원 email
+   * @return 생성한 댓글
    */
   createComment(
     createCommentDto: CreateCommentDto,
@@ -21,11 +21,11 @@ export interface CommentsService {
   findAll(): Promise<Comment[]>;
 
   /**
-   * 댓글 정보 업데이트.
+   * 댓글 정보 수정.
    * @param id 댓글 번호
    * @param email accessToken으로 얻은 회원 email
-   * @param updateCommentDto 업데이트할 내용
-   * @returns 업데이트된 댓글 객체
+   * @param updateCommentDto 수정할 내용
+   * @returns 수정된 댓글 객체
    */
   update(
     id: number,
