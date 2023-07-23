@@ -10,6 +10,7 @@ import { ExceptionModule } from './exception/exception.module';
 import { CategorysModule } from './categorys/categorys.module';
 import { CommentsModule } from './comments/comments.module';
 import jwtConfig from './config/jwtConfig';
+import { validationSchema } from './config/validationSchema';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import jwtConfig from './config/jwtConfig';
       envFilePath: [`${__dirname}/config/env/.${process.env.NODE_ENV}.env`],
       load: [jwtConfig],
       isGlobal: true,
+      validationSchema: validationSchema,
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
@@ -27,6 +29,8 @@ import jwtConfig from './config/jwtConfig';
       database: process.env.DATABASE_NAME,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+      migrationsRun: false,
+      migrations: [__dirname + '/**/migration/*.js'],
     }),
     AuthModule,
     UsersModule,
