@@ -1,24 +1,23 @@
-import { IsEmail } from 'class-validator';
+import 'reflect-metadata';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Post } from '../posts/entities/post.entity';
 import { BaseModel } from '../common/base-enttity/base.entity';
 
-@Entity('users')
+@Entity('user')
 export class User extends BaseModel {
-  @Column({ unique: true })
-  @IsEmail()
+  @Column({ length: 50, unique: true })
   email: string;
 
-  @Column({ nullable: false })
-  name: string;
-
-  @Column({ nullable: false })
+  @Column({ length: 20, nullable: false })
   nickname: string;
 
-  @Column()
+  @Column({ type: 'char', length: 5, nullable: false })
+  role: 'USER' | 'ADMIN' = 'USER';
+
+  @Column({ type: 'text', name: 'profile_image' })
   profileImage?: string;
 
-  @Column({ nullable: false })
+  @Column({ length: 20 })
   password: string;
 
   @OneToMany(() => Post, (posts) => posts.writer)
@@ -26,14 +25,12 @@ export class User extends BaseModel {
 
   constructor(
     email: string,
-    name: string,
     nickname: string,
     password: string,
     profileImage?: string,
   ) {
     super();
     this.email = email;
-    this.name = name;
     this.nickname = nickname;
     this.password = password;
     this.profileImage = profileImage;
@@ -46,6 +43,6 @@ export class User extends BaseModel {
     password: string,
     profileImage?: string,
   ) {
-    return new User(email, name, nickname, password, profileImage);
+    return new User(email, nickname, password, profileImage);
   }
 }

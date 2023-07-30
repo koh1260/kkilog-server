@@ -1,36 +1,49 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import 'reflect-metadata';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { User } from '../../users/user.entity';
-import { PublicScope } from '../enumerate/public-scope';
 import { BaseModel } from '../../common/base-enttity/base.entity';
 import { Category } from '../../categorys/entities/category.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { PostImage } from './post-images.entity';
 
-@Entity('posts')
+@Entity('post')
 export class Post extends BaseModel {
   @Column({ length: 30 })
   title: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: false })
   content: string;
 
   @Column({
-    type: 'enum',
-    enum: PublicScope.values(),
-    default: PublicScope.PUBLIC.visible,
+    name: 'public_scope',
+    default: 'PUBLIC',
   })
-  publicScope?: PublicScope;
+  publicScope?: 'PUBLIC' | 'PRIVATE';
 
-  @Column()
+  @Column({ length: 200, nullable: false })
   introduction: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: false })
   thumbnail: string;
 
-  @ManyToOne(() => User, (user) => user.posts)
+  @ManyToOne(() => User, (user) => user.posts, { nullable: false })
+  @JoinColumn({
+    name: 'writer_id',
+  })
   writer: User;
 
   @ManyToOne(() => Category, (category) => category.posts)
+  @JoinColumn({
+    name: 'category_id',
+  })
   category: Category;
 
   @OneToMany(() => Comment, (comment) => comment.post)
@@ -38,6 +51,20 @@ export class Post extends BaseModel {
 
   @OneToMany(() => PostImage, (postImage) => postImage.post)
   images?: PostImage[];
+
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable({
+    name: 'post_like',
+    joinColumn: {
+      name: 'post_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+  })
+  users?: User[];
 
   constructor(
     title: string,

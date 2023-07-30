@@ -1,13 +1,17 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import 'reflect-metadata';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseModel } from '../../common/base-enttity/base.entity';
 import { Post } from './post.entity';
 
 @Entity('post_image')
 export class PostImage extends BaseModel {
-  @Column({ type: 'text', name: 'image_url' })
+  @Column({ type: 'text', name: 'image_url', nullable: false })
   imageUrl: string;
 
-  @ManyToOne(() => Post)
+  @ManyToOne(() => Post, { nullable: false })
+  @JoinColumn({
+    name: 'post_id',
+  })
   post: Post;
 
   constructor(imageUrl: string, post: Post) {

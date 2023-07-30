@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import jwtConfig from 'src/config/jwtConfig';
 import { User } from '../users/user.entity';
 
-export type UserInfo = Pick<User, 'email' | 'name' | 'nickname'>;
+export type UserInfo = Pick<User, 'email' | 'nickname'>;
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -22,7 +22,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // 반환 값을 Request 객체의 user에 넣어줌.
     return {
       email: payload.email,
-      name: payload.name,
       nickname: payload.nickname,
     };
   }

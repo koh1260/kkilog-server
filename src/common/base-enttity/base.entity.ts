@@ -1,16 +1,17 @@
+import 'reflect-metadata';
 import {
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-export class BaseModel {
+export abstract class BaseModel {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'create_at' })
   createAt?: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'update_at' })
   updateAt?: Date;
 }

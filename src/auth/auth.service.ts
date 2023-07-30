@@ -15,7 +15,7 @@ export class AuthService {
     const user = await this.usersRepository.findOneByEmail(email);
 
     if (user && (await comparePassword(password, user.password))) {
-      const { email, name, nickname }: UserInfo = user;
+      const { email, nickname }: UserInfo = user;
       return {
         email: email,
         name: name,
@@ -28,7 +28,6 @@ export class AuthService {
   async login(user: UserInfo) {
     const payload = {
       email: user.email,
-      name: user.name,
       nickname: user.nickname,
     };
 

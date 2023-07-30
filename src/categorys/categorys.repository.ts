@@ -6,7 +6,7 @@ import { CustomRepository } from '../common/custom-repository/custom-repository'
 export class CategorysRepository extends Repository<Category> {
   async findOneByName(categoryName: string) {
     return await this.findOneBy({
-      name: categoryName,
+      categoryName: categoryName,
     });
   }
 }

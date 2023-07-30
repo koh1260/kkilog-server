@@ -1,13 +1,22 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseModel } from '../../common/base-enttity/base.entity';
 import { Post } from '../../posts/entities/post.entity';
 
-@Entity('categories')
+@Entity('categorie')
 export class Category extends BaseModel {
-  @Column({ type: 'char', length: 15, unique: true })
-  name: string;
+  @Column({
+    type: 'char',
+    length: 15,
+    unique: true,
+    name: 'category_name',
+    nullable: false,
+  })
+  categoryName: string;
 
   @ManyToOne(() => Category, (category) => category.childCategories)
+  @JoinColumn({
+    name: 'parent_id',
+  })
   parentCategory?: Category;
 
   @OneToMany(() => Category, (category) => category.parentCategory)
@@ -16,8 +25,8 @@ export class Category extends BaseModel {
   @OneToMany(() => Post, (post) => post.category)
   posts?: Post[];
 
-  constructor(name: string) {
+  constructor(categoryName: string) {
     super();
-    this.name = name;
+    this.categoryName = categoryName;
   }
 }
