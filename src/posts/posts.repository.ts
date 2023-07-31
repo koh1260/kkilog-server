@@ -5,28 +5,29 @@ import { CustomRepository } from '../common/custom-repository/custom-repository'
 @CustomRepository(Post)
 export class PostsRepository extends Repository<Post> {
   async findByCategory(categoryId: number): Promise<Post[]> {
-    return await this.createQueryBuilder('posts')
+    return await this.createQueryBuilder('post')
       .select([
-        'posts.id',
-        'posts.title',
-        'posts.introduction',
-        'posts.thumbnail',
-        'posts.createAt',
+        'post.id',
+        'post.title',
+        'post.introduction',
+        'post.thumbnail',
+        'post.createAt',
       ])
       .where('posts.categoryId = :categoryId', { categoryId: categoryId })
       .getMany();
   }
 
   async findAll() {
-    return await this.find({
-      select: {
-        id: true,
-        title: true,
-        introduction: true,
-        thumbnail: true,
-        createAt: true,
-      },
-    });
+    return await this.createQueryBuilder('post')
+      .select([
+        'post.id',
+        'post.title',
+        'post.introduction',
+        'post.thumbnail',
+        'post.createAt',
+      ])
+      .leftJoinAndSelect('post.comments', 'comment')
+      .getMany();
   }
 
   async findOneById(id: number) {

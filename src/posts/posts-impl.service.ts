@@ -52,7 +52,14 @@ export class PostsServiceImp implements PostsService {
   }
 
   async findAll(): Promise<Post[]> {
-    return await this.postsRepository.findAll();
+    const posts = await this.postsRepository.findAll();
+    posts.map((post) => {
+      post['commentCount'] = post.comments?.length;
+      delete post.comments;
+      return post;
+    });
+
+    return posts;
   }
 
   async findOne(id: number): Promise<Post> {
