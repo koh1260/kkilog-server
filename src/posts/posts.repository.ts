@@ -13,7 +13,8 @@ export class PostsRepository extends Repository<Post> {
         'post.thumbnail',
         'post.createAt',
       ])
-      .where('posts.categoryId = :categoryId', { categoryId: categoryId })
+      .leftJoinAndSelect('post.comments', 'comment')
+      .where('post.category = :categoryId', { categoryId: categoryId })
       .getMany();
   }
 

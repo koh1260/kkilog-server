@@ -69,7 +69,14 @@ export class PostsServiceImp implements PostsService {
   }
 
   async findByCategory(categoryId: number): Promise<Post[]> {
-    return await this.postsRepository.findByCategory(categoryId);
+    const posts = await this.postsRepository.findByCategory(categoryId);
+    posts.map((post) => {
+      post['commentCount'] = post.comments?.length;
+      delete post.comments;
+      return post;
+    });
+
+    return posts;
   }
 
   private existPost(post: Post | null): Post {
