@@ -32,15 +32,19 @@ export class PostsRepository extends Repository<Post> {
   }
 
   async findOneById(id: number) {
-    return await this.findOne({
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        thumbnail: true,
-        createAt: true,
-      },
-      where: { id: id },
-    });
+    return await this.createQueryBuilder('post')
+      .select([
+        'post.id',
+        'post.title',
+        'post.content',
+        'post.thumbnail',
+        'post.createAt',
+      ])
+      .addSelect(['comment.id', 'comment.content', 'comment.createAt'])
+      .addSelect(['user.nickname'])
+      .leftJoin('post.comments', 'comment')
+      .leftJoin('comment.writer', 'user')
+      .where('post.id=:id', { id })
+      .getOne();
   }
 }
