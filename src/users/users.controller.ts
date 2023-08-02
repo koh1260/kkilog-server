@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
@@ -6,6 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { UserInfo } from '../auth/jwt.strategy';
 import { LoginUser } from '../common/decorator/user.decorator';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -31,7 +32,9 @@ export class UsersController {
    */
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@LoginUser() user: UserInfo) {
-    return await this.authService.login(user);
+  async login(@Res() res: Response, @LoginUser() user: UserInfo) {
+    const token = await this.authService.login(user);
+    res.header('Authorization', 'Bearer ' + token.accessToken);
+    return res.status(200).send('로그인 완료.');
   }
 }
