@@ -14,7 +14,7 @@ export class UsersService {
    * @returns 생성된 회원 정보
    */
   async createUser(dto: CreateUserDto): Promise<User> {
-    const { email, name, nickname, password } = dto;
+    const { email, nickname, password } = dto;
 
     const findUser = await this.usersRepository.findOneByEmail(email);
 
@@ -23,7 +23,7 @@ export class UsersService {
     }
 
     return this.usersRepository.save(
-      User.create(email, name, nickname, await hashPassword(password)),
+      User.create(email, nickname, await hashPassword(password)),
     );
   }
 }

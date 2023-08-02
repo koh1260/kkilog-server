@@ -14,10 +14,10 @@ export class User extends BaseModel {
   @Column({ type: 'char', length: 5, nullable: false })
   role: 'USER' | 'ADMIN' = 'USER';
 
-  @Column({ type: 'text', name: 'profile_image' })
-  profileImage?: string;
+  @Column({ type: 'text', name: 'profile_image', default: true })
+  profileImage?: string = 'test';
 
-  @Column({ length: 20 })
+  @Column({ length: 255 })
   password: string;
 
   @OneToMany(() => Post, (posts) => posts.writer)
@@ -38,7 +38,6 @@ export class User extends BaseModel {
 
   static create(
     email: string,
-    name: string,
     nickname: string,
     password: string,
     profileImage?: string,

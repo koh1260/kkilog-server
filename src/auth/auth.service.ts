@@ -18,7 +18,6 @@ export class AuthService {
       const { email, nickname }: UserInfo = user;
       return {
         email: email,
-        name: name,
         nickname: nickname,
       };
     }
