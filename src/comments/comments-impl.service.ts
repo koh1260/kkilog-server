@@ -30,11 +30,27 @@ export class CommentsServiceImpl implements CommentsService {
     );
     const comment = new Comment(createCommentDto.content, writer, post);
 
+    if (createCommentDto.parentId) {
+      this.existComment(
+        await this.commentsRepository.findOneById(createCommentDto.parentId),
+      );
+      comment.setParentId(createCommentDto.parentId);
+    }
+
     return await this.commentsRepository.save(comment);
   }
 
-  async findAll() {
-    return await this.commentsRepository.findAll();
+  async findAll(postId: number) {
+    try {
+      return await this.commentsRepository.findAll(postId);
+    } catch (e) {
+      console.log(e);
+    }
+    return await this.commentsRepository.findAll(postId);
+  }
+
+  async findChildComment(parentId: number): Promise<Comment[]> {
+    return this.commentsRepository.findChildCommentByParentId(parentId);
   }
 
   async update(

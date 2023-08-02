@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   HttpStatus,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CommentsService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -19,7 +20,7 @@ import { UserInfo } from '../auth/jwt.strategy';
 import { CustomResponse } from '../common/response/custom-reponse';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('comments')
 export class CommentsController {
   constructor(
@@ -32,16 +33,20 @@ export class CommentsController {
     @Body() createCommentDto: CreateCommentDto,
     @LoginUser() user: UserInfo,
   ) {
-    console.log(user);
-    console.log(user);
     await this.commentsService.createComment(createCommentDto, user.email);
     return CustomResponse.create(HttpStatus.CREATED, '댓글 작성 완료.');
   }
 
   @Get()
-  async findAll() {
-    const comments = await this.commentsService.findAll();
+  async findAll(@Query('post', ParseIntPipe) postId: number) {
+    const comments = await this.commentsService.findAll(postId);
     return CustomResponse.create(HttpStatus.OK, '댓글 전체 조회.', comments);
+  }
+
+  @Get('/child')
+  async findChildComment(@Query('parent', ParseIntPipe) parentId: number) {
+    const comments = await this.commentsService.findChildComment(parentId);
+    return CustomResponse.create(HttpStatus.OK, '자식 댓글 조회', comments);
   }
 
   @Patch(':id')

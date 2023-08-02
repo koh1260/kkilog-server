@@ -4,16 +4,18 @@ import { Comment } from './entities/comment.entity';
 
 @CustomRepository(Comment)
 export class CommentsRepository extends Repository<Comment> {
-  async findAll() {
-    return await this.createQueryBuilder('comments')
+  async findAll(postId: number) {
+    return await this.createQueryBuilder('comment')
       .select([
-        'comments.id',
-        'comments.content',
-        'comments.createAt',
-        'users.nickname',
-        'users.profileImage',
+        'comment.id',
+        'comment.content',
+        'comment.createAt',
+        'user.nickname',
+        'user.profileImage',
       ])
-      .leftJoin('comments.writer', 'users')
+      .leftJoin('comment.writer', 'user')
+      .where('comment.post=:postId', { postId })
+      .andWhere('comment.parent IS NULL')
       .getMany();
   }
 
@@ -23,5 +25,19 @@ export class CommentsRepository extends Repository<Comment> {
       .leftJoin('comments.writer', 'users')
       .where('comments.id=:id', { id: id })
       .getOne();
+  }
+
+  async findChildCommentByParentId(parentId: number) {
+    return this.createQueryBuilder('comment')
+      .select([
+        'comment.id',
+        'comment.content',
+        'comment.createAt',
+        'user.nickname',
+        'user.profileImage',
+      ])
+      .leftJoin('comment.writer', 'user')
+      .where('comment.id=:id', { id: parentId })
+      .getMany();
   }
 }

@@ -18,7 +18,7 @@ export interface CommentsService {
    * 특정 게시물 모든 댓글 조회.
    * @returns 댓글 목록
    */
-  findAll(): Promise<Comment[]>;
+  findAll(postId: number): Promise<Comment[]>;
 
   /**
    * 댓글 정보 수정.
@@ -39,6 +39,12 @@ export interface CommentsService {
    * @param email accessToken에서 얻은 회원 이메일
    */
   remove(id: number, email: string): Promise<void>;
+
+  /**
+   * 자식 댓글 조회.
+   * @param parentId 부모 댓글 번호
+   */
+  findChildComment(parentId: number): Promise<Comment[]>;
 }
 
 export const CommentsService = Symbol('CommentsService');
