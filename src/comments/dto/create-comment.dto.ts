@@ -1,4 +1,4 @@
-import { IsString, MaxLength, MinLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateCommentDto {
   @MinLength(1)
@@ -8,4 +8,8 @@ export class CreateCommentDto {
   @MinLength(1)
   @MaxLength(500)
   content!: string;
+
+  @MinLength(1)
+  @IsOptional()
+  parentId?: number;
 }

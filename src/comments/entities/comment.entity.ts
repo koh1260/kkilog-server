@@ -16,7 +16,7 @@ export class Comment extends BaseModel {
   @Column({ type: 'text', nullable: false })
   content: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: false })
   @JoinColumn({
     name: 'writer_id',
   })
@@ -27,6 +27,12 @@ export class Comment extends BaseModel {
     name: 'post_id',
   })
   post: Post;
+
+  @Column({ nullable: true })
+  @JoinColumn({
+    name: 'parent_id',
+  })
+  parent?: number;
 
   @ManyToMany(() => User, { cascade: true, nullable: false })
   @JoinTable({
@@ -41,6 +47,10 @@ export class Comment extends BaseModel {
     },
   })
   users?: User[];
+
+  setParentId(arg: number) {
+    this.parent = arg;
+  }
 
   constructor(content: string, writer: User, post: Post) {
     super();
