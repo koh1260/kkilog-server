@@ -34,6 +34,9 @@ export class Post extends BaseModel {
   @Column({ type: 'text', nullable: false })
   thumbnail: string;
 
+  @Column({ default: 0 })
+  likes!: number;
+
   @ManyToOne(() => User, (user) => user.posts, { nullable: false })
   @JoinColumn({
     name: 'writer_id',
@@ -51,20 +54,6 @@ export class Post extends BaseModel {
 
   @OneToMany(() => PostImage, (postImage) => postImage.post)
   images?: PostImage[];
-
-  @ManyToMany(() => User, { cascade: true })
-  @JoinTable({
-    name: 'post_like',
-    joinColumn: {
-      name: 'post_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id',
-    },
-  })
-  users?: User[];
 
   constructor(
     title: string,

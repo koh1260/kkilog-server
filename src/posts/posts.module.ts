@@ -9,10 +9,11 @@ import { PostsService } from './posts.service';
 import { Category } from '../categorys/entities/category.entity';
 import { UsersRepository } from '../users/users.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
+import { PostLike } from './entities/post-like.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Category]),
+    TypeOrmModule.forFeature([User, Category, PostLike]),
     CustomTypeOrmModule.forCustomRepository([
       PostsRepository,
       UsersRepository,

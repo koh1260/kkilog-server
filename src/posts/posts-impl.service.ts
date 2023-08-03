@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsRepository } from './posts.repository';
@@ -8,10 +8,15 @@ import { PostsService } from './posts.service';
 import { Category } from '../categorys/entities/category.entity';
 import { UsersRepository } from '../users/users.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
+import { PostLike } from './entities/post-like.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsServiceImp implements PostsService {
   constructor(
+    @InjectRepository(PostLike)
+    private readonly postLikeRepository: Repository<PostLike>,
     private readonly usersRepository: UsersRepository,
     private readonly categoryRepository: CategorysRepository,
     private readonly postsRepository: PostsRepository,
@@ -77,6 +82,47 @@ export class PostsServiceImp implements PostsService {
     });
 
     return posts;
+  }
+
+  async like(postId: number, userId: number) {
+    // user, post 존재 확인.
+    const user = this.existUser(await this.usersRepository.findOneById(userId));
+    const post = this.existPost(await this.postsRepository.findOneById(postId));
+
+    const liked = await this.postLikeRepository.findOne({
+      where: {
+        post: { id: postId },
+        user: { id: userId },
+      },
+    });
+
+    const likeCount = await this.postLikeRepository.count({
+      where: {
+        post: { id: postId },
+      },
+    });
+
+    if (liked) {
+      try {
+        await this.postLikeRepository.delete(liked.id);
+        post.likes = likeCount - 1;
+        await this.postsRepository.save(post);
+        return;
+      } catch (e) {
+        console.log(`Error: ${e}`);
+      }
+    }
+    const like = new PostLike();
+    like.user_id = userId;
+    like.post_id = postId;
+
+    try {
+      await this.postLikeRepository.save(like);
+      post.likes = likeCount + 1;
+      await this.postsRepository.save(post);
+    } catch (e) {
+      console.log(`Error: ${e}`);
+    }
   }
 
   private existPost(post: Post | null): Post {

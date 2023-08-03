@@ -32,6 +32,12 @@ export interface PostsService {
   findByCategory(categoryId: number): Promise<Post[]>;
 
   /**
+   * 게시글 좋아요.
+   * @param postId 게시글 번호
+   */
+  like(postId: number, userId: number): void;
+
+  /**
    * 게시글 정보 수정.
    * @param id 게시글 번호
    * @param updatePostDto 수정할 내용

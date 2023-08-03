@@ -10,6 +10,8 @@ import {
   Inject,
   ParseIntPipe,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -20,14 +22,21 @@ import { Post as PostEntity } from './entities/post.entity';
 import { CustomResponse } from '../common/response/custom-reponse';
 import { LoginUser } from '../common/decorator/user.decorator';
 import { UserInfo } from '../auth/jwt.strategy';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostsController {
   constructor(
     @Inject(PostsService)
     private readonly postsService: PostsServiceImp,
   ) {}
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
+  }
 
   @Post()
   async createPost(
@@ -66,6 +75,14 @@ export class PostsController {
       '카테고리별 게시글 조회.',
       posts,
     );
+  }
+
+  @Get('/like/:postId')
+  async like(
+    @Param('postId', ParseIntPipe) postId: number,
+    @LoginUser() { id }: UserInfo,
+  ) {
+    await this.postsService.like(postId, id);
   }
 
   @Patch(':id')
