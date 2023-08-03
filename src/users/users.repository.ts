@@ -9,4 +9,12 @@ export class UsersRepository extends Repository<User> {
       email: email,
     });
   }
+
+  async findOneById(id: number) {
+    return await this.findOne({
+      where: {
+        id,
+      },
+    });
+  }
 }
