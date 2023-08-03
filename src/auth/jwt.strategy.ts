@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import jwtConfig from 'src/config/jwtConfig';
 import { User } from '../users/user.entity';
 
-export type UserInfo = Pick<User, 'email' | 'nickname'>;
+export type UserInfo = Pick<User, 'id' | 'email' | 'nickname'>;
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -21,6 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any): Promise<UserInfo> {
     // 반환 값을 Request 객체의 user에 넣어줌.
     return {
+      id: payload.id,
       email: payload.email,
       nickname: payload.nickname,
     };

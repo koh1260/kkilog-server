@@ -4,6 +4,7 @@ import { UserInfo } from '../../auth/jwt.strategy';
 export const LoginUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): UserInfo => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user;
+    const user: UserInfo = request.user;
+    return user;
   },
 );
