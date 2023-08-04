@@ -103,30 +103,25 @@ export class PostsServiceImp implements PostsService {
       },
     });
 
+    // 좋아요 취소 트랜잭션
     if (liked) {
-      try {
-        await this.dataSource.transaction(async (manager) => {
-          await manager.delete(PostLike, liked.id);
-          post.likes = likeCount - 1;
-          await manager.save(post);
-        });
-
-        return;
-      } catch (e) {
-        console.log(`Error: ${e}`);
-      }
+      await this.dataSource.transaction(async (manager) => {
+        await manager.delete(PostLike, liked.id);
+        post.likes = likeCount - 1;
+        await manager.save(Post, post);
+      });
+      return;
     }
     const like = new PostLike();
     like.user_id = userId;
     like.post_id = postId;
 
-    try {
-      await this.postLikeRepository.save(like);
+    // 좋아요 트랜잭션
+    await this.dataSource.transaction(async (manager) => {
+      await manager.save(PostLike, like);
       post.likes = likeCount + 1;
-      await this.postsRepository.save(post);
-    } catch (e) {
-      console.log(`Error: ${e}`);
-    }
+      await manager.save(Post, post);
+    });
   }
 
   private existPost(post: Post | null): Post {
