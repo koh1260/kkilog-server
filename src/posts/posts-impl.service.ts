@@ -9,12 +9,13 @@ import { Category } from '../categorys/entities/category.entity';
 import { UsersRepository } from '../users/users.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { PostLike } from './entities/post-like.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository, Transaction } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsServiceImp implements PostsService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(PostLike)
     private readonly postLikeRepository: Repository<PostLike>,
     private readonly usersRepository: UsersRepository,
@@ -104,9 +105,12 @@ export class PostsServiceImp implements PostsService {
 
     if (liked) {
       try {
-        await this.postLikeRepository.delete(liked.id);
-        post.likes = likeCount - 1;
-        await this.postsRepository.save(post);
+        await this.dataSource.transaction(async (manager) => {
+          await manager.delete(PostLike, liked.id);
+          post.likes = likeCount - 1;
+          await manager.save(post);
+        });
+
         return;
       } catch (e) {
         console.log(`Error: ${e}`);
