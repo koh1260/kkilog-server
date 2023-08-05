@@ -38,6 +38,12 @@ export interface PostsService {
   like(postId: number, userId: number): void;
 
   /**
+   * 이전, 다음 게시글 제목.
+   * @param id 게시글 번호
+   */
+  getOtherPosts(id: number): Promise<[Post | null, Post | null]>;
+
+  /**
    * 게시글 정보 수정.
    * @param id 게시글 번호
    * @param updatePostDto 수정할 내용

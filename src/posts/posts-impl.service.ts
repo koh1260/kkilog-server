@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsRepository } from './posts.repository';
@@ -9,7 +9,7 @@ import { Category } from '../categorys/entities/category.entity';
 import { UsersRepository } from '../users/users.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { PostLike } from './entities/post-like.entity';
-import { DataSource, Repository, Transaction } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -103,25 +103,26 @@ export class PostsServiceImp implements PostsService {
       },
     });
 
-    // 좋아요 취소 트랜잭션
-    if (liked) {
-      await this.dataSource.transaction(async (manager) => {
+    await this.dataSource.transaction(async (manager) => {
+      if (liked) {
         await manager.delete(PostLike, liked.id);
         post.likes = likeCount - 1;
-        await manager.save(Post, post);
-      });
-      return;
-    }
-    const like = new PostLike();
-    like.user_id = userId;
-    like.post_id = postId;
-
-    // 좋아요 트랜잭션
-    await this.dataSource.transaction(async (manager) => {
-      await manager.save(PostLike, like);
-      post.likes = likeCount + 1;
+      } else {
+        const like = new PostLike();
+        like.user = user;
+        like.post = post;
+        await manager.save(PostLike, like);
+        post.likes = likeCount + 1;
+      }
       await manager.save(Post, post);
     });
+  }
+
+  async getOtherPosts(id: number): Promise<[Post | null, Post | null]> {
+    const prevPost = await this.postsRepository.getPrevious(id);
+    const nextPost = await this.postsRepository.getNext(id);
+
+    return [prevPost, nextPost];
   }
 
   private existPost(post: Post | null): Post {

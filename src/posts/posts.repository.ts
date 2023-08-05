@@ -47,4 +47,22 @@ export class PostsRepository extends Repository<Post> {
       .where('post.id=:id', { id })
       .getOne();
   }
+
+  async getPrevious(id: number) {
+    return await this.createQueryBuilder('post')
+      .select(['post.id', 'post.title'])
+      .where('post.id<:id', { id })
+      .orderBy('post.id', 'DESC')
+      .limit(1)
+      .getOne();
+  }
+
+  async getNext(id: number) {
+    return await this.createQueryBuilder('post')
+      .select(['post.id', 'post.title'])
+      .where('post.id>:id', { id })
+      .orderBy('post.id', 'ASC')
+      .limit(1)
+      .getOne();
+  }
 }

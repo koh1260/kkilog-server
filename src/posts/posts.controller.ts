@@ -12,6 +12,7 @@ import {
   HttpStatus,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -24,7 +25,7 @@ import { LoginUser } from '../common/decorator/user.decorator';
 import { UserInfo } from '../auth/jwt.strategy';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostsController {
   constructor(
@@ -83,6 +84,16 @@ export class PostsController {
     @LoginUser() { id }: UserInfo,
   ) {
     await this.postsService.like(postId, id);
+  }
+
+  @Get('/other/:postId')
+  async getOtherPost(@Param('postId') id: number) {
+    const posts = await this.postsService.getOtherPosts(id);
+    return CustomResponse.create(
+      HttpStatus.OK,
+      '이전 다음 게시글 제목.',
+      posts,
+    );
   }
 
   @Patch(':id')
