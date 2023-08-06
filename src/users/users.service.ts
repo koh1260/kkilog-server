@@ -15,15 +15,13 @@ export class UsersService {
    */
   async createUser(dto: CreateUserDto): Promise<User> {
     const { email, nickname, password } = dto;
-
     const findUser = await this.usersRepository.findOneByEmail(email);
 
     if (findUser) {
       throw new BadRequestException('이미 존재하는 이메일입니다.');
     }
+    const user = User.of(email, nickname, await hashPassword(password));
 
-    return this.usersRepository.save(
-      User.create(email, nickname, await hashPassword(password)),
-    );
+    return this.usersRepository.save(user);
   }
 }
