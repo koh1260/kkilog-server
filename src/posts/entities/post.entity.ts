@@ -17,10 +17,10 @@ import { PostImage } from './post-images.entity';
 @Entity('post')
 export class Post extends BaseModel {
   @Column({ length: 30 })
-  title: string;
+  title!: string;
 
   @Column({ type: 'text', nullable: false })
-  content: string;
+  content!: string;
 
   @Column({
     name: 'public_scope',
@@ -29,10 +29,10 @@ export class Post extends BaseModel {
   publicScope?: 'PUBLIC' | 'PRIVATE';
 
   @Column({ length: 200, nullable: false })
-  introduction: string;
+  introduction!: string;
 
   @Column({ type: 'text', nullable: false })
-  thumbnail: string;
+  thumbnail!: string;
 
   @Column({ default: 0 })
   likes!: number;
@@ -41,13 +41,13 @@ export class Post extends BaseModel {
   @JoinColumn({
     name: 'writer_id',
   })
-  writer: User;
+  writer!: User;
 
   @ManyToOne(() => Category, (category) => category.posts)
   @JoinColumn({
     name: 'category_id',
   })
-  category: Category;
+  category!: Category;
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comments?: Comment[];
@@ -55,24 +55,24 @@ export class Post extends BaseModel {
   @OneToMany(() => PostImage, (postImage) => postImage.post)
   images?: PostImage[];
 
-  constructor(
-    title: string,
-    content: string,
-    introduction: string,
-    thumbnail: string,
-    writer: User,
-    category: Category,
-  ) {
-    super();
-    this.title = title;
-    this.content = content;
-    this.introduction = introduction;
-    this.thumbnail = thumbnail;
-    this.writer = writer;
-    this.category = category;
-  }
+  // constructor(
+  //   title: string,
+  //   content: string,
+  //   introduction: string,
+  //   thumbnail: string,
+  //   writer: User,
+  //   category: Category,
+  // ) {
+  //   super();
+  //   this.title = title;
+  //   this.content = content;
+  //   this.introduction = introduction;
+  //   this.thumbnail = thumbnail;
+  //   this.writer = writer;
+  //   this.category = category;
+  // }
 
-  static create(
+  static of(
     title: string,
     content: string,
     introdution: string,
@@ -80,6 +80,14 @@ export class Post extends BaseModel {
     writer: User,
     category: Category,
   ) {
-    return new Post(title, content, introdution, thumbnail, writer, category);
+    const post = new Post();
+    post.title = title;
+    post.content = content;
+    post.introduction = introdution;
+    post.thumbnail = thumbnail;
+    post.writer = writer;
+    post.category = category;
+
+    return post;
   }
 }

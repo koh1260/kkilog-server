@@ -23,16 +23,19 @@ export class PostsServiceImp implements PostsService {
     private readonly postsRepository: PostsRepository,
   ) {}
 
-  async createPost(createPostDto: CreatePostDto, email: string): Promise<Post> {
+  async createPost(
+    createPostDto: CreatePostDto,
+    loginedUserId: number,
+  ): Promise<Post> {
     const user = this.existUser(
-      await this.usersRepository.findOneByEmail(email),
+      await this.usersRepository.findOneById(loginedUserId),
     );
     const category = this.existCategory(
       await this.categoryRepository.findOneByName(createPostDto.categoryName),
     );
 
     return this.postsRepository.save(
-      Post.create(
+      Post.of(
         createPostDto.title,
         createPostDto.content,
         createPostDto.introduction,
