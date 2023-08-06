@@ -6,15 +6,13 @@ import { CustomRepository } from '../common/custom-repository/custom-repository'
 export class UsersRepository extends Repository<User> {
   async findOneByEmail(email: string) {
     return await this.findOneBy({
-      email: email,
+      email,
     });
   }
 
   async findOneById(id: number) {
-    return await this.findOne({
-      where: {
-        id,
-      },
+    return await this.findOneBy({
+      id,
     });
   }
 }
