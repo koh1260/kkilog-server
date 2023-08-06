@@ -4,6 +4,7 @@ import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { BadRequestException } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 const mockUsersRepository = {
   findOneByEmail: jest.fn(),
@@ -40,7 +41,7 @@ describe('UsersService', () => {
     const user = await usersService.createUser(createUserDto);
 
     // then
-    expect(user.name).toEqual('NAME');
+    expect(user.email).toEqual('test@eaxmple.com');
   });
 
   it('회원가입 이메일 중복', async () => {
@@ -51,12 +52,10 @@ describe('UsersService', () => {
       'NICKNAME',
       'PASSWORD',
     );
-    const user = new User(
-      createUserDto.email,
-      createUserDto.name,
-      createUserDto.nickname,
-      createUserDto.password,
-    );
+    const user = new User();
+    user.email = createUserDto.email;
+    user.nickname = createUserDto.nickname;
+    user.password = createUserDto.password;
     jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(user);
 
     // when
@@ -77,7 +76,6 @@ class createUserDtoFactory {
   ) {
     const dto = new CreateUserDto();
     dto.email = email;
-    dto.name = name;
     dto.nickname = nickname;
     dto.password = password;
 
