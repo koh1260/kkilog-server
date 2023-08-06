@@ -5,7 +5,6 @@ import { Post } from '../../posts/entities/post.entity';
 @Entity('categorie')
 export class Category extends BaseModel {
   @Column({
-    type: 'char',
     length: 15,
     unique: true,
     name: 'category_name',
