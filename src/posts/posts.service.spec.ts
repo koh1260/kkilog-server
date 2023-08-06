@@ -10,10 +10,22 @@ import { UsersRepository } from '../users/users.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { Post } from './entities/post.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { DataSource } from 'typeorm';
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
+import { PostLike } from './entities/post-like.entity';
+import { repositoryMockFactory } from '../common/mock-data-sourec';
 
 const mockPostsRepository = {
   save: jest.fn((value) => value),
   findOneById: jest.fn(),
+};
+
+const mockDataSource = {
+  transaction: jest.fn(),
+};
+
+const mockPostLikeRepository = {
+  save: jest.fn(),
 };
 
 describe('PostsService', () => {
@@ -25,7 +37,10 @@ describe('PostsService', () => {
   let category: Category;
 
   beforeEach(async () => {
-    user = new User('EMAIL@example.com', 'NAME', 'NICKNAME', 'PASSWORD');
+    user = new User();
+    user.email = 'EMAIL@example.com';
+    user.nickname = 'NICKNAME';
+    user.password = 'PASSWORD';
     category = new Category('CATEGORYNAME');
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -33,6 +48,11 @@ describe('PostsService', () => {
         CategorysRepository,
         { provide: PostsRepository, useValue: mockPostsRepository },
         { provide: PostsService, useClass: PostsServiceImp },
+        { provide: DataSource, useValue: mockDataSource },
+        {
+          provide: getRepositoryToken(PostLike),
+          useFactory: repositoryMockFactory,
+        },
       ],
     }).compile();
 
@@ -48,21 +68,15 @@ describe('PostsService', () => {
 
   it('createPost 정상 작동', async () => {
     // given
-    const createPostDto = createPostDtoFactory(
-      'TITLE',
-      'CONTENT',
-      'INTRO',
-      'THUMBNAIL',
-      'CATEGORY_NAME',
-    );
-
-    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(user);
+    const createPostDto = createPostDtoFactory('Nest.js');
+    const loginedUserId = 1;
+    jest.spyOn(usersRepository, 'findOneById').mockResolvedValue(user);
     jest
       .spyOn(categorysRepository, 'findOneByName')
       .mockResolvedValue(category);
 
     // when
-    const post = await postsService.createPost(createPostDto, 'EMAIL');
+    const post = await postsService.createPost(createPostDto, loginedUserId);
 
     // then
     expect(post.title).toEqual(createPostDto.title);
@@ -70,37 +84,25 @@ describe('PostsService', () => {
 
   it('createPost 존재하지 않는 회원', async () => {
     // given
-    const createPostDto = createPostDtoFactory(
-      'TITLE',
-      'CONTENT',
-      'INTRO',
-      'THUMBNAIL',
-      'CATEGORY_NAME',
-    );
-
-    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(null);
+    const createPostDto = createPostDtoFactory('Nest.js');
+    jest.spyOn(usersRepository, 'findOneById').mockResolvedValue(null);
 
     // when
     await expect(async () => {
-      await postsService.createPost(createPostDto, 'EMAIL');
+      await postsService.createPost(createPostDto, 1);
     }).rejects.toThrowError(new NotFoundException('존재하지 않는 회원입니다.'));
   });
 
   it('createPost 존재하지 않는 카테고리', async () => {
     // given
-    const createPostDto = createPostDtoFactory(
-      'TITLE',
-      'CONTENT',
-      'INTRO',
-      'THUMBNAIL',
-      'CATEGORY_NAME',
-    );
-    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(user);
+    const createPostDto = createPostDtoFactory('Nest.js');
+    const loginedUserId = 1;
+    jest.spyOn(usersRepository, 'findOneById').mockResolvedValue(user);
     jest.spyOn(categorysRepository, 'findOneByName').mockResolvedValue(null);
 
     // when
     await expect(async () => {
-      await postsService.createPost(createPostDto, 'EMAIL');
+      await postsService.createPost(createPostDto, loginedUserId);
     }).rejects.toThrowError(
       new NotFoundException('존재하지 않는 카테고리입니다.'),
     );
@@ -124,15 +126,14 @@ describe('PostsService', () => {
     // given
     const id = 1;
     const updatePostDto = new UpdatePostDto();
-    updatePostDto.title = 'UPDATED_TITLE';
-    const originalPost = new Post(
-      'TITLE',
-      'CONTENT',
-      'INTRO',
-      'THUMB',
-      user,
-      category,
-    );
+    updatePostDto.title = 'updated post';
+    const originalPost = new Post();
+    originalPost.title = 'title';
+    originalPost.content = 'nestjs 재밌군';
+    originalPost.introduction = 'intro';
+    originalPost.thumbnail = 'thumb';
+    originalPost.writer = user;
+    originalPost.category = category;
 
     jest.spyOn(postsRepository, 'findOneById').mockResolvedValue(originalPost);
 
@@ -140,22 +141,16 @@ describe('PostsService', () => {
     const updatedPost = await postsService.update(id, updatePostDto);
 
     // then
-    expect(updatedPost.title).toEqual('UPDATED_TITLE');
+    expect(updatedPost.title).toEqual('updated post');
   });
 });
 
-export const createPostDtoFactory = (
-  title: string,
-  content: string,
-  introduction: string,
-  thumbnail: string,
-  categoryName: string,
-) => {
+const createPostDtoFactory = (categoryName: string) => {
   const dto = new CreatePostDto();
-  dto.title = title;
-  dto.content = content;
-  dto.introduction = introduction;
-  dto.thumbnail = thumbnail;
+  dto.title = 'title';
+  dto.content = 'content';
+  dto.introduction = 'introduction';
+  dto.thumbnail = 'thumbnail';
   dto.categoryName = categoryName;
 
   return dto;
