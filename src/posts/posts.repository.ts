@@ -4,7 +4,7 @@ import { CustomRepository } from '../common/custom-repository/custom-repository'
 
 @CustomRepository(Post)
 export class PostsRepository extends Repository<Post> {
-  async findByCategory(categoryId: number): Promise<Post[]> {
+  async findByCategoryId(categoryId: number): Promise<Post[]> {
     return await this.createQueryBuilder('post')
       .select([
         'post.id',
@@ -48,7 +48,7 @@ export class PostsRepository extends Repository<Post> {
       .getOne();
   }
 
-  async getPrevious(id: number) {
+  async findPrevious(id: number) {
     return await this.createQueryBuilder('post')
       .select(['post.id', 'post.title'])
       .where('post.id<:id', { id })
@@ -57,7 +57,7 @@ export class PostsRepository extends Repository<Post> {
       .getOne();
   }
 
-  async getNext(id: number) {
+  async findNext(id: number) {
     return await this.createQueryBuilder('post')
       .select(['post.id', 'post.title'])
       .where('post.id>:id', { id })

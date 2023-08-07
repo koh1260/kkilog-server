@@ -78,7 +78,7 @@ export class PostsServiceImp implements PostsService {
   }
 
   async findByCategory(categoryId: number): Promise<Post[]> {
-    const posts = await this.postsRepository.findByCategory(categoryId);
+    const posts = await this.postsRepository.findByCategoryId(categoryId);
     posts.map((post) => {
       post['commentCount'] = post.comments?.length;
       delete post.comments;
@@ -122,8 +122,8 @@ export class PostsServiceImp implements PostsService {
   }
 
   async getOtherPosts(id: number): Promise<[Post | null, Post | null]> {
-    const prevPost = await this.postsRepository.getPrevious(id);
-    const nextPost = await this.postsRepository.getNext(id);
+    const prevPost = await this.postsRepository.findPrevious(id);
+    const nextPost = await this.postsRepository.findNext(id);
 
     return [prevPost, nextPost];
   }
