@@ -37,7 +37,7 @@ export class CommentsRepository extends Repository<Comment> {
         'user.profileImage',
       ])
       .leftJoin('comment.writer', 'user')
-      .where('comment.id=:id', { id: parentId })
+      .where('comment.parent=:id', { id: parentId })
       .getMany();
   }
 }
