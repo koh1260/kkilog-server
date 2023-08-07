@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostsServiceImp } from './posts-impl.service';
-import { PostsRepository } from './posts.repository';
-import { User } from '../users/user.entity';
-import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { Category } from '../categorys/entities/category.entity';
+import { PostsServiceImp } from '../../posts/posts-impl.service';
+import { PostsRepository } from '../../posts/posts.repository';
+import { User } from '../../users/user.entity';
+import { PostsService } from '../../posts/posts.service';
+import { CreatePostDto } from '../../posts/dto/create-post.dto';
+import { Category } from '../../categorys/entities/category.entity';
 import { NotFoundException } from '@nestjs/common';
-import { UsersRepository } from '../users/users.repository';
-import { CategorysRepository } from '../categorys/categorys.repository';
-import { Post } from './entities/post.entity';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { UsersRepository } from '../../users/users.repository';
+import { CategorysRepository } from '../../categorys/categorys.repository';
+import { Post } from '../../posts/entities/post.entity';
+import { UpdatePostDto } from '../../posts/dto/update-post.dto';
 import { DataSource } from 'typeorm';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
-import { PostLike } from './entities/post-like.entity';
-import { repositoryMockFactory } from '../common/mock-data-sourec';
+import { PostLike } from '../../posts/entities/post-like.entity';
+import { repositoryMockFactory } from '../../common/mock-data-sourec';
 
 const mockPostsRepository = {
   save: jest.fn((value) => value),
@@ -41,7 +41,8 @@ describe('PostsService', () => {
     user.email = 'EMAIL@example.com';
     user.nickname = 'NICKNAME';
     user.password = 'PASSWORD';
-    category = new Category('CATEGORYNAME');
+    category = new Category();
+    category.categoryName = 'Nest.js';
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersRepository,

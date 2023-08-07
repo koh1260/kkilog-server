@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from './user.entity';
-import { UsersRepository } from './users.repository';
+import { User } from '../../users/user.entity';
+import { UsersRepository } from '../../users/users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CustomTypeOrmModule } from '../common/custom-repository/custom-typeorm-module';
-import { Post } from '../posts/entities/post.entity';
-import { TestTypeOrmModule } from '../common/test-database/test-db.module';
+import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
+import { Post } from '../../posts/entities/post.entity';
+import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
 
 describe('UsersRepository', () => {
   let repository: UsersRepository;

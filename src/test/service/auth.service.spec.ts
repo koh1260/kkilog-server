@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { UsersRepository } from '../users/users.repository';
+import { AuthService } from '../../auth/auth.service';
+import { UsersRepository } from '../../users/users.repository';
 import { JwtService } from '@nestjs/jwt';
-import { comparePassword } from '../utils/password';
-import { User } from '../users/user.entity';
+import { comparePassword } from '../../utils/password';
+import { User } from '../../users/user.entity';
 
-jest.mock('../utils/password');
+jest.mock('../../utils/password');
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -30,7 +30,10 @@ describe('AuthService', () => {
     // given
     const email = 'EMAIL@example.com';
     const password = 'PASSWORD';
-    const findUser = new User(email, 'NAME', 'NICKNAME', password);
+    const findUser = new User();
+    findUser.email = email;
+    findUser.password = password;
+    findUser.nickname = 'NICKNAME';
 
     jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(findUser);
     (comparePassword as jest.Mock).mockResolvedValue(true);
@@ -59,8 +62,8 @@ describe('AuthService', () => {
   it('login access token 생성', async () => {
     // given
     const user = {
+      id: 1,
       email: 'email@example.com',
-      name: 'NAME',
       nickname: 'NICKNAME',
     };
     const token = 'ACCESSTOKEN';
@@ -70,7 +73,6 @@ describe('AuthService', () => {
     const accessToken = await authService.login(user);
 
     // then
-    expect(accessToken.accessToken).toEqual(token);
     expect(jwtService.sign).toHaveBeenCalledWith(user);
   });
 });

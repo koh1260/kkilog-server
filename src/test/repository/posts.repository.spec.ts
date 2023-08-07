@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Category } from '../categorys/entities/category.entity';
-import { User } from '../users/user.entity';
-import { Post } from './entities/post.entity';
-import { PostsRepository } from './posts.repository';
-import { TestTypeOrmModule } from '../common/test-database/test-db.module';
-import { CustomTypeOrmModule } from '../common/custom-repository/custom-typeorm-module';
-import { UsersRepository } from '../users/users.repository';
-import { CategorysRepository } from '../categorys/categorys.repository';
+import { Category } from '../../categorys/entities/category.entity';
+import { User } from '../../users/user.entity';
+import { Post } from '../../posts/entities/post.entity';
+import { PostsRepository } from '../../posts/posts.repository';
+import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
+import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
+import { UsersRepository } from '../../users/users.repository';
+import { CategorysRepository } from '../../categorys/categorys.repository';
 
 describe('PostsRepository', () => {
   let postsRepository: PostsRepository;
@@ -31,19 +31,13 @@ describe('PostsRepository', () => {
     usersRepository = module.get<UsersRepository>(UsersRepository);
     categorysRepository = module.get<CategorysRepository>(CategorysRepository);
 
-    writer = new User();
-    writer.id = 1;
-    writer.email = 'test@test.com';
-    writer.nickname = 'nickname';
-    writer.password = 'password';
+    writer = User.of('test@test.com', 'nickname', 'password');
     await usersRepository.save(writer);
-    category = new Category();
-    category.id = 7;
-    category.categoryName = 'Nest.js';
+    category = createCategory(7, 'Nest.js');
     await categorysRepository.save(category);
   });
 
-  it('카테고리 번호로 조회', async () => {
+  it('카테고리 번호로 전체 조회', async () => {
     // given
     const post1 = createPost(1, writer, category);
     const post2 = createPost(2, writer, category);
@@ -52,20 +46,6 @@ describe('PostsRepository', () => {
 
     // when
     const posts = await postsRepository.findByCategoryId(category.id);
-
-    // then
-    expect(posts).toHaveLength(3);
-  });
-
-  it('전체 조회', async () => {
-    // given
-    const post1 = createPost(1, writer, category);
-    const post2 = createPost(2, writer, category);
-    const post3 = createPost(3, writer, category);
-    await postsRepository.save([post1, post2, post3]);
-
-    // when
-    const posts = await postsRepository.findAll();
 
     // then
     expect(posts).toHaveLength(3);
@@ -81,6 +61,20 @@ describe('PostsRepository', () => {
 
     // then
     expect(foundPost?.title).toEqual(post.title);
+  });
+
+  it('전체 조회', async () => {
+    // given
+    const post1 = createPost(1, writer, category);
+    const post2 = createPost(2, writer, category);
+    const post3 = createPost(3, writer, category);
+    await postsRepository.save([post1, post2, post3]);
+
+    // when
+    const posts = await postsRepository.findAll();
+
+    // then
+    expect(posts).toHaveLength(3);
   });
 
   it('이전 글 조회', async () => {
@@ -125,4 +119,12 @@ const createPost = (id: number, writer: User, category: Category) => {
   post.category = category;
 
   return post;
+};
+
+const createCategory = (id: number, categoryName: string) => {
+  const category = new Category();
+  category.id = id;
+  category.categoryName = categoryName;
+
+  return category;
 };

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-import { UsersRepository } from './users.repository';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './user.entity';
+import { UsersService } from '../../users/users.service';
+import { UsersRepository } from '../../users/users.repository';
+import { CreateUserDto } from '../../users/dto/create-user.dto';
+import { User } from '../../users/user.entity';
 import { BadRequestException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
