@@ -28,13 +28,13 @@ export class CommentsServiceImpl implements CommentsService {
     const post = this.existPost(
       await this.postsRepository.findOneById(createCommentDto.postId),
     );
-    const comment = new Comment(createCommentDto.content, writer, post);
+    const comment = Comment.of(createCommentDto.content, writer, post);
 
     if (createCommentDto.parentId) {
       this.existComment(
         await this.commentsRepository.findOneById(createCommentDto.parentId),
       );
-      comment.setParentId(createCommentDto.parentId);
+      comment.parent = createCommentDto.parentId;
     }
 
     return await this.commentsRepository.save(comment);

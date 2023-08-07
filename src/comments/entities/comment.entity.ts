@@ -14,19 +14,19 @@ import { Post } from '../../posts/entities/post.entity';
 @Entity('comment')
 export class Comment extends BaseModel {
   @Column({ type: 'text', nullable: false })
-  content: string;
+  content!: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({
     name: 'writer_id',
   })
-  writer: User;
+  writer!: User;
 
   @ManyToOne(() => Post, (post) => post.comments, { nullable: false })
   @JoinColumn({
     name: 'post_id',
   })
-  post: Post;
+  post!: Post;
 
   @Column({ nullable: true })
   @JoinColumn({
@@ -48,14 +48,12 @@ export class Comment extends BaseModel {
   })
   users?: User[];
 
-  setParentId(arg: number) {
-    this.parent = arg;
-  }
+  static of(content: string, writer: User, post: Post) {
+    const comment = new Comment();
+    comment.content = content;
+    comment.writer = writer;
+    comment.post = post;
 
-  constructor(content: string, writer: User, post: Post) {
-    super();
-    this.content = content;
-    this.writer = writer;
-    this.post = post;
+    return comment;
   }
 }
