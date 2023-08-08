@@ -6,10 +6,10 @@ export interface PostsService {
   /**
    * 게시글 작성.
    * @param createPostDto 게시글 작성에 필요한 데이터
-   * @param email accessToken으로 얻은 회원 email
+   * @param id accessToken으로 얻은 회원번호
    * @return 생성한 게시글
    */
-  createPost(createPostDto: CreatePostDto, email: string): Promise<Post>;
+  createPost(createPostDto: CreatePostDto, id: number): Promise<Post>;
 
   /**
    * 모든 게시글 조회.
