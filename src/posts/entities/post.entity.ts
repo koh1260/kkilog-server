@@ -1,13 +1,5 @@
 import 'reflect-metadata';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../users/user.entity';
 import { BaseModel } from '../../common/base-enttity/base.entity';
 import { Category } from '../../categorys/entities/category.entity';
@@ -37,7 +29,9 @@ export class Post extends BaseModel {
   @Column({ default: 0 })
   likes!: number;
 
-  @ManyToOne(() => User, (user) => user.posts, { nullable: false })
+  @ManyToOne(() => User, (user) => user.posts, {
+    nullable: false,
+  })
   @JoinColumn({
     name: 'writer_id',
   })
@@ -54,23 +48,6 @@ export class Post extends BaseModel {
 
   @OneToMany(() => PostImage, (postImage) => postImage.post)
   images?: PostImage[];
-
-  // constructor(
-  //   title: string,
-  //   content: string,
-  //   introduction: string,
-  //   thumbnail: string,
-  //   writer: User,
-  //   category: Category,
-  // ) {
-  //   super();
-  //   this.title = title;
-  //   this.content = content;
-  //   this.introduction = introduction;
-  //   this.thumbnail = thumbnail;
-  //   this.writer = writer;
-  //   this.category = category;
-  // }
 
   static of(
     title: string,
