@@ -33,7 +33,7 @@ export class CommentsController {
     @Body() createCommentDto: CreateCommentDto,
     @LoginUser() user: UserInfo,
   ) {
-    await this.commentsService.createComment(createCommentDto, user.email);
+    await this.commentsService.createComment(createCommentDto, user.id);
     return CustomResponse.create(HttpStatus.CREATED, '댓글 작성 완료.');
   }
 
