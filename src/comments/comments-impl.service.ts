@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -44,11 +45,8 @@ export class CommentsServiceImpl implements CommentsService {
   }
 
   async findAll(postId: number) {
-    try {
-      return await this.commentsRepository.findAll(postId);
-    } catch (e) {
-      console.log(e);
-    }
+    this.existPost(await this.postsRepository.findOneById(postId));
+
     return await this.commentsRepository.findAll(postId);
   }
 
@@ -81,7 +79,7 @@ export class CommentsServiceImpl implements CommentsService {
   private async validateWriter(comment: Comment, email: string) {
     const writerEmail = comment.writer.email;
     if (writerEmail !== email) {
-      throw new BadRequestException('작성자가 아닙니다.');
+      throw new ForbiddenException('작성자가 아닙니다.');
     }
   }
 
