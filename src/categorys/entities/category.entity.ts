@@ -10,7 +10,7 @@ export class Category extends BaseModel {
     name: 'category_name',
     nullable: false,
   })
-  categoryName: string;
+  categoryName!: string;
 
   @ManyToOne(() => Category, (category) => category.childCategories)
   @JoinColumn({
@@ -24,8 +24,10 @@ export class Category extends BaseModel {
   @OneToMany(() => Post, (post) => post.category)
   posts?: Post[];
 
-  constructor(categoryName: string) {
-    super();
-    this.categoryName = categoryName;
+  static of(categoryName: string) {
+    const category = new Category();
+    category.categoryName = categoryName;
+
+    return category;
   }
 }
