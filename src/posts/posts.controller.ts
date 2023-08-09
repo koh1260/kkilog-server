@@ -44,7 +44,7 @@ export class PostsController {
     @Body() createPostDto: CreatePostDto,
     @LoginUser() user: UserInfo,
   ): Promise<CustomResponse<never>> {
-    await this.postsService.createPost(createPostDto, user.email);
+    await this.postsService.createPost(createPostDto, user.id);
 
     return CustomResponse.create(HttpStatus.CREATED, '게시글 작성 완료.');
   }
