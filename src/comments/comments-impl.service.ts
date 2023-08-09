@@ -21,9 +21,12 @@ export class CommentsServiceImpl implements CommentsService {
     private readonly postsRepository: PostsRepository,
   ) {}
 
-  async createComment(createCommentDto: CreateCommentDto, email: string) {
+  async createComment(
+    createCommentDto: CreateCommentDto,
+    loginedUserId: number,
+  ) {
     const writer = this.existUser(
-      await this.usersRepository.findOneByEmail(email),
+      await this.usersRepository.findOneById(loginedUserId),
     );
     const post = this.existPost(
       await this.postsRepository.findOneById(createCommentDto.postId),
