@@ -23,7 +23,7 @@ export interface CommentsService {
   /**
    * 댓글 정보 수정.
    * @param id 댓글 번호
-   * @param email accessToken으로 얻은 회원 email
+   * @param email 작성자 email
    * @param updateCommentDto 수정할 내용
    * @returns 수정된 댓글 객체
    */
