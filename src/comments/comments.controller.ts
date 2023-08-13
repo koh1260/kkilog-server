@@ -19,9 +19,12 @@ import { LoginUser } from '../common/decorator/user.decorator';
 import { UserInfo } from '../auth/jwt.strategy';
 import { CustomResponse } from '../common/response/custom-reponse';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Comment } from './entities/comment.entity';
 
 // @UseGuards(JwtAuthGuard)
 @Controller('comments')
+@ApiTags('댓글 API')
 export class CommentsController {
   constructor(
     @Inject(CommentsService)
@@ -29,6 +32,8 @@ export class CommentsController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: '댓글 작성 API', description: '댓글을 작성한다.' })
+  @ApiCreatedResponse({ description: '댓글을 작성한다.', type: Comment })
   async createComment(
     @Body() createCommentDto: CreateCommentDto,
     @LoginUser() user: UserInfo,
@@ -38,18 +43,36 @@ export class CommentsController {
   }
 
   @Get()
+  @ApiOperation({
+    summary: '특정 게시글 댓글 전체 조회 API',
+    description: '특정 게시글의 모든 댓글을 조회한다.',
+  })
+  @ApiCreatedResponse({
+    description: '특정 게시글의 모든 댓글을 조회한다.',
+    type: [Comment],
+  })
   async findAll(@Query('post', ParseIntPipe) postId: number) {
     const comments = await this.commentsService.findAll(postId);
     return CustomResponse.create(HttpStatus.OK, '댓글 전체 조회.', comments);
   }
 
   @Get('/child')
+  @ApiOperation({
+    summary: '자식 댓글 조회 API',
+    description: '특정 댓글의 자식 댓글을 조회한다.',
+  })
+  @ApiCreatedResponse({
+    description: '특정 댓글의 자식 댓글을 조회한다.',
+    type: [Comment],
+  })
   async findChildComment(@Query('parent', ParseIntPipe) parentId: number) {
     const comments = await this.commentsService.findChildComment(parentId);
     return CustomResponse.create(HttpStatus.OK, '자식 댓글 조회', comments);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: '댓글 수정 API', description: '댓글을 수정한다.' })
+  @ApiCreatedResponse({ description: '댓글을 수정한다.', type: Comment })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCommentDto: UpdateCommentDto,
@@ -60,6 +83,8 @@ export class CommentsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: '댓글 삭제 API', description: '댓글을 삭제한다.' })
+  @ApiCreatedResponse({ description: '댓글을 삭제한다.', type: Comment })
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @LoginUser() user: UserInfo,

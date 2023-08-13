@@ -24,9 +24,11 @@ import { CustomResponse } from '../common/response/custom-reponse';
 import { LoginUser } from '../common/decorator/user.decorator';
 import { UserInfo } from '../auth/jwt.strategy';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // @UseGuards(JwtAuthGuard)
 @Controller('posts')
+@ApiTags('게시글 API')
 export class PostsController {
   constructor(
     @Inject(PostsService)
@@ -40,6 +42,11 @@ export class PostsController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: '게시글 등록 API',
+    description: '게시글을 생성한다.',
+  })
+  @ApiCreatedResponse({ description: '게시글을 생성한다', type: PostEntity })
   async createPost(
     @Body() createPostDto: CreatePostDto,
     @LoginUser() user: UserInfo,
@@ -50,6 +57,14 @@ export class PostsController {
   }
 
   @Get()
+  @ApiOperation({
+    summary: '게시글 전체 조회 API',
+    description: '게시글 목록을 조회한다.',
+  })
+  @ApiCreatedResponse({
+    description: '게시글 목록을 조회한다',
+    type: [PostEntity],
+  })
   async findAll(): Promise<CustomResponse<PostEntity[]>> {
     const posts = await this.postsService.findAll();
 
@@ -57,6 +72,11 @@ export class PostsController {
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary: '게시글 조회 API',
+    description: '게시글을 조회한다,',
+  })
+  @ApiCreatedResponse({ description: '게시글을 조회한다.', type: PostEntity })
   async findOne(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CustomResponse<PostEntity>> {
@@ -66,6 +86,14 @@ export class PostsController {
   }
 
   @Get('category/:categoryId')
+  @ApiOperation({
+    summary: '카테고리별 게시글 목록 조회 API',
+    description: '카테고리별로 게시글 모록을 조회한다.',
+  })
+  @ApiCreatedResponse({
+    description: '카테고리별로 게시글 목록을 조회한다.',
+    type: [PostEntity],
+  })
   async findByCategory(
     @Param('categoryId', ParseIntPipe) categoryId: number,
   ): Promise<CustomResponse<PostEntity[]>> {
@@ -79,6 +107,11 @@ export class PostsController {
   }
 
   @Get('/like/:postId')
+  @ApiOperation({
+    summary: '게시글 좋아요 API',
+    description: '게시글 토글 좋아요  기능.',
+  })
+  @ApiCreatedResponse({ description: '게시글 토글 좋아요  기능.' })
   async like(
     @Param('postId', ParseIntPipe) postId: number,
     @LoginUser() { id }: UserInfo,
@@ -87,6 +120,14 @@ export class PostsController {
   }
 
   @Get('/other/:postId')
+  @ApiOperation({
+    summary: '이전, 다음 게시글 조회 API',
+    description: '이전, 다음 게시글을 조회한다.',
+  })
+  @ApiCreatedResponse({
+    description: '이전, 다음 게시글을 조회한다.',
+    type: PostEntity,
+  })
   async getOtherPost(@Param('postId') id: number) {
     const posts = await this.postsService.getOtherPosts(id);
     return CustomResponse.create(
@@ -97,6 +138,13 @@ export class PostsController {
   }
 
   @Patch(':id')
+  @ApiOperation({
+    summary: '게시글 정보 수정 API',
+    description: '게시글 정보를 수정한다.',
+  })
+  @ApiCreatedResponse({
+    description: '게시글 정보를 수정한다.',
+  })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePostDto: Partial<UpdatePostDto>,
@@ -107,6 +155,13 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @ApiOperation({
+    summary: '게시글 삭제 API',
+    description: '게시글을 삭제한다.',
+  })
+  @ApiCreatedResponse({
+    description: '게시글을 삭제한다.',
+  })
   async remove(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CustomResponse<never>> {

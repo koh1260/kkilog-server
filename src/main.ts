@@ -7,6 +7,7 @@ import {
 } from 'nest-winston';
 import * as winston from 'winston';
 import { HttpExceptionFilter } from './exception/http-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -32,6 +33,16 @@ async function bootstrap() {
   // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.useGlobalFilters(new HttpExceptionFilter(new Logger()));
   console.log(process.env.NODE_ENV);
-  await app.listen(3000);
+
+  const config = new DocumentBuilder()
+    .setTitle('KKilog API')
+    .setDescription('KKilog API 임미다.')
+    .setVersion('1.0')
+    .addTag('KKilog')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+  await app.listen(8080);
 }
 void bootstrap();
