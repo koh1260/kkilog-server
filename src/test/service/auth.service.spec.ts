@@ -2,10 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../../auth/auth.service';
 import { UsersRepository } from '../../users/users.repository';
 import { JwtService } from '@nestjs/jwt';
-import { comparePassword } from '../../utils/password';
 import { User } from '../../users/user.entity';
-
-jest.mock('../../utils/password');
+import { ConfigService } from '@nestjs/config';
+import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
+import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
+import * as pwd from '../../utils/password/index';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { UserInfo } from '../../auth/jwt.strategy';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -14,7 +17,11 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService, JwtService, UsersRepository],
+      imports: [
+        TestTypeOrmModule,
+        CustomTypeOrmModule.forCustomRepository([UsersRepository]),
+      ],
+      providers: [AuthService, JwtService, ConfigService],
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
@@ -26,53 +33,88 @@ describe('AuthService', () => {
     expect(authService).toBeDefined();
   });
 
-  it('validateUser 인증 완료', async () => {
+  it('회원 검증 성공', async () => {
     // given
-    const email = 'EMAIL@example.com';
-    const password = 'PASSWORD';
-    const findUser = new User();
-    findUser.email = email;
-    findUser.password = password;
-    findUser.nickname = 'NICKNAME';
-
-    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(findUser);
-    (comparePassword as jest.Mock).mockResolvedValue(true);
+    const user = createUser('test@test.com', 'password', 'nickname');
+    const savedUser = await usersRepository.save(user);
+    jest.spyOn(pwd, 'comparePassword').mockResolvedValue(true);
 
     // when
-    const logiendUserInfo = await authService.validateUser(email, password);
+    const logiendUserInfo = await authService.validateUser(
+      user.email,
+      user.password,
+    );
 
     // then
-    expect(logiendUserInfo!.email).toEqual(email);
+    expect(logiendUserInfo?.id).toEqual(savedUser.id);
+    expect(logiendUserInfo?.email).toEqual(savedUser.email);
+    expect(logiendUserInfo?.nickname).toEqual(savedUser.nickname);
   });
 
-  it('validateUser 인증 실패', async () => {
+  it('존재하지 않는 이메일로 회원 검증 시 예외 발생', async () => {
     // given
-    const email = 'EMAIL@example.com';
-    const password = 'PASSWORD';
-    jest.spyOn(usersRepository, 'findOneByEmail').mockResolvedValue(null);
-    (comparePassword as jest.Mock).mockResolvedValue(false);
+    const nonExistUserEmail = 'nonexist@test.com';
+    const password = 'password';
+    jest.spyOn(pwd, 'comparePassword').mockResolvedValue(false);
 
     // when
-    const logiendUserInfo = await authService.validateUser(email, password);
-
     // then
-    expect(logiendUserInfo).toEqual(null);
+    await expect(
+      async () => await authService.validateUser(nonExistUserEmail, password),
+    ).rejects.toThrowError(new NotFoundException('존재하지 않는 회원입니다.'));
   });
 
-  it('login access token 생성', async () => {
+  it('잘못된 비밀번호로 회원 검증 시 예외 발생', async () => {
     // given
-    const user = {
-      id: 1,
-      email: 'email@example.com',
-      nickname: 'NICKNAME',
-    };
+    const user = createUser('test@test.com', 'password', 'nickname');
+    const wrongPassword = 'wrongpassword';
+    await usersRepository.save(user);
+    jest.spyOn(pwd, 'comparePassword').mockResolvedValue(false);
+
+    // when
+    // then
+    await expect(
+      async () => await authService.validateUser(user.email, wrongPassword),
+    ).rejects.toThrowError(
+      new BadRequestException('비밀번호가 일치하지 않습니다.'),
+    );
+  });
+
+  it('Access Token 생성', async () => {
+    // given
+    const userInfo = createUserInfo(1, 'test@test.com', 'nickname');
     const token = 'ACCESSTOKEN';
-    jest.spyOn(jwtService, 'sign').mockReturnValue(token);
+    jest.spyOn(jwtService, 'signAsync').mockResolvedValue(token);
 
     // when
-    const accessToken = await authService.login(user);
+    const accessToken = await authService.generateAccessToken(userInfo);
 
     // then
-    expect(jwtService.sign).toHaveBeenCalledWith(user);
+    expect(accessToken).toEqual(token);
+  });
+
+  it('Refresh Token 생성', async () => {
+    // given
+    const userInfo = createUserInfo(1, 'test@test.com', 'nickname');
+    const token = 'REFRESHTOKEN';
+    jest.spyOn(jwtService, 'signAsync').mockResolvedValue(token);
+
+    // when
+    const refreshToken = await authService.generateRefreshToken(userInfo);
+
+    // then
+    expect(refreshToken).toEqual(token);
   });
 });
+
+const createUser = (email: string, password: string, nickname: string) => {
+  return User.of(email, password, nickname);
+};
+
+const createUserInfo = (id: number, email: string, nickname: string) => {
+  return {
+    id,
+    email,
+    nickname,
+  } as UserInfo;
+};
