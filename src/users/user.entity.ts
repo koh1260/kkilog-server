@@ -26,6 +26,12 @@ export class User extends BaseModel {
   @ApiProperty({ description: '비밀번호' })
   password!: string;
 
+  @Column({ type: 'text', name: 'refresh_token', nullable: true })
+  refreshToken?: string;
+
+  @Column({ type: 'datetime', name: 'refresh_token_exp', nullable: true })
+  refreshTokenExp?: Date;
+
   @OneToMany(() => Post, (posts) => posts.writer)
   posts?: Post;
 

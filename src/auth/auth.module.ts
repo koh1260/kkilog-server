@@ -9,6 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { CustomTypeOrmModule } from 'src/common/custom-repository/custom-typeorm-module';
 import { UsersRepository } from 'src/users/users.repository';
 import { ConfigService } from '@nestjs/config';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -20,12 +21,15 @@ import { ConfigService } from '@nestjs/config';
       useFactory: (configService: ConfigService) => {
         return {
           secret: configService.get('JWT_SECRET_KEY'),
-          signOptions: { expiresIn: '60s' },
+          signOptions: {
+            expiresIn: configService.get<number>('JWT_ACCESS_EXPIRATION_TIME'),
+          },
         };
       },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, ConfigService],
   exports: [AuthService],
+  controllers: [AuthController],
 })
 export class AuthModule {}
