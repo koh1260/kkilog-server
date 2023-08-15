@@ -41,9 +41,11 @@ export class PostsRepository extends Repository<Post> {
         'post.createAt',
       ])
       .addSelect(['comment.id', 'comment.content', 'comment.createAt'])
-      .addSelect(['user.nickname'])
+      .addSelect(['postUser.nickname'])
+      .addSelect(['commentUser.nickname'])
       .leftJoin('post.comments', 'comment')
-      .leftJoin('comment.writer', 'user')
+      .leftJoin('post.writer', 'postUser')
+      .leftJoin('comment.writer', 'commentUser')
       .where('post.id=:id', { id })
       .getOne();
   }
