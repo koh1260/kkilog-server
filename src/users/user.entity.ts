@@ -29,9 +29,6 @@ export class User extends BaseModel {
   @Column({ type: 'text', name: 'refresh_token', nullable: true })
   refreshToken?: string;
 
-  @Column({ type: 'datetime', name: 'refresh_token_exp', nullable: true })
-  refreshTokenExp?: Date;
-
   @OneToMany(() => Post, (posts) => posts.writer)
   posts?: Post;
 
