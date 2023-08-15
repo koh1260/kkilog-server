@@ -8,6 +8,8 @@ import {
 import * as winston from 'winston';
 import { HttpExceptionFilter } from './exception/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -16,6 +18,7 @@ async function bootstrap() {
         new winston.transports.Console({
           level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
           format: winston.format.combine(
+            winston.format.colorize(),
             winston.format.timestamp(),
             nestWinstonModuleUtilities.format.nestLike('My-Blog', {
               prettyPrint: true,
@@ -25,6 +28,7 @@ async function bootstrap() {
       ],
     }),
   });
+  app.useGlobalInterceptors(new LoggingInterceptor(new Logger()));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -32,6 +36,7 @@ async function bootstrap() {
   );
   // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.useGlobalFilters(new HttpExceptionFilter(new Logger()));
+  app.use(cookieParser());
   console.log(process.env.NODE_ENV);
 
   const config = new DocumentBuilder()
