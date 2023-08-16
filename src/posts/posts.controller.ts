@@ -24,11 +24,17 @@ import { CustomResponse } from '../common/response/custom-reponse';
 import { LoginUser } from '../common/decorator/user.decorator';
 import { UserInfo } from '../auth/jwt.strategy';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 // @UseGuards(JwtAuthGuard)
 @Controller('posts')
 @ApiTags('게시글 API')
+@ApiBearerAuth()
 export class PostsController {
   constructor(
     @Inject(PostsService)
@@ -147,7 +153,7 @@ export class PostsController {
   })
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updatePostDto: Partial<UpdatePostDto>,
+    @Body() updatePostDto: UpdatePostDto,
   ): Promise<CustomResponse<never>> {
     await this.postsService.update(id, updatePostDto);
 

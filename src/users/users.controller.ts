@@ -7,7 +7,12 @@ import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { UserInfo } from '../auth/jwt.strategy';
 import { LoginUser } from '../common/decorator/user.decorator';
 import { Response } from 'express';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('users')
 @ApiTags('회원 API')
@@ -44,6 +49,7 @@ export class UsersController {
     description: 'Access Token을 해석해 회원 정보를 조회한다.',
     type: User,
   })
+  @ApiBearerAuth()
   async getProfile(@LoginUser() user: UserInfo) {
     return await this.usersService.getProfile(user.id);
   }

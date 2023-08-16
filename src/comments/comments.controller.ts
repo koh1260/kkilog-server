@@ -19,12 +19,18 @@ import { LoginUser } from '../common/decorator/user.decorator';
 import { UserInfo } from '../auth/jwt.strategy';
 import { CustomResponse } from '../common/response/custom-reponse';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Comment } from './entities/comment.entity';
 
 // @UseGuards(JwtAuthGuard)
 @Controller('comments')
 @ApiTags('댓글 API')
+@ApiBearerAuth()
 export class CommentsController {
   constructor(
     @Inject(CommentsService)
