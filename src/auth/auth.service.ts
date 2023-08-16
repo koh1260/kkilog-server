@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/user.entity';
 
-interface DecodedToken {
+export interface DecodedToken {
   id: number;
   iat: number;
   exp: number;
@@ -127,7 +127,11 @@ export class AuthService {
 
       return decodedToken;
     } catch (e: any) {
-      throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+      if (e instanceof Error && e.name === 'TokenExpiredError')
+        throw new UnauthorizedException('만료된 토큰입니다.');
+      if (e instanceof Error && e.name === 'JsonWebTokenError')
+        throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+      throw e;
     }
   }
 
@@ -142,7 +146,7 @@ export class AuthService {
     if (!usersRefresh)
       throw new NotFoundException('발급한 토큰이 존재하지 않습니다.');
     if (!(await bcrypt.compare(refresh, usersRefresh)))
-      throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+      throw new UnauthorizedException('토큰이 일치하지 않습니다.');
   }
 
   async login(user: UserInfo) {
