@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService, DecodedToken } from '../../auth/auth.service';
 import { UsersRepository } from '../../users/users.repository';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../../users/user.entity';
@@ -7,8 +7,14 @@ import { ConfigService } from '@nestjs/config';
 import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
 import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
 import * as pwd from '../../utils/password/index';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserInfo } from '../../auth/jwt.strategy';
+import * as bcrypt from 'bcrypt';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -35,7 +41,7 @@ describe('AuthService', () => {
 
   it('회원 검증 성공', async () => {
     // given
-    const user = createUser('test@test.com', 'password', 'nickname');
+    const user = createUser(1, 'test@test.com', 'password', 'nickname');
     const savedUser = await usersRepository.save(user);
     jest.spyOn(pwd, 'comparePassword').mockResolvedValue(true);
 
@@ -66,7 +72,7 @@ describe('AuthService', () => {
 
   it('잘못된 비밀번호로 회원 검증 시 예외 발생', async () => {
     // given
-    const user = createUser('test@test.com', 'password', 'nickname');
+    const user = createUser(1, 'test@test.com', 'password', 'nickname');
     const wrongPassword = 'wrongpassword';
     await usersRepository.save(user);
     jest.spyOn(pwd, 'comparePassword').mockResolvedValue(false);
@@ -105,10 +111,184 @@ describe('AuthService', () => {
     // then
     expect(refreshToken).toEqual(token);
   });
+
+  it('Access Token 재생성', async () => {
+    // given
+    const user = createUser(1, 'test@test.com', 'password', 'nickname');
+    const mockToken = 'AccessToken';
+    await usersRepository.save(user);
+    jest
+      .spyOn(authService, 'generateAccessToken')
+      .mockImplementation(async () => mockToken);
+
+    // when
+    const token = await authService.regenerateAccessToken(user.id);
+
+    // then
+    expect(authService.generateAccessToken).toHaveBeenCalled();
+    expect(token).toEqual(mockToken);
+  });
+
+  it('존재하지 않는 회원 정보로 Access Token 재생성 시 예외 발생', async () => {
+    // given
+    const nonExistUserId = 231;
+    const mockToken = 'AccessToken';
+    jest
+      .spyOn(authService, 'generateAccessToken')
+      .mockImplementation(async () => mockToken);
+
+    // when
+    // then
+    await expect(
+      async () => await authService.regenerateAccessToken(nonExistUserId),
+    ).rejects.toThrowError(new NotFoundException('존재하지 않는 회원입니다.'));
+  });
+
+  it('Refresh Token DB에 저장', async () => {
+    // given
+    const user = createUser(1, 'test@test.com', 'password', 'nickname');
+    await usersRepository.save(user);
+    const mockRefreshToken = 'RefreshToken';
+    jest
+      .spyOn(authService, 'gethashedRefreshToken')
+      .mockResolvedValue(`Hashed${mockRefreshToken}`);
+
+    // when
+    await authService.setRefreshToken(user.id, mockRefreshToken);
+    const token = (await usersRepository.findOneById(user.id))?.refreshToken;
+
+    // then
+    expect(token).toEqual(`Hashed${mockRefreshToken}`);
+  });
+
+  it('Refresh Token 해싱', async () => {
+    // given
+    const mockRefreshToken = 'RefreshToken';
+    jest
+      .spyOn(bcrypt, 'hash')
+      .mockImplementation(() => `Hashed${mockRefreshToken}`);
+
+    // when
+    const hashedToken = await authService.gethashedRefreshToken(
+      mockRefreshToken,
+    );
+
+    // then
+    expect(bcrypt.hash).toHaveBeenCalled();
+    expect(hashedToken).toEqual(`Hashed${mockRefreshToken}`);
+  });
+
+  it('Refresh Token 검증', async () => {
+    // given
+    const mockRefreshToken = 'RefreshToken';
+    const user = createUser(1, 'test@test.com', 'password', 'nickname');
+    user.refreshToken = mockRefreshToken;
+    await usersRepository.save(user);
+    const mockDecodedToken: DecodedToken = {
+      id: user.id,
+      iat: 123123,
+      exp: 999999999,
+    };
+    jest.spyOn(jwtService, 'verify').mockReturnValue(mockDecodedToken);
+    jest.spyOn(bcrypt, 'compare').mockImplementation(() => true);
+
+    // when
+    const decodedToken = await authService.verifyRefreshToken(mockRefreshToken);
+
+    // then
+    expect(decodedToken).toEqual(mockDecodedToken);
+    expect(jwtService.verify).toHaveBeenCalled();
+    expect(bcrypt.compare).toHaveBeenCalled();
+  });
+
+  it('만료된 Refresh Token으로 검증 시 예외 발생', async () => {
+    // given
+    const ExpiredRefreshToken = 'ExpiredRefreshToken';
+    jest.spyOn(jwtService, 'verify').mockImplementation(() => {
+      throw new TokenExpiredError('message', new Date());
+    });
+
+    // when
+    // then
+    await expect(
+      async () => await authService.verifyRefreshToken(ExpiredRefreshToken),
+    ).rejects.toThrowError(new UnauthorizedException('만료된 토큰입니다.'));
+  });
+
+  it('존재하지 않는 회원의 Refresh Token 검증 시 예외 발생', async () => {
+    // given
+    const mockRefreshToken = 'RefreshToken';
+    const nonExistUserId = 3123;
+    const mockDecodedToken: DecodedToken = {
+      id: nonExistUserId,
+      iat: 123123,
+      exp: 999999999,
+    };
+    jest.spyOn(jwtService, 'verify').mockReturnValue(mockDecodedToken);
+
+    // when
+    // then
+    await expect(
+      async () => await authService.verifyRefreshToken(mockRefreshToken),
+    ).rejects.toThrowError(new NotFoundException('존재하지 않는 회원입니다.'));
+  });
+
+  it('Refresh Token 검증 시 해당 회원이 토큰을 가지고 있지 않을 경우 예외 발생', async () => {
+    // given
+    const mockRefreshToken = 'RefreshToken';
+    const user = createUser(1, 'test@test.com', 'password', 'nickname');
+    await usersRepository.save(user);
+    const mockDecodedToken: DecodedToken = {
+      id: user.id,
+      iat: 123123,
+      exp: 999999999,
+    };
+    jest.spyOn(jwtService, 'verify').mockReturnValue(mockDecodedToken);
+
+    // when
+    // then
+    await expect(
+      async () => await authService.verifyRefreshToken(mockRefreshToken),
+    ).rejects.toThrowError(
+      new NotFoundException('발급한 토큰이 존재하지 않습니다.'),
+    );
+  });
+
+  it('Refresh Token 검증 시 회원이 가지고 있는 토큰과 일치하지 않을 경우 예외 발생', async () => {
+    // given
+    const mockRefreshToken = 'RefreshToken';
+    const usersToken = 'UsersToken';
+    const user = createUser(1, 'test@test.com', 'password', 'nickname');
+    user.refreshToken = usersToken;
+    await usersRepository.save(user);
+    const mockDecodedToken: DecodedToken = {
+      id: user.id,
+      iat: 123123,
+      exp: 999999999,
+    };
+    jest.spyOn(jwtService, 'verify').mockReturnValue(mockDecodedToken);
+    jest.spyOn(bcrypt, 'compare').mockImplementation(() => false);
+
+    // when
+    // then
+    await expect(
+      async () => await authService.verifyRefreshToken(mockRefreshToken),
+    ).rejects.toThrowError(
+      new UnauthorizedException('토큰이 일치하지 않습니다.'),
+    );
+  });
 });
 
-const createUser = (email: string, password: string, nickname: string) => {
-  return User.of(email, password, nickname);
+const createUser = (
+  id: number,
+  email: string,
+  password: string,
+  nickname: string,
+) => {
+  const user = User.of(email, password, nickname);
+  user.id = id;
+
+  return user;
 };
 
 const createUserInfo = (id: number, email: string, nickname: string) => {
