@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsRepository } from './posts.repository';
@@ -30,6 +34,7 @@ export class PostsServiceImp implements PostsService {
     const user = this.existUser(
       await this.usersRepository.findOneById(loginedUserId),
     );
+    this.validateRole(user.role);
     const category = this.existCategory(
       await this.categoryRepository.findOneByName(createPostDto.categoryName),
     );
@@ -44,6 +49,11 @@ export class PostsServiceImp implements PostsService {
         category,
       ),
     );
+  }
+
+  private validateRole(role: 'USER' | 'ADMIN') {
+    if (role !== 'ADMIN')
+      throw new UnauthorizedException('관리자 권한이 없습니다.');
   }
 
   private existUser(user: User | null): User {
