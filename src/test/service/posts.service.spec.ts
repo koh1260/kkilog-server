@@ -5,7 +5,7 @@ import { User } from '../../users/user.entity';
 import { PostsService } from '../../posts/posts.service';
 import { CreatePostDto } from '../../posts/dto/create-post.dto';
 import { Category } from '../../categorys/entities/category.entity';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from '../../users/users.repository';
 import { CategorysRepository } from '../../categorys/categorys.repository';
 import { Post } from '../../posts/entities/post.entity';
@@ -50,6 +50,7 @@ describe('PostsService', () => {
     categorysRepository = module.get<CategorysRepository>(CategorysRepository);
 
     testWriter = User.of('test@test.com', 'nickname', 'password');
+    testWriter.role = 'ADMIN';
     await usersRepository.save(testWriter);
     testCategory = Category.of('Back-end');
     await categorysRepository.save(testCategory);
@@ -61,25 +62,41 @@ describe('PostsService', () => {
 
   it('게시글 생성', async () => {
     // given
-    const createPostDto = createPostDtoFactory(testCategory.categoryName);
+    const dto = createPostDtoFactory(testCategory.categoryName);
     const loginedUser = createUserInfo(1, 'test@test.com', 'nickname');
 
     // when
-    const post = await postsService.createPost(createPostDto, loginedUser.id);
+    const post = await postsService.createPost(dto, loginedUser.id);
 
     // then
-    expect(post.title).toEqual(createPostDto.title);
+    expect(post.title).toEqual(dto.title);
+  });
+
+  it('관리자 권한이 없는 회원이 게시글 생성 시 예외 발생', async () => {
+    // given
+    const nonAdminUser = User.of('nonadmin@test.com', 'nickname', 'password');
+    await usersRepository.save(nonAdminUser);
+    const dto = createPostDtoFactory(testCategory.categoryName);
+    const loginedUser = createUserInfo(2, 'test@test.com', 'nickname');
+
+    // when
+    // then
+    await expect(
+      async () => await postsService.createPost(dto, loginedUser.id),
+    ).rejects.toThrowError(
+      new UnauthorizedException('관리자 권한이 없습니다.'),
+    );
   });
 
   it('존재하지 않는 회원으로 생성 시 예외 발생', async () => {
     // given
-    const createPostDto = createPostDtoFactory(testCategory.categoryName);
+    const dto = createPostDtoFactory(testCategory.categoryName);
     const nonExistUserId = 122;
 
     // when
     // then
     try {
-      await postsService.createPost(createPostDto, nonExistUserId);
+      await postsService.createPost(dto, nonExistUserId);
     } catch (e) {
       expect(e).toEqual(new NotFoundException('존재하지 않는 회원입니다.'));
     }
@@ -88,12 +105,12 @@ describe('PostsService', () => {
   it('존재하지 않는 카테고리로 생성 시 예외 발생', async () => {
     // given
     const nonExistCategoryName = '고양이';
-    const createPostDto = createPostDtoFactory(nonExistCategoryName);
+    const dto = createPostDtoFactory(nonExistCategoryName);
     const loginedUser = createUserInfo(1, 'test@test.com', 'nickname');
 
     // when
     await expect(async () => {
-      await postsService.createPost(createPostDto, loginedUser.id);
+      await postsService.createPost(dto, loginedUser.id);
     }).rejects.toThrowError(
       new NotFoundException('존재하지 않는 카테고리입니다.'),
     );
@@ -114,9 +131,9 @@ describe('PostsService', () => {
 
   it('게시글 정보 업데이트', async () => {
     // given
-    const updatePostDto = new UpdatePostDto();
-    updatePostDto.content = 'updated content';
-    updatePostDto.title = 'updated post';
+    const dto = new UpdatePostDto();
+    dto.content = 'updated content';
+    dto.title = 'updated post';
     const originalPost = createPost(
       1,
       'title',
@@ -127,10 +144,7 @@ describe('PostsService', () => {
     await postsRepository.save(originalPost);
 
     // when
-    const updatedPost = await postsService.update(
-      originalPost.id,
-      updatePostDto,
-    );
+    const updatedPost = await postsService.update(originalPost.id, dto);
 
     // then
     expect(updatedPost.content).toEqual('updated content');
