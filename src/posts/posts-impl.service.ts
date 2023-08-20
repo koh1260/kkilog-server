@@ -87,8 +87,19 @@ export class PostsServiceImp implements PostsService {
     return findPost;
   }
 
-  async findByCategory(categoryId: number): Promise<Post[]> {
+  async findByCategoryId(categoryId: number): Promise<Post[]> {
     const posts = await this.postsRepository.findByCategoryId(categoryId);
+    posts.map((post) => {
+      post['commentCount'] = post.comments?.length;
+      delete post.comments;
+      return post;
+    });
+
+    return posts;
+  }
+
+  async findByCategoryName(categoryName: string): Promise<Post[]> {
+    const posts = await this.postsRepository.findByCategoryName(categoryName);
     posts.map((post) => {
       post['commentCount'] = post.comments?.length;
       delete post.comments;

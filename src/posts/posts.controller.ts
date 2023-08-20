@@ -31,28 +31,29 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-// @UseGuards(JwtAuthGuard)
 @Controller('posts')
 @ApiTags('게시글 API')
-@ApiBearerAuth()
 export class PostsController {
   constructor(
     @Inject(PostsService)
     private readonly postsService: PostsServiceImp,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File) {
     console.log(file);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({
     summary: '게시글 등록 API',
     description: '게시글을 생성한다.',
   })
   @ApiCreatedResponse({ description: '게시글을 생성한다', type: PostEntity })
+  @ApiBearerAuth()
   async createPost(
     @Body() createPostDto: CreatePostDto,
     @LoginUser() user: UserInfo,
@@ -77,6 +78,27 @@ export class PostsController {
     return CustomResponse.create(HttpStatus.OK, '게시글 전체 조회.', posts);
   }
 
+  @Get('category')
+  @ApiOperation({
+    summary: '카테고리별 게시글 목록 조회 API',
+    description: '카테고리별로 게시글 목록을 조회한다.',
+  })
+  @ApiCreatedResponse({
+    description: '카테고리별로 게시글 목록을 조회한다.',
+    type: [PostEntity],
+  })
+  async findByCategoryName(
+    @Query('categoryName') categoryName: string,
+  ): Promise<CustomResponse<PostEntity[]>> {
+    const posts = await this.postsService.findByCategoryName(categoryName);
+
+    return CustomResponse.create(
+      HttpStatus.OK,
+      '카테고리별 게시글 조회.',
+      posts,
+    );
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: '게시글 조회 API',
@@ -91,26 +113,26 @@ export class PostsController {
     return CustomResponse.create(HttpStatus.OK, '게시글 상세 조회', post);
   }
 
-  @Get('category/:categoryId')
-  @ApiOperation({
-    summary: '카테고리별 게시글 목록 조회 API',
-    description: '카테고리별로 게시글 모록을 조회한다.',
-  })
-  @ApiCreatedResponse({
-    description: '카테고리별로 게시글 목록을 조회한다.',
-    type: [PostEntity],
-  })
-  async findByCategory(
-    @Param('categoryId', ParseIntPipe) categoryId: number,
-  ): Promise<CustomResponse<PostEntity[]>> {
-    const posts = await this.postsService.findByCategory(categoryId);
+  // @Get('category/:categoryId')
+  // @ApiOperation({
+  //   summary: '카테고리별 게시글 목록 조회 API',
+  //   description: '카테고리별로 게시글 모록을 조회한다.',
+  // })
+  // @ApiCreatedResponse({
+  //   description: '카테고리별로 게시글 목록을 조회한다.',
+  //   type: [PostEntity],
+  // })
+  // async findByCategoryId(
+  //   @Query('categoryName') categoryId: number,
+  // ): Promise<CustomResponse<PostEntity[]>> {
+  //   const posts = await this.postsService.findByCategoryId(categoryId);
 
-    return CustomResponse.create(
-      HttpStatus.OK,
-      '카테고리별 게시글 조회.',
-      posts,
-    );
-  }
+  //   return CustomResponse.create(
+  //     HttpStatus.OK,
+  //     '카테고리별 게시글 조회.',
+  //     posts,
+  //   );
+  // }
 
   @Get('/like/:postId')
   @ApiOperation({

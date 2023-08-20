@@ -29,7 +29,14 @@ export interface PostsService {
    * @param categoryId 카테고리 번호
    * @return 해당 카테고리의 게시글 목록
    */
-  findByCategory(categoryId: number): Promise<Post[]>;
+  findByCategoryId(categoryId: number): Promise<Post[]>;
+
+  /**
+   * 카테고리별 게시글 전체 조회.
+   * @param categoryName 카테고리 이름
+   * @return 해당 카테고리의 게시글 목록
+   */
+  findByCategoryName(categoryName: string): Promise<Post[]>;
 
   /**
    * 게시글 좋아요.

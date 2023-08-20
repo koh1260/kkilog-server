@@ -18,6 +18,27 @@ export class PostsRepository extends Repository<Post> {
       .getMany();
   }
 
+  async findByCategoryName(categoryName: string): Promise<Post[]> {
+    return await this.createQueryBuilder('post')
+      .select([
+        'post.id',
+        'post.title',
+        'post.introduction',
+        'post.thumbnail',
+        'post.createAt',
+      ])
+      .leftJoinAndSelect('post.comments', 'comment')
+      .leftJoin('post.category', 'category')
+      .leftJoin('category.parentCategory', 'parentCategory')
+      .where('category.categoryName = :categoryName', {
+        categoryName: categoryName,
+      })
+      .orWhere('parentCategory.categoryName = :categoryName', {
+        categoryName: categoryName,
+      })
+      .getMany();
+  }
+
   async findAll() {
     return await this.createQueryBuilder('post')
       .select([
