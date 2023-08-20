@@ -6,7 +6,13 @@ import { CustomRepository } from '../common/custom-repository/custom-repository'
 export class CategorysRepository extends Repository<Category> {
   async findAll() {
     return await this.createQueryBuilder('category')
-      .leftJoinAndSelect('category.childCategories', 'childCategories')
+      .select(['category.id', 'category.categoryName', 'category.icon'])
+      .addSelect([
+        'childCategories.id',
+        'childCategories.categoryName',
+        'childCategories.icon',
+      ])
+      .leftJoin('category.childCategories', 'childCategories')
       .where('category.parentCategory IS NULL')
       .getMany();
   }
