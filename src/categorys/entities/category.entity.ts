@@ -12,6 +12,12 @@ export class Category extends BaseModel {
   })
   categoryName!: string;
 
+  @Column({
+    type: 'text',
+    nullable: false,
+  })
+  icon!: string;
+
   @ManyToOne(() => Category, (category) => category.childCategories)
   @JoinColumn({
     name: 'parent_id',
