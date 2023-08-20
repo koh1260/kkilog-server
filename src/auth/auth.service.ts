@@ -159,4 +159,9 @@ export class AuthService {
       refreshToken: refresh,
     };
   }
+
+  async validateEmail(email: string) {
+    const user = await this.usersRepository.findOneByEmail(email);
+    this.assertUserExist(user);
+  }
 }
