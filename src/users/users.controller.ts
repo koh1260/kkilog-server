@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
@@ -13,6 +21,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { CustomResponse } from '../common/response/custom-reponse';
 
 @Controller('users')
 @ApiTags('회원 API')
@@ -35,9 +44,12 @@ export class UsersController {
   @ApiCreatedResponse({ description: '로그인을 한다' })
   async login(@Res() res: Response, @LoginUser() user: UserInfo) {
     const tokens = await this.authService.login(user);
+    const userInfo = await this.usersService.getProfile(user.id);
     res.header('Authorization', 'Bearer ' + tokens.accessToken);
     res.cookie('refresh_token', tokens.refreshToken, { httpOnly: true });
-    return res.status(200).send('로그인 완료.');
+    return res
+      .status(200)
+      .json(CustomResponse.create(HttpStatus.OK, '로그인 완료', userInfo));
   }
 
   @Get()
