@@ -1,9 +1,18 @@
-import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { string } from 'joi';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { CustomResponse } from '../common/response/custom-reponse';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -23,12 +32,13 @@ export class AuthController {
     const decodedToken = await this.authService.verifyRefreshToken(
       req.cookies['refresh_token'],
     );
+    const accessToken = await this.authService.regenerateAccessToken(
+      decodedToken.id,
+    );
 
-    return {
-      accessToken: await this.authService.regenerateAccessToken(
-        decodedToken.id,
-      ),
-    };
+    return CustomResponse.create(HttpStatus.OK, 'Access Token 재발급 성공', {
+      accessToken,
+    });
   }
 
   @ApiOperation({
