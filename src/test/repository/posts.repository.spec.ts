@@ -34,6 +34,7 @@ describe('PostsRepository', () => {
     writer = User.of('test@test.com', 'nickname', 'password');
     await usersRepository.save(writer);
     category = createCategory(7, 'Nest.js');
+    category.icon = 'test';
     await categorysRepository.save(category);
   });
 
@@ -46,6 +47,22 @@ describe('PostsRepository', () => {
 
     // when
     const posts = await postsRepository.findByCategoryId(category.id);
+
+    // then
+    expect(posts).toHaveLength(3);
+  });
+
+  it('카테고리 이름으로 전체 조회', async () => {
+    // given
+    const post1 = createPost(1, writer, category);
+    const post2 = createPost(2, writer, category);
+    const post3 = createPost(3, writer, category);
+    await postsRepository.save([post1, post2, post3]);
+
+    // when
+    const posts = await postsRepository.findByCategoryName(
+      category.categoryName,
+    );
 
     // then
     expect(posts).toHaveLength(3);

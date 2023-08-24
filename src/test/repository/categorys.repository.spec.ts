@@ -61,6 +61,7 @@ const createCategory = (id: number, name: string) => {
   const category = new Category();
   category.id = id;
   category.categoryName = name;
+  category.icon = 'test';
 
   return category;
 };

@@ -53,6 +53,7 @@ describe('PostsService', () => {
     testWriter.role = 'ADMIN';
     await usersRepository.save(testWriter);
     testCategory = Category.of('Back-end');
+    testCategory.icon = 'test';
     await categorysRepository.save(testCategory);
   });
 

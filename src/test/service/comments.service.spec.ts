@@ -49,6 +49,7 @@ describe('CommentsService', () => {
     testWriter = createUser(3, 'test@test.com', 'nickname');
     await usersRepository.save(testWriter);
     testCategoty = Category.of('Test-category');
+    testCategoty.icon = 'test';
     await categorysRepository.save(testCategoty);
     testPost = createPost(7, 'title', 'content', testWriter, testCategoty);
     await postsRepository.save(testPost);
