@@ -26,6 +26,7 @@ export class PostsRepository extends Repository<Post> {
         'post.introduction',
         'post.thumbnail',
         'post.createAt',
+        'post.likes',
       ])
       .leftJoinAndSelect('post.comments', 'comment')
       .leftJoin('post.category', 'category')
@@ -47,6 +48,7 @@ export class PostsRepository extends Repository<Post> {
         'post.introduction',
         'post.thumbnail',
         'post.createAt',
+        'post.likes',
       ])
       .leftJoinAndSelect('post.comments', 'comment')
       .getMany();
