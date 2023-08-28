@@ -13,6 +13,8 @@ import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { string } from 'joi';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { CustomResponse } from '../common/response/custom-reponse';
+import { LoginUser } from '../common/decorator/user.decorator';
+import { UserInfo } from './jwt.strategy';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -51,9 +53,8 @@ export class AuthController {
   })
   @UseGuards(JwtAuthGuard)
   @Get('/login-validate')
-  async loginValidate(@Query('email') email: string) {
-    console.log(email);
-    await this.authService.validateEmail(email);
-    return '굿';
+  async loginValidate(@LoginUser() user: UserInfo) {
+    const loginedUser = await this.authService.validateEmail(user.email);
+    return CustomResponse.create(HttpStatus.OK, '인증 성공', loginedUser);
   }
 }
