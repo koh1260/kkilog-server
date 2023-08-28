@@ -24,8 +24,18 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async getProfile(userId: number): Promise<User> {
-    return this.existUser(await this.usersRepository.findOneById(userId));
+  async getProfile(userId: number): Promise<Partial<User>> {
+    const user = this.existUser(await this.usersRepository.findOneById(userId));
+    const profile: Partial<User> = {
+      id: user.id,
+      email: user.email,
+      nickname: user.nickname,
+      profileImage: user.profileImage,
+      role: user.role,
+      createAt: user.createAt,
+    };
+
+    return profile;
   }
 
   private existUser(user: User | null): User {
