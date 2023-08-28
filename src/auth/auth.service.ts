@@ -160,8 +160,14 @@ export class AuthService {
     };
   }
 
-  async validateEmail(email: string) {
+  async validateEmail(email: string): Promise<Partial<User>> {
     const user = await this.usersRepository.findOneByEmail(email);
     this.assertUserExist(user);
+    const se: Partial<User> = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+    return se;
   }
 }
