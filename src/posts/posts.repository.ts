@@ -64,6 +64,7 @@ export class PostsRepository extends Repository<Post> {
         'post.introduction',
         'post.publicScope',
         'post.createAt',
+        'post.likes',
       ])
       .addSelect(['comment.id', 'comment.content', 'comment.createAt'])
       .addSelect(['postUser.nickname'])
