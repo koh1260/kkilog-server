@@ -144,7 +144,25 @@ export class PostsController {
     @Param('postId', ParseIntPipe) postId: number,
     @LoginUser() { id }: UserInfo,
   ) {
-    await this.postsService.like(postId, id);
+    const likeCount = await this.postsService.like(postId, id);
+
+    return CustomResponse.create(HttpStatus.OK, '좋아요', likeCount);
+  }
+
+  @Get('/like-check/:postId')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '게시글 좋아요 여부 확인 API',
+    description: '게시글 좋아요 여부 확인 기능.',
+  })
+  @ApiCreatedResponse({ description: '게시글 좋아요 여부 확인 기능.' })
+  async likeCheck(
+    @Param('postId', ParseIntPipe) postId: number,
+    @LoginUser() { id }: UserInfo,
+  ) {
+    const liked = await this.postsService.likeCheck(postId, id);
+
+    return CustomResponse.create(HttpStatus.OK, '좋아요 확인', liked);
   }
 
   @Get('/other/:postId')
@@ -166,6 +184,7 @@ export class PostsController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '게시글 정보 수정 API',
     description: '게시글 정보를 수정한다.',

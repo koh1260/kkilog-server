@@ -140,6 +140,20 @@ export class PostsServiceImp implements PostsService {
       }
       await manager.save(Post, post);
     });
+
+    return post.likes;
+  }
+
+  async likeCheck(postId: number, userId: number) {
+    const liked = await this.postLikeRepository.findOne({
+      where: {
+        post: { id: postId },
+        user: { id: userId },
+      },
+    });
+
+    if (liked) return true;
+    return false;
   }
 
   async getOtherPosts(id: number): Promise<[Post | null, Post | null]> {
