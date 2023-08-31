@@ -8,7 +8,7 @@ import { PostImage } from './post-images.entity';
 
 @Entity('post')
 export class Post extends BaseModel {
-  @Column({ length: 30 })
+  @Column({ length: 60 })
   title!: string;
 
   @Column({ type: 'text', nullable: false })
