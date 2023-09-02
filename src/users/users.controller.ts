@@ -22,6 +22,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CustomResponse } from '../common/response/custom-reponse';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('users')
 @ApiTags('회원 API')
@@ -50,6 +51,21 @@ export class UsersController {
     return res
       .status(200)
       .json(CustomResponse.create(HttpStatus.OK, '로그인 완료', userInfo));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/logout')
+  @ApiOperation({
+    summary: '로그아웃 API',
+    description: 'http only cookie를 clear해 로그아웃을 한다.',
+  })
+  @ApiCreatedResponse({ description: '로그아웃을 한다' })
+  async logout(@Res() res: Response) {
+    res.clearCookie('refresh_token');
+    console.log('s');
+    return res
+      .status(200)
+      .json(CustomResponse.create(HttpStatus.OK, '로그아웃'));
   }
 
   @Get()
