@@ -34,6 +34,12 @@ export class Comment extends BaseModel {
   })
   parent?: number;
 
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  nickname!: string;
+
+  @Column({ type: 'varchar', length: 6, nullable: true })
+  password!: string;
+
   @ManyToMany(() => User, { cascade: true, nullable: false })
   @JoinTable({
     name: 'comment_like',
