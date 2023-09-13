@@ -30,8 +30,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { CacheControlIntercepter } from '../common/interceptor/cache-control.intercepter';
 
 @Controller('posts')
+@UseInterceptors(CacheControlIntercepter)
 @ApiTags('게시글 API')
 export class PostsController {
   constructor(
@@ -99,6 +101,19 @@ export class PostsController {
     );
   }
 
+  @Get('/like-count')
+  @ApiOperation({
+    summary: '게시글 좋아요 수 조회 API',
+    description: '게시글 좋아요 수 조회 기능.',
+  })
+  @ApiCreatedResponse({ description: '게시글 좋아요 수 조회 기능.' })
+  async likeCount(@Query('post', ParseIntPipe) postId: number) {
+    console.log(postId);
+    const likeCount = await this.postsService.likeCount(postId);
+
+    return CustomResponse.create(HttpStatus.OK, '좋아요 개수', { likeCount });
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: '게시글 조회 API',
@@ -113,28 +128,29 @@ export class PostsController {
     return CustomResponse.create(HttpStatus.OK, '게시글 상세 조회', post);
   }
 
-  // @Get('category/:categoryId')
-  // @ApiOperation({
-  //   summary: '카테고리별 게시글 목록 조회 API',
-  //   description: '카테고리별로 게시글 모록을 조회한다.',
-  // })
-  // @ApiCreatedResponse({
-  //   description: '카테고리별로 게시글 목록을 조회한다.',
-  //   type: [PostEntity],
-  // })
-  // async findByCategoryId(
-  //   @Query('categoryName') categoryId: number,
-  // ): Promise<CustomResponse<PostEntity[]>> {
-  //   const posts = await this.postsService.findByCategoryId(categoryId);
+  @Get('category/:categoryId')
+  @ApiOperation({
+    summary: '카테고리별 게시글 목록 조회 API',
+    description: '카테고리별로 게시글 모록을 조회한다.',
+  })
+  @ApiCreatedResponse({
+    description: '카테고리별로 게시글 목록을 조회한다.',
+    type: [PostEntity],
+  })
+  async findByCategoryId(
+    @Query('categoryName') categoryId: number,
+  ): Promise<CustomResponse<PostEntity[]>> {
+    const posts = await this.postsService.findByCategoryId(categoryId);
 
-  //   return CustomResponse.create(
-  //     HttpStatus.OK,
-  //     '카테고리별 게시글 조회.',
-  //     posts,
-  //   );
-  // }
+    return CustomResponse.create(
+      HttpStatus.OK,
+      '카테고리별 게시글 조회.',
+      posts,
+    );
+  }
 
   @Get('/like/:postId')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '게시글 좋아요 API',
     description: '게시글 토글 좋아요  기능.',
@@ -142,11 +158,11 @@ export class PostsController {
   @ApiCreatedResponse({ description: '게시글 토글 좋아요  기능.' })
   async like(
     @Param('postId', ParseIntPipe) postId: number,
-    @LoginUser() { id }: UserInfo,
+    @LoginUser() user: UserInfo,
   ) {
-    const likeCount = await this.postsService.like(postId, id);
+    const likeCount = await this.postsService.like(postId, user.id);
 
-    return CustomResponse.create(HttpStatus.OK, '좋아요', likeCount);
+    return CustomResponse.create(HttpStatus.OK, '좋아요', { likeCount });
   }
 
   @Get('/like-check/:postId')
@@ -162,7 +178,7 @@ export class PostsController {
   ) {
     const liked = await this.postsService.likeCheck(postId, id);
 
-    return CustomResponse.create(HttpStatus.OK, '좋아요 확인', liked);
+    return CustomResponse.create(HttpStatus.OK, '좋아요 확인', { liked });
   }
 
   @Get('/other/:postId')
