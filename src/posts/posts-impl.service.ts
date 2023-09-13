@@ -156,6 +156,12 @@ export class PostsServiceImp implements PostsService {
     return false;
   }
 
+  async likeCount(postId: number) {
+    const post = this.existPost(await this.postsRepository.findOneById(postId));
+    const count = post.likes;
+    return count;
+  }
+
   async getOtherPosts(id: number): Promise<[Post | null, Post | null]> {
     const prevPost = await this.postsRepository.findPrevious(id);
     const nextPost = await this.postsRepository.findNext(id);
