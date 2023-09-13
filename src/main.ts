@@ -28,6 +28,10 @@ async function bootstrap() {
       ],
     }),
   });
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
   app.useGlobalInterceptors(new LoggingInterceptor(new Logger()));
   app.useGlobalPipes(
     new ValidationPipe({
