@@ -5,16 +5,18 @@ import {
   Param,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { string } from 'joi';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { CustomResponse } from '../common/response/custom-reponse';
 import { LoginUser } from '../common/decorator/user.decorator';
 import { UserInfo } from './jwt.strategy';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -56,5 +58,20 @@ export class AuthController {
   async loginValidate(@LoginUser() user: UserInfo) {
     const loginedUser = await this.authService.validateEmail(user.email);
     return CustomResponse.create(HttpStatus.OK, '인증 성공', loginedUser);
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(): Promise<void> {
+    throw new Error('not implemented');
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthCallback(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    throw new Error('not implemented');
   }
 }
