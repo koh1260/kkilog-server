@@ -3,7 +3,7 @@ import { MaxLength, MinLength } from 'class-validator';
 
 export class CreatePostDto {
   @MinLength(1)
-  @MaxLength(30)
+  @MaxLength(60)
   @ApiProperty({ description: '제목' })
   title!: string;
 
