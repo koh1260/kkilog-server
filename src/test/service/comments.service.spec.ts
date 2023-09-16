@@ -205,7 +205,7 @@ const createComment = (
   writer: User,
   post: Post,
 ) => {
-  const comment = Comment.of(content, writer, post);
+  const comment = Comment.createMember(content, post, writer);
   comment.id = id;
 
   return comment;
