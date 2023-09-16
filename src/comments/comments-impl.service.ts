@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -24,15 +23,26 @@ export class CommentsServiceImpl implements CommentsService {
 
   async createComment(
     createCommentDto: CreateCommentDto,
-    loginedUserId: number,
+    loginedUserId: number | null,
   ) {
-    const writer = this.existUser(
-      await this.usersRepository.findOneById(loginedUserId),
-    );
+    let writer: User | null = null;
+    let comment: Comment | null = null;
     const post = this.existPost(
       await this.postsRepository.findOneById(createCommentDto.postId),
     );
-    const comment = Comment.of(createCommentDto.content, writer, post);
+
+    if (loginedUserId) {
+      writer = await this.usersRepository.findOneById(loginedUserId);
+      this.existUser(writer);
+      comment = Comment.createMember(createCommentDto.content, post, writer);
+    } else {
+      comment = Comment.createNonMember(
+        createCommentDto.content,
+        post,
+        createCommentDto.nickname,
+        createCommentDto.password,
+      );
+    }
 
     if (createCommentDto.parentId) {
       this.existComment(
@@ -77,7 +87,7 @@ export class CommentsServiceImpl implements CommentsService {
    * @param email 작성자와 비교할 이메일
    */
   private async validateWriter(comment: Comment, email: string) {
-    const writerEmail = comment.writer.email;
+    const writerEmail = comment.writer!.email;
     if (writerEmail !== email) {
       throw new ForbiddenException('작성자가 아닙니다.');
     }
@@ -96,11 +106,10 @@ export class CommentsServiceImpl implements CommentsService {
    * @param user 검사할 회원
    * @returns 검사를 통과한 User 객체
    */
-  private existUser(user: User | null): User {
+  private existUser(user: User | null): asserts user is User {
     if (!user) {
       throw new NotFoundException('존재하지 않는 회원입니다.');
     }
-    return user;
   }
 
   /**

@@ -9,7 +9,6 @@ import {
   Inject,
   ParseIntPipe,
   HttpStatus,
-  UseGuards,
   Query,
 } from '@nestjs/common';
 import { CommentsService } from './comment.service';
@@ -18,7 +17,6 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { LoginUser } from '../common/decorator/user.decorator';
 import { UserInfo } from '../auth/jwt.strategy';
 import { CustomResponse } from '../common/response/custom-reponse';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -27,7 +25,6 @@ import {
 } from '@nestjs/swagger';
 import { Comment } from './entities/comment.entity';
 
-// @UseGuards(JwtAuthGuard)
 @Controller('comments')
 @ApiTags('댓글 API')
 @ApiBearerAuth()
@@ -44,7 +41,10 @@ export class CommentsController {
     @Body() createCommentDto: CreateCommentDto,
     @LoginUser() user: UserInfo,
   ) {
-    await this.commentsService.createComment(createCommentDto, user.id);
+    await this.commentsService.createComment(
+      createCommentDto,
+      user ? user.id : null,
+    );
     return CustomResponse.create(HttpStatus.CREATED, '댓글 작성 완료.');
   }
 

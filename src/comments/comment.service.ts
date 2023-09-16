@@ -11,7 +11,7 @@ export interface CommentsService {
    */
   createComment(
     createCommentDto: CreateCommentDto,
-    userId: number,
+    userId: number | null,
   ): Promise<Comment>;
 
   /**

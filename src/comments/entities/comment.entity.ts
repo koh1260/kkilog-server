@@ -16,11 +16,11 @@ export class Comment extends BaseModel {
   @Column({ type: 'text', nullable: false })
   content!: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: true })
   @JoinColumn({
     name: 'writer_id',
   })
-  writer!: User;
+  writer?: User;
 
   @ManyToOne(() => Post, (post) => post.comments, { nullable: false })
   @JoinColumn({
@@ -35,10 +35,10 @@ export class Comment extends BaseModel {
   parent?: number;
 
   @Column({ type: 'varchar', length: 10, nullable: true })
-  nickname!: string;
+  nickname?: string;
 
   @Column({ type: 'varchar', length: 6, nullable: true })
-  password!: string;
+  password?: string;
 
   @ManyToMany(() => User, { cascade: true, nullable: false })
   @JoinTable({
@@ -54,11 +54,25 @@ export class Comment extends BaseModel {
   })
   users?: User[];
 
-  static of(content: string, writer: User, post: Post) {
+  static createMember(content: string, post: Post, writer: User) {
     const comment = new Comment();
     comment.content = content;
-    comment.writer = writer;
     comment.post = post;
+    comment.writer = writer;
+
+    return comment;
+  }
+  static createNonMember(
+    content: string,
+    post: Post,
+    nikcname?: string,
+    password?: string,
+  ) {
+    const comment = new Comment();
+    comment.content = content;
+    comment.post = post;
+    comment.nickname = nikcname;
+    comment.password = password;
 
     return comment;
   }

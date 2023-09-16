@@ -11,7 +11,6 @@ export class CommentsRepository extends Repository<Comment> {
         'comment.content',
         'comment.createAt',
         'comment.nickname',
-        'comment.password',
         'user.nickname',
         'user.profileImage',
       ])

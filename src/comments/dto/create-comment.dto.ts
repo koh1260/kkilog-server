@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateCommentDto {
   @MinLength(1)
@@ -16,4 +22,16 @@ export class CreateCommentDto {
   @IsOptional()
   @ApiProperty({ description: '부모 댓글 번호' })
   parentId?: number;
+
+  @IsString()
+  @MaxLength(10)
+  @MinLength(2)
+  @ApiProperty({ description: '비회원 닉네임' })
+  nickname?: string;
+
+  @IsString()
+  @MaxLength(6)
+  @MinLength(2)
+  @ApiProperty({ description: '비회원 비밀번호' })
+  password?: string;
 }

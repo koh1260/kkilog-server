@@ -66,9 +66,14 @@ export class PostsRepository extends Repository<Post> {
         'post.createAt',
         'post.likes',
       ])
-      .addSelect(['comment.id', 'comment.content', 'comment.createAt'])
-      .addSelect(['postUser.nickname'])
-      .addSelect(['commentUser.nickname'])
+      .addSelect([
+        'comment.id',
+        'comment.content',
+        'comment.createAt',
+        'comment.nickname',
+      ])
+      .addSelect(['postUser.nickname', 'postUser.profileImage'])
+      .addSelect(['commentUser.nickname', 'commentUser.profileImage'])
       .leftJoin('post.comments', 'comment')
       .leftJoin('post.writer', 'postUser')
       .leftJoin('comment.writer', 'commentUser')
