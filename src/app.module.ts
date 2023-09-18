@@ -11,6 +11,7 @@ import { CategorysModule } from './categorys/categorys.module';
 import { CommentsModule } from './comments/comments.module';
 import jwtConfig from './config/jwtConfig';
 import { validationSchema } from './config/validationSchema';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { validationSchema } from './config/validationSchema';
       database: process.env.DATABASE_NAME,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
-      logging: true,
+      // logging: true,
       // migrationsRun: false,
       // migrations: [__dirname + '/**/migration/*.js'],
     }),
@@ -39,6 +40,7 @@ import { validationSchema } from './config/validationSchema';
     ExceptionModule,
     CategorysModule,
     CommentsModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
