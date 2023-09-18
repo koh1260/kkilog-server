@@ -44,10 +44,12 @@ export class UsersController {
   @ApiOperation({ summary: '로그인 API', description: '로그인을 한다.' })
   @ApiCreatedResponse({ description: '로그인을 한다' })
   async login(@Res() res: Response, @LoginUser() user: UserInfo) {
-    const tokens = await this.authService.login(user);
     const userInfo = await this.usersService.getProfile(user.id);
+    const tokens = await this.authService.login(user);
     res.header('Authorization', 'Bearer ' + tokens.accessToken);
+    res.cookie('access_token', tokens.accessToken, { httpOnly: true });
     res.cookie('refresh_token', tokens.refreshToken, { httpOnly: true });
+
     return res
       .status(200)
       .json(CustomResponse.create(HttpStatus.OK, '로그인 완료', userInfo));
@@ -62,7 +64,7 @@ export class UsersController {
   @ApiCreatedResponse({ description: '로그아웃을 한다' })
   async logout(@Res() res: Response) {
     res.clearCookie('refresh_token');
-    console.log('s');
+
     return res
       .status(200)
       .json(CustomResponse.create(HttpStatus.OK, '로그아웃'));
