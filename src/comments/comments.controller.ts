@@ -37,14 +37,8 @@ export class CommentsController {
   @Post()
   @ApiOperation({ summary: '댓글 작성 API', description: '댓글을 작성한다.' })
   @ApiCreatedResponse({ description: '댓글을 작성한다.', type: Comment })
-  async createComment(
-    @Body() createCommentDto: CreateCommentDto,
-    @LoginUser() user: UserInfo,
-  ) {
-    await this.commentsService.createComment(
-      createCommentDto,
-      user ? user.id : null,
-    );
+  async createComment(@Body() createCommentDto: CreateCommentDto) {
+    await this.commentsService.createComment(createCommentDto);
     return CustomResponse.create(HttpStatus.CREATED, '댓글 작성 완료.');
   }
 

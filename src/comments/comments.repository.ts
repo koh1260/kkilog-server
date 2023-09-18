@@ -11,9 +11,8 @@ export class CommentsRepository extends Repository<Comment> {
         'comment.content',
         'comment.createAt',
         'comment.nickname',
-        'user.nickname',
-        'user.profileImage',
       ])
+      .addSelect(['user.nickname', 'user.profileImage'])
       .leftJoin('comment.writer', 'user')
       .where('comment.post=:postId', { postId })
       .andWhere('comment.parent IS NULL')

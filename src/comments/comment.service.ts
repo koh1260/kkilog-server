@@ -6,13 +6,9 @@ export interface CommentsService {
   /**
    * 댓글 생성 기능.
    * @param createCommentDto 댓글 생성에 필요한 데이터
-   * @param email accessToken으로 얻은 회원 email
    * @return 생성한 댓글
    */
-  createComment(
-    createCommentDto: CreateCommentDto,
-    userId: number | null,
-  ): Promise<Comment>;
+  createComment(createCommentDto: CreateCommentDto): Promise<Comment>;
 
   /**
    * 특정 게시물 모든 댓글 조회.

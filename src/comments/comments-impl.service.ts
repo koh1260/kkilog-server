@@ -21,18 +21,15 @@ export class CommentsServiceImpl implements CommentsService {
     private readonly postsRepository: PostsRepository,
   ) {}
 
-  async createComment(
-    createCommentDto: CreateCommentDto,
-    loginedUserId: number | null,
-  ) {
+  async createComment(createCommentDto: CreateCommentDto) {
     let writer: User | null = null;
     let comment: Comment | null = null;
     const post = this.existPost(
-      await this.postsRepository.findOneById(createCommentDto.postId),
+      await this.postsRepository.findOneById(+createCommentDto.postId),
     );
 
-    if (loginedUserId) {
-      writer = await this.usersRepository.findOneById(loginedUserId);
+    if (createCommentDto.userId) {
+      writer = await this.usersRepository.findOneById(+createCommentDto.userId);
       this.existUser(writer);
       comment = Comment.createMember(createCommentDto.content, post, writer);
     } else {

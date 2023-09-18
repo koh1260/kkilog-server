@@ -62,6 +62,7 @@ export class Comment extends BaseModel {
 
     return comment;
   }
+
   static createNonMember(
     content: string,
     post: Post,
