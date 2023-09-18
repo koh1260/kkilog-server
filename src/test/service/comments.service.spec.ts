@@ -61,11 +61,14 @@ describe('CommentsService', () => {
 
   it('댓글 생성', async () => {
     // given
-    const dto = createCommentDtoFactory('content', testPost.id);
-    const loginedUser = createUserInfo(3, 'test@test.com', 'nickname');
+    const dto = createCommentDtoFactory(
+      'content',
+      testPost.id,
+      String(testWriter.id),
+    );
 
     // when
-    const comment = await commentsService.createComment(dto, loginedUser.id);
+    const comment = await commentsService.createComment(dto);
 
     // then
     expect(comment.content).toEqual(dto.content);
@@ -73,13 +76,17 @@ describe('CommentsService', () => {
 
   it('존재하지 않는 회원으로 생성 시 예외 발생', async () => {
     // given
-    const dto = createCommentDtoFactory('content', testPost.id);
     const nonExistUserId = 122;
+    const dto = createCommentDtoFactory(
+      'content',
+      testPost.id,
+      String(nonExistUserId),
+    );
 
     // when
     // then
     await expect(
-      async () => await commentsService.createComment(dto, nonExistUserId),
+      async () => await commentsService.createComment(dto),
     ).rejects.toThrowError(new NotFoundException('존재하지 않는 회원입니다.'));
   });
 
@@ -158,9 +165,12 @@ describe('CommentsService', () => {
 
   it('댓글 삭제', async () => {
     // given
-    const dto = createCommentDtoFactory('content', testPost.id);
-    const loginedUser = createUserInfo(3, 'test@test.com', 'nickname');
-    const comment = await commentsService.createComment(dto, loginedUser.id);
+    const dto = createCommentDtoFactory(
+      'content',
+      testPost.id,
+      String(testWriter.id),
+    );
+    const comment = await commentsService.createComment(dto);
 
     // when
     await commentsService.remove(comment.id, testWriter.email);
@@ -171,9 +181,12 @@ describe('CommentsService', () => {
 
   it('작성자가 아닌 회원이 댓글 삭세 시 예외 발생', async () => {
     // given
-    const dto = createCommentDtoFactory('content', testPost.id);
-    const loginedUser = createUserInfo(3, 'test@test.com', 'nickname');
-    const comment = await commentsService.createComment(dto, loginedUser.id);
+    const dto = createCommentDtoFactory(
+      'content',
+      testPost.id,
+      String(testWriter.id),
+    );
+    const comment = await commentsService.createComment(dto);
     const nonAuthorEmail = 'nonauthor@test.com';
 
     // when
@@ -184,10 +197,15 @@ describe('CommentsService', () => {
   });
 });
 
-const createCommentDtoFactory = (content: string, postId: number) => {
+const createCommentDtoFactory = (
+  content: string,
+  postId: number,
+  userId: string,
+) => {
   const dto = new CreateCommentDto();
   dto.content = content;
-  dto.postId = postId;
+  dto.postId = postId.toString();
+  dto.userId = userId;
 
   return dto;
 };
