@@ -28,10 +28,7 @@ async function bootstrap() {
       ],
     }),
   });
-  app.enableCors({
-    origin: true,
-    credentials: true,
-  });
+
   app.useGlobalInterceptors(new LoggingInterceptor(new Logger()));
   app.useGlobalPipes(
     new ValidationPipe({
@@ -41,6 +38,11 @@ async function bootstrap() {
   // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.useGlobalFilters(new HttpExceptionFilter(new Logger()));
   app.use(cookieParser());
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   console.log(process.env.NODE_ENV);
 
   const config = new DocumentBuilder()
