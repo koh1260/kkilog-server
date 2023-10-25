@@ -6,7 +6,7 @@ import { ApiOperation } from '@nestjs/swagger';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
+  @Get('/health')
   @ApiOperation({ summary: '테스트용 hello kkilog', description: '테스트용' })
   helloKkilog() {
     return '🐘KKilog!!🐘';
