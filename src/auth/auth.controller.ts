@@ -2,8 +2,6 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
-  Query,
   Req,
   Res,
   UseGuards,
@@ -32,17 +30,18 @@ export class AuthController {
     type: string,
   })
   @Get('/refresh')
-  async refreshAccessToken(@Req() req: Request) {
+  async refreshAccessToken(@Req() req: Request, @Res() res: Response) {
     const decodedToken = await this.authService.verifyRefreshToken(
       req.cookies['refresh_token'],
     );
     const accessToken = await this.authService.regenerateAccessToken(
       decodedToken.id,
     );
+    res.cookie('access_token', accessToken, { httpOnly: true });
 
-    return CustomResponse.create(HttpStatus.OK, 'Access Token 재발급 성공', {
-      accessToken,
-    });
+    return res
+      .status(200)
+      .json(CustomResponse.create(HttpStatus.OK, 'Access Token 재발급 성공'));
   }
 
   @ApiOperation({
