@@ -25,7 +25,8 @@ export class UsersService {
   }
 
   async getProfile(userId: number): Promise<Partial<User>> {
-    const user = this.existUser(await this.usersRepository.findOneById(userId));
+    const user = await this.usersRepository.findOneById(userId);
+    this.existUser(user);
     const profile: Partial<User> = {
       id: user.id,
       email: user.email,
@@ -38,8 +39,12 @@ export class UsersService {
     return profile;
   }
 
-  private existUser(user: User | null): User {
+  private existUser(user: User | null): asserts user is User {
     if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
-    return user;
   }
+
+  // private existUser(user: User | null): User {
+  //   if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
+  //   return user;
+  // }
 }
