@@ -8,7 +8,7 @@ export const validationSchema = Joi.object({
   DATABASE_PORT: Joi.number().required(),
   JWT_SECRET_KEY: Joi.string().required(),
   JWT_ACCESS_EXPIRATION_TIME: Joi.number().required(),
-  JWT_REFRESH_EXPIRATION_TIME: Joi.string().required(),
+  JWT_REFRESH_EXPIRATION_TIME: Joi.number().required(),
   JWT_REFRESH_HASH_SALT: Joi.number().required(),
   AWS_BUCKET_REGION: Joi.string().required(),
   AWS_BUCKET_NAME: Joi.string().required(),
