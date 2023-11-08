@@ -46,10 +46,10 @@ export class AuthController {
 
   @ApiOperation({
     summary: '로그인 검증',
-    description: 'Acess Token과 email을 통해 로그인을 검증한다.',
+    description: 'Access Token과 email을 통해 로그인을 검증한다.',
   })
   @ApiCreatedResponse({
-    description: 'Acess Token과 email을 통해 로그인을 검증한다.',
+    description: 'Access Token과 email을 통해 로그인을 검증한다.',
     type: string,
   })
   @UseGuards(JwtAuthGuard)
