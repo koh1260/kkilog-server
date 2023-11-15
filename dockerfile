@@ -1,15 +1,27 @@
-FROM node:18
+# Stage 1 Build
+FROM node:18-alpine as buildStage
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install
+
+RUN npm run build
+
+
+# Stage 2
+FROM node:18-alpine
 
 RUN mkdir -p /usr/app
 
 WORKDIR /usr/app
 
-COPY . .
+COPY --from=buildStage /app/package.json ./
+COPY --from=buildStage /app/dist ./dist
 
-RUN npm install 
-
-RUN npm run build
+RUN npm install
 
 EXPOSE 8080
-
+  
 CMD ["npm", "run", "start:prod"]
