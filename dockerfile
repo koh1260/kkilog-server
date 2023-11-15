@@ -18,9 +18,9 @@ RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
 COPY --from=buildStage /app/package.json ./
+COPY --from=buildStage /app/node_modules ./node_modules
 COPY --from=buildStage /app/dist ./dist
 
-RUN npm install
 
 EXPOSE 8080
   
