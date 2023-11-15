@@ -43,7 +43,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-  console.log(process.env.NODE_ENV);
 
   const config = new DocumentBuilder()
     .setTitle('KKilog API')
