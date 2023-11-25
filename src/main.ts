@@ -10,6 +10,7 @@ import { HttpExceptionFilter } from './exception/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -29,6 +30,23 @@ async function bootstrap() {
     }),
   });
 
+  app.use(cookieParser());
+  app.use(
+    json({
+      limit: '10mb',
+    }),
+  );
+  app.use(
+    urlencoded({
+      limit: '10mb',
+      extended: false,
+    }),
+  );
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   app.useGlobalInterceptors(new LoggingInterceptor(new Logger()));
   app.useGlobalPipes(
     new ValidationPipe({
@@ -37,12 +55,6 @@ async function bootstrap() {
   );
   // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.useGlobalFilters(new HttpExceptionFilter(new Logger()));
-  app.use(cookieParser());
-  app.enableCors({
-    origin: process.env.CORS_ORIGIN,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
-  });
 
   const config = new DocumentBuilder()
     .setTitle('KKilog API')
