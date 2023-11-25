@@ -37,6 +37,7 @@ export class PostsRepository extends Repository<Post> {
       .orWhere('parentCategory.categoryName = :categoryName', {
         categoryName: categoryName,
       })
+      .orderBy('post.createAt')
       .getMany();
   }
 
@@ -51,6 +52,7 @@ export class PostsRepository extends Repository<Post> {
         'post.likes',
       ])
       .leftJoinAndSelect('post.comments', 'comment')
+      .orderBy('post.createAt')
       .getMany();
   }
 
