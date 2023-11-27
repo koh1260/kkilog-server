@@ -4,15 +4,21 @@ import { CustomRepository } from '../common/custom-repository/custom-repository'
 
 @CustomRepository(User)
 export class UsersRepository extends Repository<User> {
-  async findOneByEmail(email: string) {
+  async findOneById(id: number) {
     return await this.findOne({
-      where: { email: email },
+      where: { id },
     });
   }
 
-  async findOneById(id: number) {
+  async findOneByEmail(email: string) {
     return await this.findOne({
-      where: { id: id },
+      where: { email },
+    });
+  }
+
+  async findOneByNickname(nickname: string) {
+    return await this.findOne({
+      where: { nickname },
     });
   }
 }

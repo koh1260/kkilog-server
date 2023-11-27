@@ -1,12 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { hashPassword } from '../utils/password';
+import { ConflictEmailException } from '../exception/custom-exception/ConflictEmail.exception';
+import { ConflictNicknameException } from '../exception/custom-exception/conflictNickname.exception';
 
 @Injectable()
 export class UsersService {
@@ -14,11 +12,19 @@ export class UsersService {
 
   async createUser(dto: CreateUserDto): Promise<User> {
     const { email, nickname, password } = dto;
-    const findUser = await this.usersRepository.findOneByEmail(email);
 
-    if (findUser) {
-      throw new BadRequestException('이미 존재하는 이메일입니다.');
+    const findUserByEmail = await this.usersRepository.findOneByEmail(email);
+    if (findUserByEmail) {
+      throw new ConflictEmailException();
     }
+
+    const findUserByNickname = await this.usersRepository.findOneByNickname(
+      nickname,
+    );
+    if (findUserByNickname) {
+      throw new ConflictNicknameException();
+    }
+
     const user = User.of(email, nickname, await hashPassword(password));
 
     return this.usersRepository.save(user);
@@ -42,9 +48,4 @@ export class UsersService {
   private existUser(user: User | null): asserts user is User {
     if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
   }
-
-  // private existUser(user: User | null): User {
-  //   if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
-  //   return user;
-  // }
 }
