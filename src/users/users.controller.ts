@@ -63,6 +63,7 @@ export class UsersController {
   })
   @ApiCreatedResponse({ description: '로그아웃을 한다' })
   async logout(@Res() res: Response) {
+    res.clearCookie('access_token');
     res.clearCookie('refresh_token');
 
     return res
