@@ -1,20 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CommentsService } from '../../comments/comment.service';
-import { CommentsServiceImpl } from '../../comments/comments-impl.service';
-import { UsersRepository } from '../../users/users.repository';
-import { PostsRepository } from '../../posts/posts.repository';
-import { CommentsRepository } from '../../comments/comments.repository';
-import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
-import { Comment } from '../../comments/entities/comment.entity';
-import { User } from '../../users/user.entity';
-import { Category } from '../../categorys/entities/category.entity';
-import { Post } from '../../posts/entities/post.entity';
-import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
-import { CreateCommentDto } from '../../comments/dto/create-comment.dto';
+import { CommentsService } from '../../modules/comments/comment.service';
+import { CommentsServiceImpl } from '../../modules/comments/comments-impl.service';
+import { UsersRepository } from '../../modules/users/users.repository';
+import { PostsRepository } from '../../modules/posts/posts.repository';
+import { CommentsRepository } from '../../modules/comments/comments.repository';
+import { TestTypeOrmModule } from '../db/test-db.module';
+import { Comment } from '../../modules/comments/entities/comment.entity';
+import { User } from '../../modules/users/user.entity';
+import { Category } from '../../modules/categorys/entities/category.entity';
+import { Post } from '../../modules/posts/entities/post.entity';
+import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
+import { CreateCommentDto } from '../../modules/comments/dto/create-comment.dto';
 import { UserInfo } from '../../auth/jwt.strategy';
-import { CategorysRepository } from '../../categorys/categorys.repository';
+import { CategorysRepository } from '../../modules/categorys/categorys.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { UpdateCommentDto } from '../../comments/dto/update-comment.dto';
+import { UpdateCommentDto } from '../../modules/comments/dto/update-comment.dto';
 
 describe('CommentsService', () => {
   let commentsService: CommentsService;

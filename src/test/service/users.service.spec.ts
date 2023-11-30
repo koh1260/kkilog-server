@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '../../users/users.service';
-import { UsersRepository } from '../../users/users.repository';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
-import { User } from '../../users/user.entity';
+import { UsersService } from '../../modules/users/users.service';
+import { UsersRepository } from '../../modules/users/users.repository';
+import { CreateUserDto } from '../../modules/users/dto/create-user.dto';
+import { User } from '../../modules/users/user.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
-import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
+import { TestTypeOrmModule } from '../db/test-db.module';
+import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
 
 describe('UsersService', () => {
   let usersService: UsersService;

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { BaseModel } from '../../common/base-enttity/base.entity';
+import { BaseModel } from '../../../config/typeorm/base.entity';
 import { Post } from './post.entity';
 
 @Entity('post_image')

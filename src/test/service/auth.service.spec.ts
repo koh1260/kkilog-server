@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService, DecodedToken } from '../../auth/auth.service';
-import { UsersRepository } from '../../users/users.repository';
+import { UsersRepository } from '../../modules/users/users.repository';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../../users/user.entity';
+import { User } from '../../modules/users/user.entity';
 import { ConfigService } from '@nestjs/config';
-import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
-import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
+import { TestTypeOrmModule } from '../db/test-db.module';
+import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
 import * as pwd from '../../utils/password/index';
 import {
   BadRequestException,

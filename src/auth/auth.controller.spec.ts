@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { TestTypeOrmModule } from '../common/test-database/test-db.module';
-import { CustomTypeOrmModule } from '../common/custom-repository/custom-typeorm-module';
-import { UsersRepository } from '../users/users.repository';
+import { TestTypeOrmModule } from '../test/db/test-db.module';
+import { CustomTypeOrmModule } from '../config/typeorm/custom-typeorm-module';
+import { UsersRepository } from '../modules/users/users.repository';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 

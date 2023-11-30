@@ -6,10 +6,10 @@ import {
   utilities as nestWinstonModuleUtilities,
 } from 'nest-winston';
 import * as winston from 'winston';
-import { HttpExceptionFilter } from './exception/http-exception.filter';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
-import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { json, urlencoded } from 'express';
 
 async function bootstrap() {

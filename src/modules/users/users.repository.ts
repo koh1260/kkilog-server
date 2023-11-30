@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
-import { CustomRepository } from '../common/custom-repository/custom-repository';
+import { CustomRepository } from '../../config/typeorm/custom-repository';
 
 @CustomRepository(User)
 export class UsersRepository extends Repository<User> {

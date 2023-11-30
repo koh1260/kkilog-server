@@ -1,7 +1,7 @@
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { CategorysService } from './categorys.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CustomResponse } from '../common/response/custom-reponse';
+import { CustomResponse } from '../../common/response/custom-reponse';
 
 @Controller('categorys')
 @ApiTags('카테고리 API')

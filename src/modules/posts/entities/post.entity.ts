@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../users/user.entity';
-import { BaseModel } from '../../common/base-enttity/base.entity';
+import { BaseModel } from '../../../config/typeorm/base.entity';
 import { Category } from '../../categorys/entities/category.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { PostImage } from './post-images.entity';

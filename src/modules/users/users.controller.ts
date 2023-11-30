@@ -10,10 +10,10 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
-import { AuthService } from '../auth/auth.service';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
-import { UserInfo } from '../auth/jwt.strategy';
-import { LoginUser } from '../common/decorator/user.decorator';
+import { AuthService } from '../../auth/auth.service';
+import { LocalAuthGuard } from '../../auth/local-auth.guard';
+import { UserInfo } from '../../auth/jwt.strategy';
+import { LoginUser } from '../../common/decorators/user.decorator';
 import { Response } from 'express';
 import {
   ApiBearerAuth,
@@ -21,8 +21,8 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { CustomResponse } from '../common/response/custom-reponse';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CustomResponse } from '../../common/response/custom-reponse';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('users')
 @ApiTags('회원 API')

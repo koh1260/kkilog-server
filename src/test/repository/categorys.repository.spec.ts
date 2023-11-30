@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
-import { Category } from '../../categorys/entities/category.entity';
-import { CategorysRepository } from '../../categorys/categorys.repository';
-import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
+import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
+import { Category } from '../../modules/categorys/entities/category.entity';
+import { CategorysRepository } from '../../modules/categorys/categorys.repository';
+import { TestTypeOrmModule } from '../db/test-db.module';
 
 describe('CategoryRepository', () => {
   let repository: CategorysRepository;
