@@ -16,13 +16,13 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { PostsServiceImp } from './posts-impl.service';
 import { PostsService } from './posts.service';
 import { Post as PostEntity } from './entities/post.entity';
-import { CustomResponse } from '../common/response/custom-reponse';
-import { LoginUser } from '../common/decorator/user.decorator';
-import { UserInfo } from '../auth/jwt.strategy';
+import { CustomResponse } from '../../common/response/custom-reponse';
+import { LoginUser } from '../../common/decorators/user.decorator';
+import { UserInfo } from '../../auth/jwt.strategy';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
@@ -30,7 +30,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { CacheControlIntercepter } from '../common/interceptor/cache-control.intercepter';
+import { CacheControlIntercepter } from '../../common/interceptors/cache-control.intercepter';
 
 @Controller('posts')
 @UseInterceptors(CacheControlIntercepter)

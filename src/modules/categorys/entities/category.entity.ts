@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { BaseModel } from '../../common/base-enttity/base.entity';
+import { BaseModel } from '../../../config/typeorm/base.entity';
 import { Post } from '../../posts/entities/post.entity';
 
 @Entity('categorie')

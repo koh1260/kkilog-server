@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
-import { CustomRepository } from '../common/custom-repository/custom-repository';
+import { CustomRepository } from '../../config/typeorm/custom-repository';
 
 @CustomRepository(Category)
 export class CategorysRepository extends Repository<Category> {

@@ -1,8 +1,7 @@
-import { S3Client } from '@aws-sdk/client-s3';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
-import { multerOptionsFactory } from '../common/utils/multer.option';
+import { multerOptionsFactory } from '../common/multer/multer.option';
 import { FileController } from './file.controller';
 import { FileService } from './file.service';
 

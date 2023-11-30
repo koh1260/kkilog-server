@@ -14,9 +14,9 @@ import {
 import { CommentsService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { LoginUser } from '../common/decorator/user.decorator';
-import { UserInfo } from '../auth/jwt.strategy';
-import { CustomResponse } from '../common/response/custom-reponse';
+import { LoginUser } from '../../common/decorators/user.decorator';
+import { UserInfo } from '../../auth/jwt.strategy';
+import { CustomResponse } from '../../common/response/custom-reponse';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,

@@ -4,13 +4,12 @@ import { LocalStrategy } from './local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/modules/users/user.entity';
 import { JwtStrategy } from './jwt.strategy';
-import { CustomTypeOrmModule } from 'src/common/custom-repository/custom-typeorm-module';
-import { UsersRepository } from 'src/users/users.repository';
+import { CustomTypeOrmModule } from 'src/config/typeorm/custom-typeorm-module';
+import { UsersRepository } from 'src/modules/users/users.repository';
 import { ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
-import { GoogleStrategy } from './strategy/google-strategy';
 
 @Module({
   imports: [
@@ -29,13 +28,7 @@ import { GoogleStrategy } from './strategy/google-strategy';
       },
     }),
   ],
-  providers: [
-    ConfigService,
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    GoogleStrategy,
-  ],
+  providers: [ConfigService, AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

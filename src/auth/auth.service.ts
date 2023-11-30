@@ -5,12 +5,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from '../users/users.repository';
+import { UsersRepository } from '../modules/users/users.repository';
 import { comparePassword } from '../utils/password';
 import { UserInfo } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { User } from '../users/user.entity';
+import { User } from '../modules/users/user.entity';
 
 export interface DecodedToken {
   id: number;

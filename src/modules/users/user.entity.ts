@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Post } from '../posts/entities/post.entity';
-import { BaseModel } from '../common/base-enttity/base.entity';
+import { BaseModel } from '../../config/typeorm/base.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('user')

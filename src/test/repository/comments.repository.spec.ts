@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
-import { CommentsRepository } from '../../comments/comments.repository';
-import { UsersRepository } from '../../users/users.repository';
-import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
-import { User } from '../../users/user.entity';
-import { Comment } from '../../comments/entities/comment.entity';
-import { PostsRepository } from '../../posts/posts.repository';
-import { Post } from '../../posts/entities/post.entity';
+import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
+import { CommentsRepository } from '../../modules/comments/comments.repository';
+import { UsersRepository } from '../../modules/users/users.repository';
+import { TestTypeOrmModule } from '../db/test-db.module';
+import { User } from '../../modules/users/user.entity';
+import { Comment } from '../../modules/comments/entities/comment.entity';
+import { PostsRepository } from '../../modules/posts/posts.repository';
+import { Post } from '../../modules/posts/entities/post.entity';
 
 describe('CommentsRepository', () => {
   let commentsRepository: CommentsRepository;

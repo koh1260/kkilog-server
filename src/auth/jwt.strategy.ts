@@ -3,7 +3,7 @@ import { ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import jwtConfig from 'src/config/jwtConfig';
-import { User } from '../users/user.entity';
+import { User } from '../modules/users/user.entity';
 
 export type UserInfo = Pick<User, 'id' | 'email' | 'nickname'>;
 

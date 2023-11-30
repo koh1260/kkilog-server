@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Category } from '../../categorys/entities/category.entity';
-import { User } from '../../users/user.entity';
-import { Post } from '../../posts/entities/post.entity';
-import { PostsRepository } from '../../posts/posts.repository';
-import { TestTypeOrmModule } from '../../common/test-database/test-db.module';
-import { CustomTypeOrmModule } from '../../common/custom-repository/custom-typeorm-module';
-import { UsersRepository } from '../../users/users.repository';
-import { CategorysRepository } from '../../categorys/categorys.repository';
+import { Category } from '../../modules/categorys/entities/category.entity';
+import { User } from '../../modules/users/user.entity';
+import { Post } from '../../modules/posts/entities/post.entity';
+import { PostsRepository } from '../../modules/posts/posts.repository';
+import { TestTypeOrmModule } from '../db/test-db.module';
+import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
+import { UsersRepository } from '../../modules/users/users.repository';
+import { CategorysRepository } from '../../modules/categorys/categorys.repository';
 
 describe('PostsRepository', () => {
   let postsRepository: PostsRepository;
