@@ -23,7 +23,6 @@ export const multerOptionsFactory = (
       acl: 'public-read',
       key(_req, file, done) {
         try {
-          console.log(file);
           const folder = 'kkilog';
           const ext = path.extname(file.originalname);
           const basename = path.basename(file.originalname, ext);
