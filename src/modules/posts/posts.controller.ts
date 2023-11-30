@@ -108,7 +108,6 @@ export class PostsController {
   })
   @ApiCreatedResponse({ description: '게시글 좋아요 수 조회 기능.' })
   async likeCount(@Query('post', ParseIntPipe) postId: number) {
-    console.log(postId);
     const likeCount = await this.postsService.likeCount(postId);
 
     return CustomResponse.create(HttpStatus.OK, '좋아요 개수', { likeCount });
