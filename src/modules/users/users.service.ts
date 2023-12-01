@@ -3,8 +3,8 @@ import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { hashPassword } from '../../utils/password';
-import { ConflictNicknameException } from '../../exception/custom-exception/conflictNickname.exception';
-import { ConflictEmailException } from '../../exception/custom-exception/conflictEmail.exception';
+import { ConflictNicknameException } from './exception/conflictNickname.exception';
+import { ConflictEmailException } from './exception/conflictEmail.exception';
 
 @Injectable()
 export class UsersService {
