@@ -177,10 +177,23 @@ export class PostsServiceImp implements PostsService {
   }
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
-    let post = this.existPost(await this.postsRepository.findOneById(id));
+    let post = this.existPost(
+      await this.postsRepository.findOne({
+        where: { id },
+        relations: ['category'],
+      }),
+    );
+
+    const category = this.existCategory(
+      await this.categoryRepository.findOne({
+        where: { categoryName: updatePostDto.categoryName },
+      }),
+    );
+
     post = {
       ...post,
       ...updatePostDto,
+      category,
     };
 
     return this.postsRepository.save(post);
