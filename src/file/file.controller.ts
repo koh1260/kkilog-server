@@ -5,18 +5,18 @@ import {
   ParseFilePipe,
   Post,
   UploadedFile,
-  // UseInterceptors,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileService } from './file.service';
-// import { FileInterceptor } from '@nestjs/platform-express';
 import { CustomResponse } from '../common/response/custom-reponse';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
   @Post('upload')
-  // @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file'))
   uploadFile(
     @UploadedFile(
       new ParseFilePipe({
@@ -25,6 +25,7 @@ export class FileController {
     )
     file: Express.MulterS3.File,
   ) {
+    console.log('파일: ' + file);
     const image = this.fileService.uploadFile(file);
     return CustomResponse.create(HttpStatus.OK, '이미지 업로드 완료', image);
   }
