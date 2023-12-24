@@ -24,5 +24,6 @@
 **/values.dev.yaml
 **/build
 **/dist
+**/test
 LICENSE
 README.md
