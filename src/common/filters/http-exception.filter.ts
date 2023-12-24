@@ -26,11 +26,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const stack = exception.stack;
     const log = {
       timestamp: new Date(),
-      url: req.url,
-      response,
+      path: req.url,
+      message: exception.message,
       stack,
     };
-    this.logger.log({ message: 'Request', ...log });
+    this.logger.log({ ...log });
 
     res.status((exception as HttpException).getStatus()).json(response);
   }
