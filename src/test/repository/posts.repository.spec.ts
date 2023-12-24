@@ -31,7 +31,7 @@ describe('PostsRepository', () => {
     usersRepository = module.get<UsersRepository>(UsersRepository);
     categorysRepository = module.get<CategorysRepository>(CategorysRepository);
 
-    writer = User.of('test@test.com', 'nickname', 'password');
+    writer = User.create('test@test.com', 'nickname', 'password');
     await usersRepository.save(writer);
     category = createCategory(7, 'Nest.js');
     category.icon = 'test';

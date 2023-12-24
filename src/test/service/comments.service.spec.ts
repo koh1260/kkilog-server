@@ -243,7 +243,7 @@ const createPost = (
 };
 
 const createUser = (id: number, email: string, nickname: string) => {
-  const user = User.of(email, nickname, 'password');
+  const user = User.create(email, nickname, 'password');
   user.id = id;
 
   return user;

@@ -49,7 +49,7 @@ describe('PostsService', () => {
     usersRepository = module.get<UsersRepository>(UsersRepository);
     categorysRepository = module.get<CategorysRepository>(CategorysRepository);
 
-    testWriter = User.of('test@test.com', 'nickname', 'password');
+    testWriter = User.create('test@test.com', 'nickname', 'password');
     testWriter.role = 'ADMIN';
     await usersRepository.save(testWriter);
     testCategory = Category.of('Back-end');
@@ -75,7 +75,11 @@ describe('PostsService', () => {
 
   it('관리자 권한이 없는 회원이 게시글 생성 시 예외 발생', async () => {
     // given
-    const nonAdminUser = User.of('nonadmin@test.com', 'nickname', 'password');
+    const nonAdminUser = User.create(
+      'nonadmin@test.com',
+      'nickname',
+      'password',
+    );
     await usersRepository.save(nonAdminUser);
     const dto = createPostDtoFactory(testCategory.categoryName);
     const loginedUser = createUserInfo(2, 'test@test.com', 'nickname');

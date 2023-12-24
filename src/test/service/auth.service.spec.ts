@@ -285,7 +285,7 @@ const createUser = (
   password: string,
   nickname: string,
 ) => {
-  const user = User.of(email, password, nickname);
+  const user = User.create(email, password, nickname);
   user.id = id;
 
   return user;

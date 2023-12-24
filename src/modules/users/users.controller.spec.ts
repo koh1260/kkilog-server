@@ -68,7 +68,7 @@ describe('UsersController', () => {
       accessToken: 'TOKEN',
       refreshToken: 'REFRESH',
     };
-    const user = User.of(logindUser.email, logindUser.nickname, 'password');
+    const user = User.create(logindUser.email, logindUser.nickname, 'password');
     jest.spyOn(authService, 'login').mockResolvedValue(token);
     jest.spyOn(usersService, 'getProfile').mockResolvedValue(user);
     // when

@@ -32,7 +32,7 @@ export class User extends BaseModel {
   @OneToMany(() => Post, (posts) => posts.writer)
   posts?: Post;
 
-  static of(email: string, nickname: string, password: string) {
+  static create(email: string, nickname: string, password: string) {
     const user = new User();
     user.email = email;
     user.nickname = nickname;
