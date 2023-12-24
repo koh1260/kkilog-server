@@ -25,7 +25,7 @@ export class UsersService {
       throw new ConflictNicknameException();
     }
 
-    const user = User.of(email, nickname, await hashPassword(password));
+    const user = User.create(email, nickname, await hashPassword(password));
 
     return this.usersRepository.save(user);
   }
