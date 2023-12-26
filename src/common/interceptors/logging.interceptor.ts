@@ -22,13 +22,15 @@ export class LoggingInterceptor implements NestInterceptor {
   ): Observable<any> | Promise<Observable<any>> {
     const request: Request = context.switchToHttp().getRequest();
     const log = {
+      level: 'info',
+      message: 'Request',
       method: request.method,
       timestamp: new Date(),
       url: request.url,
       ip: request.ip,
     };
 
-    this.logger.log('info', { message: 'Request', ...log });
+    this.logger.log({ ...log });
     return next.handle();
   }
 }
