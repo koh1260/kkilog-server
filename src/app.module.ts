@@ -12,6 +12,14 @@ import { CommentsModule } from './modules/comments/comments.module';
 import jwtConfig from './config/jwtConfig';
 import { validationSchema } from './config/validationSchema';
 import { FileModule } from './file/file.module';
+import * as winston from 'winston';
+import {
+  utilities as nestWinstonModuleUtilities,
+  WinstonModule,
+} from 'nest-winston';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 @Module({
   imports: [
@@ -30,6 +38,24 @@ import { FileModule } from './file/file.module';
       database: process.env.DATABASE_NAME,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+    }),
+    WinstonModule.forRoot({
+      level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
+      transports: [
+        new winston.transports.Console({
+          format:
+            process.env.NODE_ENV === 'production'
+              ? winston.format.simple()
+              : winston.format.combine(
+                  winston.format.timestamp(),
+                  winston.format.ms(),
+                  nestWinstonModuleUtilities.format.nestLike('Kkilog', {
+                    colors: true,
+                    prettyPrint: true,
+                  }),
+                ),
+        }),
+      ],
     }),
     AuthModule,
     UsersModule,

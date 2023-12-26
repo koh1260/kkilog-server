@@ -13,22 +13,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { json, urlencoded } from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: WinstonModule.createLogger({
-      transports: [
-        new winston.transports.Console({
-          level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
-          format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.timestamp(),
-            nestWinstonModuleUtilities.format.nestLike('My-Blog', {
-              prettyPrint: true,
-            }),
-          ),
-        }),
-      ],
-    }),
-  });
+  const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
   app.use(
@@ -47,13 +32,11 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-  app.useGlobalInterceptors(new LoggingInterceptor(new Logger()));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     }),
   );
-  // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.useGlobalFilters(new HttpExceptionFilter(new Logger()));
 
   const config = new DocumentBuilder()
