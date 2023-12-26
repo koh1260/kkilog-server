@@ -33,7 +33,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('KKilog API')
-    .setDescription('KKilog API 임미다.')
+    .setDescription('KKilog API 입니다.')
     .setVersion('1.0')
     .addTag('KKilog')
     .build();
