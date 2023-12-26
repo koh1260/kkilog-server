@@ -66,6 +66,11 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
     FileModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigService],
+  providers: [
+    AppService,
+    ConfigService,
+    { provide: APP_FILTER, useClass: HttpExceptionFilter },
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+  ],
 })
 export class AppModule {}

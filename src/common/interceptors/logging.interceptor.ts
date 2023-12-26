@@ -1,16 +1,20 @@
 import {
   CallHandler,
   ExecutionContext,
+  Inject,
   Injectable,
   Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { WINSTON_MODULE_PROVIDER, WinstonLogger } from 'nest-winston';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  constructor(private readonly logger: Logger) {}
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger,
+  ) {}
 
   intercept(
     context: ExecutionContext,
