@@ -17,9 +17,7 @@ import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
 } from 'nest-winston';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { IntercepterModule } from './common/interceptors/intercepter.module';
 
 @Module({
   imports: [
@@ -60,17 +58,13 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
     AuthModule,
     UsersModule,
     PostsModule,
-    ExceptionModule,
     CategorysModule,
     CommentsModule,
     FileModule,
+    ExceptionModule,
+    IntercepterModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    ConfigService,
-    { provide: APP_FILTER, useClass: HttpExceptionFilter },
-    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
-  ],
+  providers: [AppService, ConfigService],
 })
 export class AppModule {}
