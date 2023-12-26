@@ -17,20 +17,22 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const req: Request = ctx.getRequest();
     const res: Response = ctx.getResponse();
 
+    const originException = exception;
+
     if (!(exception instanceof HttpException)) {
       exception = new InternalServerErrorException();
     }
 
     const response = (exception as HttpException).getResponse();
 
-    const stack = exception.stack;
     const log = {
       timestamp: new Date(),
       path: req.url,
-      message: exception.message,
-      stack,
+      name: originException.name,
+      message: originException.message,
+      stack: originException.stack,
     };
-    this.logger.log({ ...log });
+    this.logger.warn({ ...log });
 
     res.status((exception as HttpException).getStatus()).json(response);
   }
