@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
+import { init as Sentry } from '@sentry/node';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -39,6 +40,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  Sentry({
+    dsn: process.env.SENTRY_DSN,
+  });
 
   await app.listen(8080);
 }

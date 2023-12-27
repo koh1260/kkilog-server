@@ -18,4 +18,5 @@ export const validationSchema = Joi.object({
   GOOGLE_CLIENT_SECRET: Joi.string().required(),
   GOOGLE_CALLBACK_URL: Joi.string().required(),
   CORS_ORIGIN: Joi.string().required(),
+  SENTRY_DSN: Joi.string().required(),
 });

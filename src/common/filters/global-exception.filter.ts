@@ -9,8 +9,9 @@ import {
 import { Request, Response } from 'express';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { captureException as Sentry } from '@sentry/node';
 
-export interface LoggingFormat {
+interface LoggingFormat {
   level: 'warn' | 'error';
   timestamp: Date;
   path: string;
@@ -44,6 +45,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       log.level = 'error';
       log.stack = exception.stack;
       this.logger.log({ ...log });
+      Sentry(exception);
+
       exception = new InternalServerErrorException();
     }
 
