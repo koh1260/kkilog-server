@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './modules/posts/posts.module';
-import { ExceptionModule } from './exception/exception.module';
+import { ExceptionModule } from './common/filters/exception-filter.module';
 import { CategorysModule } from './modules/categorys/categorys.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import jwtConfig from './config/jwtConfig';

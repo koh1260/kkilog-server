@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GlobalExceptionFilter } from '../common/filters/http-exception.filter';
+import { GlobalExceptionFilter } from './global-exception.filter';
 
 @Module({
   providers: [{ provide: 'APP_FILTER', useClass: GlobalExceptionFilter }],
