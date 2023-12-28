@@ -54,4 +54,4 @@ jobs:
           sudo docker rm kkilog-server
           sudo docker rmi koh1260/kkilog-server
           sudo docker pull koh1260/kkilog-server
-          sudo docker run --name kkilog-server -p ${{ secrets.DOCKER_PORT }} koh1260/kkilog-server
+          sudo docker run --name kkilog-server -d -p ${{ secrets.DOCKER_PORT }} koh1260/kkilog-server
