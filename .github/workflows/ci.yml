@@ -47,8 +47,8 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          sudo docker rmi koh1260/kkilog-server:1.0.0
-          sudo docker pull koh1260/kkilog-server:1.0.0
           sudo docker stop kkilog-server
           sudo docker rm kkilog-server
+          sudo docker rmi koh1260/kkilog-server:1.0.0
+          sudo docker pull koh1260/kkilog-server:1.0.0
           sudo docker run --name kkilog-server -p ${{ secrets.DOCKER_PORT }} koh1260/kkilog-server:1.0.0
