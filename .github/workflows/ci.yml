@@ -14,21 +14,20 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4.1.1
+
+    - name: Append Environment Variables File
+      run: |
+        echo ${{ secrets.ENV_FILE }} > ./src/config/env/.production.env
+        ls ./src/config/env
+      
     - name: Use Node.js 18.x
       uses: actions/setup-node@v3
       with:
-        node-version: 18.x
+        node-version: 18
         cache: 'npm'
     - run: npm install
     - run: npm test
     - run: npm run build --if-present
-
-    - name: Append Environment Variables File
-      run: |
-        pwd
-        ls
-        echo ${{ secrets.ENV_FILE }} > ./src/config/env/.production.env
-        cat ./src/config/env/.production.env
     
     - name: Docker Login
       uses: docker/login-action@v3.0.0
