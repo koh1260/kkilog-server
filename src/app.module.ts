@@ -38,7 +38,6 @@ import { IntercepterModule } from './common/interceptors/intercepter.module';
       entities: [__dirname + '/modules/**/entities/*.entity{.ts,.js}'],
       migrationsRun: true,
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
-      logging: true,
     }),
     WinstonModule.forRoot({
       level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
