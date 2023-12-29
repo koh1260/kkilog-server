@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { User } from '../../users/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { BaseModel } from '../../../config/typeorm/base.entity';
 import { Category } from '../../categorys/entities/category.entity';
 import { Comment } from '../../comments/entities/comment.entity';

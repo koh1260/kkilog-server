@@ -34,8 +34,11 @@ import { IntercepterModule } from './common/interceptors/intercepter.module';
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
+      entities: [__dirname + '/modules/**/entities/*.entity{.ts,.js}'],
+      migrationsRun: true,
+      migrations: [__dirname + '/migrations/*{.ts,.js}'],
+      logging: true,
     }),
     WinstonModule.forRoot({
       level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',

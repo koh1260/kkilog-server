@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsServiceImp } from '../../modules/posts/posts-impl.service';
 import { PostsRepository } from '../../modules/posts/posts.repository';
-import { User } from '../../modules/users/user.entity';
+import { User } from '../../modules/users/entities/user.entity';
 import { PostsService } from '../../modules/posts/posts.service';
 import { CreatePostDto } from '../../modules/posts/dto/create-post.dto';
 import { Category } from '../../modules/categorys/entities/category.entity';

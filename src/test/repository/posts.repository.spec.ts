@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Category } from '../../modules/categorys/entities/category.entity';
-import { User } from '../../modules/users/user.entity';
+import { User } from '../../modules/users/entities/user.entity';
 import { Post } from '../../modules/posts/entities/post.entity';
 import { PostsRepository } from '../../modules/posts/posts.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';

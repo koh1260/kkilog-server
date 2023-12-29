@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 import { hashPassword } from '../../utils/password';
 import { ConflictNicknameException } from './exception/conflictNickname.exception';
 import { ConflictEmailException } from './exception/conflictEmail.exception';

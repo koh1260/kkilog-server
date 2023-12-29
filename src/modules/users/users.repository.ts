@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 import { CustomRepository } from '../../config/typeorm/custom-repository';
 
 @CustomRepository(User)

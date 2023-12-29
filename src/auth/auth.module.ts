@@ -4,7 +4,7 @@ import { LocalStrategy } from './local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/modules/users/user.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { CustomTypeOrmModule } from 'src/config/typeorm/custom-typeorm-module';
 import { UsersRepository } from 'src/modules/users/users.repository';
