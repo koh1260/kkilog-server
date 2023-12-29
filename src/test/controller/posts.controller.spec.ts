@@ -9,7 +9,7 @@ import { CategorysRepository } from '../../modules/categorys/categorys.repositor
 import { UserInfo } from '../../auth/jwt.strategy';
 import { Post } from '../../modules/posts/entities/post.entity';
 import { Category } from '../../modules/categorys/entities/category.entity';
-import { User } from '../../modules/users/user.entity';
+import { User } from '../../modules/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PostLike } from '../../modules/posts/entities/post-like.entity';

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Column, Entity, OneToMany } from 'typeorm';
-import { Post } from '../posts/entities/post.entity';
-import { BaseModel } from '../../config/typeorm/base.entity';
+import { Post } from '../../posts/entities/post.entity';
+import { BaseModel } from '../../../config/typeorm/base.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('user')
@@ -18,9 +18,9 @@ export class User extends BaseModel {
   @ApiProperty({ description: '권한' })
   role: 'USER' | 'ADMIN' = 'USER';
 
-  @Column({ type: 'text', name: 'profile_image', default: true })
+  @Column({ type: 'text', name: 'profile_image', nullable: true })
   @ApiProperty({ description: '프로필 사진' })
-  profileImage?: string = 'test';
+  profileImage?: string;
 
   @Column({ length: 255 })
   @ApiProperty({ description: '비밀번호' })

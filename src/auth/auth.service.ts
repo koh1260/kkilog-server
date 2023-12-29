@@ -10,7 +10,7 @@ import { comparePassword } from '../utils/password';
 import { UserInfo } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { User } from '../modules/users/user.entity';
+import { User } from '../modules/users/entities/user.entity';
 
 export interface DecodedToken {
   id: number;

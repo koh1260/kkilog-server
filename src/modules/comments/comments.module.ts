@@ -5,7 +5,7 @@ import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module'
 import { Comment } from './entities/comment.entity';
 import { CommentsServiceImpl } from './comments-impl.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../users/user.entity';
+import { User } from '../users/entities/user.entity';
 import { CommentsRepository } from './comments.repository';
 import { UsersRepository } from '../users/users.repository';
 import { PostsRepository } from '../posts/posts.repository';

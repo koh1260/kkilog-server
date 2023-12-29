@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService, DecodedToken } from '../../auth/auth.service';
 import { UsersRepository } from '../../modules/users/users.repository';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../../modules/users/user.entity';
+import { User } from '../../modules/users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { TestTypeOrmModule } from '../db/test-db.module';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
