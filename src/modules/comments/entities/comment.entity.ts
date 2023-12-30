@@ -13,14 +13,14 @@ import { Post } from '../../posts/entities/post.entity';
 
 @Entity('comment')
 export class Comment extends BaseModel {
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text' })
   content!: string;
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: false })
   @JoinColumn({
     name: 'writer_id',
   })
-  writer?: User;
+  writer!: User;
 
   @ManyToOne(() => Post, (post) => post.comments, { nullable: false })
   @JoinColumn({
@@ -34,7 +34,7 @@ export class Comment extends BaseModel {
   })
   parent?: number;
 
-  @ManyToMany(() => User, { cascade: true, nullable: false })
+  @ManyToMany(() => User, { cascade: true })
   @JoinTable({
     name: 'comment_like',
     joinColumn: {
@@ -46,7 +46,7 @@ export class Comment extends BaseModel {
       referencedColumnName: 'id',
     },
   })
-  users?: User[];
+  users!: User[];
 
   static create(content: string, post: Post, writer: User) {
     const comment = new Comment();
