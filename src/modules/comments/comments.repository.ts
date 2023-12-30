@@ -6,12 +6,7 @@ import { Comment } from './entities/comment.entity';
 export class CommentsRepository extends Repository<Comment> {
   async findAll(postId: number) {
     return await this.createQueryBuilder('comment')
-      .select([
-        'comment.id',
-        'comment.content',
-        'comment.createAt',
-        'comment.nickname',
-      ])
+      .select(['comment.id', 'comment.content', 'comment.createAt'])
       .addSelect(['user.nickname', 'user.profileImage'])
       .leftJoin('comment.writer', 'user')
       .where('comment.post=:postId', { postId })
