@@ -18,7 +18,9 @@ export class Category extends BaseModel {
   })
   icon!: string;
 
-  @ManyToOne(() => Category, (category) => category.childCategories)
+  @ManyToOne(() => Category, (category) => category.childCategories, {
+    nullable: true,
+  })
   @JoinColumn({
     name: 'parent_id',
   })
