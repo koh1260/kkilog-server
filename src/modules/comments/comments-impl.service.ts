@@ -22,29 +22,17 @@ export class CommentsServiceImpl implements CommentsService {
   ) {}
 
   async createComment(createCommentDto: CreateCommentDto) {
-    let writer: User | null = null;
-    let comment: Comment | null = null;
     const post = this.existPost(
       await this.postsRepository.findOneById(+createCommentDto.postId),
     );
 
-    if (createCommentDto.userId) {
-      writer = await this.usersRepository.findOneById(+createCommentDto.userId);
-      this.existUser(writer);
-      comment = Comment.createMember(createCommentDto.content, post, writer);
-    } else {
-      comment = Comment.createNonMember(
-        createCommentDto.content,
-        post,
-        createCommentDto.nickname,
-        createCommentDto.password,
-      );
-    }
+    const writer = this.existUser(
+      await this.usersRepository.findOneById(+createCommentDto.userId),
+    );
+
+    const comment = Comment.create(createCommentDto.content, post, writer);
 
     if (createCommentDto.parentId) {
-      this.existComment(
-        await this.commentsRepository.findOneById(createCommentDto.parentId),
-      );
       comment.parent = createCommentDto.parentId;
     }
 
@@ -103,10 +91,11 @@ export class CommentsServiceImpl implements CommentsService {
    * @param user 검사할 회원
    * @returns 검사를 통과한 User 객체
    */
-  private existUser(user: User | null): asserts user is User {
+  private existUser(user: User | null): User {
     if (!user) {
       throw new NotFoundException('존재하지 않는 회원입니다.');
     }
+    return user;
   }
 
   /**

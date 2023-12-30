@@ -92,9 +92,9 @@ describe('CommentsService', () => {
 
   it('특정 게시글 댓글 전체 조회', async () => {
     // given
-    const comment1 = createComment(1, 'content', testWriter, testPost);
-    const comment2 = createComment(2, 'content', testWriter, testPost);
-    const comment3 = createComment(3, 'content', testWriter, testPost);
+    const comment1 = createComment('content', testWriter, testPost);
+    const comment2 = createComment('content', testWriter, testPost);
+    const comment3 = createComment('content', testWriter, testPost);
     await commentsRepository.save([comment1, comment2, comment3]);
 
     // when
@@ -119,7 +119,7 @@ describe('CommentsService', () => {
 
   it('댓글 정보 업데이트', async () => {
     // given
-    const originalComment = createComment(2, 'content', testWriter, testPost);
+    const originalComment = createComment('content', testWriter, testPost);
     await commentsRepository.save(originalComment);
     const dto = new UpdateCommentDto();
     dto.content = 'updated content';
@@ -151,7 +151,7 @@ describe('CommentsService', () => {
   it('작성자가 아닌 회원이 댓글 업데이트 시 예외 발생', async () => {
     // given
     const comment = await commentsRepository.save(
-      createComment(2, 'content', testWriter, testPost),
+      createComment('content', testWriter, testPost),
     );
     const nonAuthorEmail = 'nonauthor@test.com';
     const dto = updateCommentDtoFactory('updated content');
@@ -217,16 +217,8 @@ const updateCommentDtoFactory = (content: string) => {
   return dto;
 };
 
-const createComment = (
-  id: number,
-  content: string,
-  writer: User,
-  post: Post,
-) => {
-  const comment = Comment.createMember(content, post, writer);
-  comment.id = id;
-
-  return comment;
+const createComment = (content: string, writer: User, post: Post) => {
+  return Comment.create(content, post, writer);
 };
 
 const createPost = (
