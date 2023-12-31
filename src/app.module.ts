@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
-import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './modules/posts/posts.module';
@@ -18,6 +17,7 @@ import {
   WinstonModule,
 } from 'nest-winston';
 import { IntercepterModule } from './common/interceptors/intercepter.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [

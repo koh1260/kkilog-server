@@ -4,12 +4,12 @@ import { LocalStrategy } from './local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/modules/users/entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
-import { CustomTypeOrmModule } from 'src/config/typeorm/custom-typeorm-module';
-import { UsersRepository } from 'src/modules/users/users.repository';
 import { ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
+import { UsersRepository } from '../modules/users/users.repository';
+import { User } from '../modules/users/entities/user.entity';
+import { CustomTypeOrmModule } from '../config/typeorm/custom-typeorm-module';
 
 @Module({
   imports: [
