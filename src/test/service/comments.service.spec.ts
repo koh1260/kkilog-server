@@ -61,11 +61,7 @@ describe('CommentsService', () => {
 
   it('댓글 생성', async () => {
     // given
-    const dto = createCommentDtoFactory(
-      'content',
-      testPost.id,
-      String(testWriter.id),
-    );
+    const dto = createCommentDtoFactory('content', testPost.id, testWriter.id);
 
     // when
     const comment = await commentsService.createComment(dto);
@@ -77,11 +73,7 @@ describe('CommentsService', () => {
   it('존재하지 않는 회원으로 생성 시 예외 발생', async () => {
     // given
     const nonExistUserId = 122;
-    const dto = createCommentDtoFactory(
-      'content',
-      testPost.id,
-      String(nonExistUserId),
-    );
+    const dto = createCommentDtoFactory('content', testPost.id, nonExistUserId);
 
     // when
     // then
@@ -121,8 +113,7 @@ describe('CommentsService', () => {
     // given
     const originalComment = createComment('content', testWriter, testPost);
     await commentsRepository.save(originalComment);
-    const dto = new UpdateCommentDto();
-    dto.content = 'updated content';
+    const dto = UpdateCommentDto.create('updated content');
 
     // when
     const updatedComment = await commentsService.update(
@@ -165,11 +156,7 @@ describe('CommentsService', () => {
 
   it('댓글 삭제', async () => {
     // given
-    const dto = createCommentDtoFactory(
-      'content',
-      testPost.id,
-      String(testWriter.id),
-    );
+    const dto = createCommentDtoFactory('content', testPost.id, testWriter.id);
     const comment = await commentsService.createComment(dto);
 
     // when
@@ -181,11 +168,7 @@ describe('CommentsService', () => {
 
   it('작성자가 아닌 회원이 댓글 삭세 시 예외 발생', async () => {
     // given
-    const dto = createCommentDtoFactory(
-      'content',
-      testPost.id,
-      String(testWriter.id),
-    );
+    const dto = createCommentDtoFactory('content', testPost.id, testWriter.id);
     const comment = await commentsService.createComment(dto);
     const nonAuthorEmail = 'nonauthor@test.com';
 
@@ -200,20 +183,14 @@ describe('CommentsService', () => {
 const createCommentDtoFactory = (
   content: string,
   postId: number,
-  userId: string,
+  userId: number,
 ) => {
-  const dto = new CreateCommentDto();
-  dto.content = content;
-  dto.postId = postId.toString();
-  dto.userId = userId;
-
+  const dto = CreateCommentDto.create(content, postId, userId);
   return dto;
 };
 
 const updateCommentDtoFactory = (content: string) => {
-  const dto = new UpdateCommentDto();
-  dto.content = content;
-
+  const dto = UpdateCommentDto.create(content);
   return dto;
 };
 

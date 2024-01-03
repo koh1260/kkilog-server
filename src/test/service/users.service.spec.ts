@@ -126,12 +126,7 @@ const createUserDtoFactory = (
   nickname: string,
   password: string,
 ) => {
-  const dto = new CreateUserDto();
-  dto.email = email;
-  dto.nickname = nickname;
-  dto.password = password;
-
-  return dto;
+  return CreateUserDto.create(email, nickname, password);
 };
 
 const createUser = (id: number, email: string, nickname: string) => {
