@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from '../../modules/posts/posts.controller';
-import { PostsServiceImp } from '../../modules/posts/posts-impl.service';
-import { PostsRepository } from '../../modules/posts/posts.repository';
 import { PostsService } from '../../modules/posts/posts.service';
+import { PostsRepository } from '../../modules/posts/posts.repository';
 import { HttpStatus } from '@nestjs/common';
 import { UsersRepository } from '../../modules/users/users.repository';
 import { CategorysRepository } from '../../modules/categorys/categorys.repository';
@@ -40,10 +39,7 @@ describe('PostsController', () => {
         PostsRepository,
         UsersRepository,
         CategorysRepository,
-        {
-          provide: PostsService,
-          useClass: PostsServiceImp,
-        },
+        PostsService,
         { provide: DataSource, useValue: mockDataSource },
         {
           provide: getRepositoryToken(PostLike),
@@ -146,7 +142,7 @@ describe('PostsController', () => {
     // given
     const originalPost = createPost(1, 'title', user, category);
     const updatedPost = createPost(1, 'updated post', user, category);
-    const updateDto = createUpdatePostDtoFactory('updated title');
+    const updateDto: UpdatePostDto = { title: 'updated title' };
     jest
       .spyOn(postsService, 'update')
       .mockImplementation(
@@ -179,22 +175,13 @@ describe('PostsController', () => {
 });
 
 const createPostDtoFactory = (categoryName: string) => {
-  const dto = new CreatePostDto();
-  dto.title = 'title';
-  dto.content = 'content';
-  dto.introduction = 'introduction';
-  dto.thumbnail = 'thumbnail';
-  dto.categoryName = categoryName;
-
-  return dto;
-};
-
-const createUpdatePostDtoFactory = (title?: string, content?: string) => {
-  const dto = new UpdatePostDto();
-  dto.title = title;
-  dto.content = content;
-
-  return dto;
+  return CreatePostDto.create(
+    'title',
+    'content',
+    'introduction',
+    'thumbnail',
+    categoryName,
+  );
 };
 
 const createPost = (

@@ -13,10 +13,19 @@ export class LoginDto {
   @MaxLength(60)
   @IsEmail()
   @ApiProperty({ description: '이메일' })
-  email!: string;
+  readonly email: string;
 
   @IsString()
   @Matches(/^[A-Za-z\d!@#$%^&*()]{8,30}$/)
   @ApiProperty({ description: '비밀번호' })
-  password!: string;
+  readonly password: string;
+
+  constructor(email: string, password: string) {
+    this.email = email;
+    this.password = password;
+  }
+
+  static create(email: string, password: string) {
+    return new LoginDto(email, password);
+  }
 }

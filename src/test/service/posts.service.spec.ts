@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostsServiceImp } from '../../modules/posts/posts-impl.service';
+import { PostsService } from '../../modules/posts/posts.service';
 import { PostsRepository } from '../../modules/posts/posts.repository';
 import { User } from '../../modules/users/entities/user.entity';
-import { PostsService } from '../../modules/posts/posts.service';
+// import { PostsService } from '../../modules/posts/posts.service';
 import { CreatePostDto } from '../../modules/posts/dto/create-post.dto';
 import { Category } from '../../modules/categorys/entities/category.entity';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
@@ -36,7 +36,7 @@ describe('PostsService', () => {
         ]),
       ],
       providers: [
-        { provide: PostsService, useClass: PostsServiceImp },
+        PostsService,
         {
           provide: getRepositoryToken(PostLike),
           useClass: Repository<PostLike>,
@@ -136,9 +136,11 @@ describe('PostsService', () => {
 
   it('게시글 정보 업데이트', async () => {
     // given
-    const dto = new UpdatePostDto();
-    dto.content = 'updated content';
-    dto.title = 'updated post';
+    const content = 'updated content';
+    const title = 'updated post';
+    const dto: UpdatePostDto = { content, title };
+    console.log(dto);
+
     const originalPost = createPost(
       1,
       'title',
@@ -157,14 +159,13 @@ describe('PostsService', () => {
 });
 
 const createPostDtoFactory = (categoryName: string) => {
-  const dto = new CreatePostDto();
-  dto.title = 'title';
-  dto.content = 'content';
-  dto.introduction = 'introduction';
-  dto.thumbnail = 'thumbnail';
-  dto.categoryName = categoryName;
-
-  return dto;
+  return CreatePostDto.create(
+    'title',
+    'content',
+    'introduction',
+    'thumbnail',
+    categoryName,
+  );
 };
 
 const createPost = (

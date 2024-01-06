@@ -8,7 +8,7 @@ import { PostImage } from './post-images.entity';
 
 @Entity('post')
 export class Post extends BaseModel {
-  @Column({ length: 60 })
+  @Column({ nullable: false })
   title!: string;
 
   @Column({ type: 'text', nullable: false })
@@ -20,7 +20,7 @@ export class Post extends BaseModel {
   })
   publicScope?: 'PUBLIC' | 'PRIVATE';
 
-  @Column({ length: 200, nullable: false })
+  @Column({ nullable: false })
   introduction!: string;
 
   @Column({ type: 'text', nullable: false })

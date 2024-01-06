@@ -38,10 +38,10 @@ describe('UsersController', () => {
 
   it('createUser', async () => {
     // given
-    const createUserDto = new CreateUserDto();
-    createUserDto.email = 'EMAIL@example.com';
-    createUserDto.nickname = 'NICKNAME';
-    createUserDto.password = 'PASSWORD';
+    const email = 'EMAIL@example.com';
+    const nickname = 'NICKNAME';
+    const password = 'PASSWORD';
+    const createUserDto = CreateUserDto.create(email, nickname, password);
 
     const user = new User();
     user.email = createUserDto.email;

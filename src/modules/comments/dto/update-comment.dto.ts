@@ -6,5 +6,13 @@ export class UpdateCommentDto {
   @MinLength(1)
   @MaxLength(500)
   @ApiProperty({ description: '내용' })
-  content?: string;
+  readonly content?: string;
+
+  constructor(content: string) {
+    this.content = content;
+  }
+
+  static create(content: string) {
+    return new UpdateCommentDto(content);
+  }
 }

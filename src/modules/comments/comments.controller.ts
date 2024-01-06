@@ -11,7 +11,6 @@ import {
   HttpStatus,
   Query,
 } from '@nestjs/common';
-import { CommentsService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { LoginUser } from '../../common/decorators/user.decorator';
@@ -24,6 +23,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Comment } from './entities/comment.entity';
+import { CommentsService } from './comments.service';
 
 @Controller('comments')
 @ApiTags('댓글 API')

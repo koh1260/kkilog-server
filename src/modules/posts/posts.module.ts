@@ -1,11 +1,10 @@
 import { Logger, Module } from '@nestjs/common';
-import { PostsServiceImp } from './posts-impl.service';
+import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
 import { PostsRepository } from './posts.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
-import { PostsService } from './posts.service';
 import { Category } from '../categorys/entities/category.entity';
 import { UsersRepository } from '../users/users.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
@@ -21,12 +20,6 @@ import { PostLike } from './entities/post-like.entity';
     ]),
   ],
   controllers: [PostsController],
-  providers: [
-    Logger,
-    {
-      provide: PostsService,
-      useClass: PostsServiceImp,
-    },
-  ],
+  providers: [Logger, PostsService],
 })
 export class PostsModule {}
