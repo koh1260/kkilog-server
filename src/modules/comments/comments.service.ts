@@ -9,7 +9,6 @@ import { CommentsRepository } from './comments.repository';
 import { Comment } from './entities/comment.entity';
 import { UsersRepository } from '../users/users.repository';
 import { PostsRepository } from '../posts/posts.repository';
-// import { CommentsService } from './comment.service';
 import { Post } from '../posts/entities/post.entity';
 import { User } from '../users/entities/user.entity';
 
@@ -72,7 +71,7 @@ export class CommentsService {
    * @param email 작성자와 비교할 이메일
    */
   private async validateWriter(comment: Comment, email: string) {
-    const writerEmail = comment.writer!.email;
+    const writerEmail = comment.writer.email;
     if (writerEmail !== email) {
       throw new ForbiddenException('작성자가 아닙니다.');
     }
