@@ -9,12 +9,12 @@ import { CommentsRepository } from './comments.repository';
 import { Comment } from './entities/comment.entity';
 import { UsersRepository } from '../users/users.repository';
 import { PostsRepository } from '../posts/posts.repository';
-import { CommentsService } from './comment.service';
+// import { CommentsService } from './comment.service';
 import { Post } from '../posts/entities/post.entity';
 import { User } from '../users/entities/user.entity';
 
 @Injectable()
-export class CommentsServiceImpl implements CommentsService {
+export class CommentsService {
   constructor(
     private readonly commentsRepository: CommentsRepository,
     private readonly usersRepository: UsersRepository,

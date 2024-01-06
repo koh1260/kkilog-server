@@ -17,7 +17,6 @@ import {
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { PostsServiceImp } from './posts-impl.service';
 import { PostsService } from './posts.service';
 import { Post as PostEntity } from './entities/post.entity';
 import { CustomResponse } from '../../common/response/custom-reponse';
@@ -38,7 +37,7 @@ import { CacheControlIntercepter } from '../../common/interceptors/cache-control
 export class PostsController {
   constructor(
     @Inject(PostsService)
-    private readonly postsService: PostsServiceImp,
+    private readonly postsService: PostsService,
   ) {}
 
   @UseGuards(JwtAuthGuard)

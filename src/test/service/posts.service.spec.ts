@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostsServiceImp } from '../../modules/posts/posts-impl.service';
+import { PostsService } from '../../modules/posts/posts.service';
 import { PostsRepository } from '../../modules/posts/posts.repository';
 import { User } from '../../modules/users/entities/user.entity';
-import { PostsService } from '../../modules/posts/posts.service';
+// import { PostsService } from '../../modules/posts/posts.service';
 import { CreatePostDto } from '../../modules/posts/dto/create-post.dto';
 import { Category } from '../../modules/categorys/entities/category.entity';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
@@ -36,7 +36,7 @@ describe('PostsService', () => {
         ]),
       ],
       providers: [
-        { provide: PostsService, useClass: PostsServiceImp },
+        PostsService,
         {
           provide: getRepositoryToken(PostLike),
           useClass: Repository<PostLike>,

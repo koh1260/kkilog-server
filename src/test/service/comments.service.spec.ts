@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CommentsService } from '../../modules/comments/comment.service';
-import { CommentsServiceImpl } from '../../modules/comments/comments-impl.service';
+import { CommentsService } from '../../modules/comments/comments.service';
 import { UsersRepository } from '../../modules/users/users.repository';
 import { PostsRepository } from '../../modules/posts/posts.repository';
 import { CommentsRepository } from '../../modules/comments/comments.repository';
@@ -37,7 +36,7 @@ describe('CommentsService', () => {
           CategorysRepository,
         ]),
       ],
-      providers: [{ provide: CommentsService, useClass: CommentsServiceImpl }],
+      providers: [CommentsService],
     }).compile();
 
     commentsService = module.get<CommentsService>(CommentsService);
