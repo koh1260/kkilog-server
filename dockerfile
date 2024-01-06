@@ -21,7 +21,6 @@ COPY --from=buildStage /app/package.json ./
 COPY --from=buildStage /app/node_modules ./node_modules
 COPY --from=buildStage /app/dist ./dist
 
-
 EXPOSE 8080
   
 CMD ["npm", "run", "start:prod"]
