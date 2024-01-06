@@ -5,13 +5,13 @@ export class ChangeColumnNullabilityFromCategory1704557458370
 {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      'ALTER TABLE category MODIFY category_name varchar(20) NOT NULL',
+      'ALTER TABLE categorie MODIFY category_name varchar(20) NOT NULL',
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      'ALTER TABLE category MODIFY category_name varchar(20)',
+      'ALTER TABLE categorie MODIFY category_name varchar(20)',
     );
   }
 }
