@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-export class CustomResponse<T> {
+export class ResponseEntity<T> {
   statusCode: HttpStatus;
   message: string;
   result?: T;
@@ -12,6 +12,6 @@ export class CustomResponse<T> {
   }
 
   static create<T>(statusCode: HttpStatus, message: string, result?: T) {
-    return new CustomResponse<T>(statusCode, message, result);
+    return new ResponseEntity<T>(statusCode, message, result);
   }
 }

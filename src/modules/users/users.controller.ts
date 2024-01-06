@@ -21,7 +21,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { CustomResponse } from '../../common/response/custom-reponse';
+import { ResponseEntity } from '../../common/response/response';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('users')
@@ -52,7 +52,7 @@ export class UsersController {
 
     return res
       .status(200)
-      .json(CustomResponse.create(HttpStatus.OK, '로그인 완료', userInfo));
+      .json(ResponseEntity.create(HttpStatus.OK, '로그인 완료', userInfo));
   }
 
   @UseGuards(JwtAuthGuard)
@@ -68,7 +68,7 @@ export class UsersController {
 
     return res
       .status(200)
-      .json(CustomResponse.create(HttpStatus.OK, '로그아웃'));
+      .json(ResponseEntity.create(HttpStatus.OK, '로그아웃'));
   }
 
   @Get()

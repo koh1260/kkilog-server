@@ -15,7 +15,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { LoginUser } from '../../common/decorators/user.decorator';
 import { UserInfo } from '../../auth/jwt.strategy';
-import { CustomResponse } from '../../common/response/custom-reponse';
+import { ResponseEntity } from '../../common/response/response';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -39,7 +39,7 @@ export class CommentsController {
   @ApiCreatedResponse({ description: '댓글을 작성한다.', type: Comment })
   async createComment(@Body() createCommentDto: CreateCommentDto) {
     await this.commentsService.createComment(createCommentDto);
-    return CustomResponse.create(HttpStatus.CREATED, '댓글 작성 완료.');
+    return ResponseEntity.create(HttpStatus.CREATED, '댓글 작성 완료.');
   }
 
   @Get()
@@ -53,7 +53,7 @@ export class CommentsController {
   })
   async findAll(@Query('post', ParseIntPipe) postId: number) {
     const comments = await this.commentsService.findAll(postId);
-    return CustomResponse.create(HttpStatus.OK, '댓글 전체 조회.', comments);
+    return ResponseEntity.create(HttpStatus.OK, '댓글 전체 조회.', comments);
   }
 
   @Get('/child')
@@ -67,7 +67,7 @@ export class CommentsController {
   })
   async findChildComment(@Query('parent', ParseIntPipe) parentId: number) {
     const comments = await this.commentsService.findChildComment(parentId);
-    return CustomResponse.create(HttpStatus.OK, '자식 댓글 조회', comments);
+    return ResponseEntity.create(HttpStatus.OK, '자식 댓글 조회', comments);
   }
 
   @Patch(':id')
@@ -79,7 +79,7 @@ export class CommentsController {
     @LoginUser() user: UserInfo,
   ) {
     await this.commentsService.update(id, user.email, updateCommentDto);
-    return CustomResponse.create(HttpStatus.NO_CONTENT, '댓글 수정 완료.');
+    return ResponseEntity.create(HttpStatus.NO_CONTENT, '댓글 수정 완료.');
   }
 
   @Delete(':id')
@@ -90,6 +90,6 @@ export class CommentsController {
     @LoginUser() user: UserInfo,
   ) {
     await this.commentsService.remove(id, user.email);
-    return CustomResponse.create(HttpStatus.NO_CONTENT, '댓글 삭제 완료.');
+    return ResponseEntity.create(HttpStatus.NO_CONTENT, '댓글 삭제 완료.');
   }
 }
