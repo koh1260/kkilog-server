@@ -8,12 +8,17 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsRepository } from './posts.repository';
 import { User } from '../users/entities/user.entity';
 import { Post } from './entities/post.entity';
-import { Category } from '../categorys/entities/category.entity';
 import { UsersRepository } from '../users/users.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { PostLike } from './entities/post-like.entity';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  OtherPostResponseDto,
+  PostDetailResponseDto,
+  PostResponseDto,
+} from './dto/response/post-response.dto';
+import { ListPost } from './type';
 
 @Injectable()
 export class PostsService {
@@ -30,13 +35,16 @@ export class PostsService {
     createPostDto: CreatePostDto,
     loginedUserId: number,
   ): Promise<Post> {
-    const user = this.existUser(
+    const user = this.validateUser(
       await this.usersRepository.findOneById(loginedUserId),
     );
+
     this.validateRole(user.role);
-    const category = this.existCategory(
-      await this.categoryRepository.findOneByName(createPostDto.categoryName),
+
+    const category = await this.categoryRepository.findOneByName(
+      createPostDto.categoryName,
     );
+    if (!category) throw new NotFoundException('존재하지 않는 카테고리입니다.');
 
     return this.postsRepository.save(
       Post.of(
@@ -55,63 +63,50 @@ export class PostsService {
       throw new UnauthorizedException('관리자 권한이 없습니다.');
   }
 
-  private existUser(user: User | null): User {
-    if (!user) {
-      throw new NotFoundException('존재하지 않는 회원입니다.');
-    }
+  private validateUser(user: User | null): User {
+    if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
     return user;
   }
 
-  private existCategory(category: Category | null): Category {
-    if (!category) {
-      throw new NotFoundException('존재하지 않는 카테고리입니다.');
-    }
-    return category;
+  private validatePost(post: Post | null): Post {
+    if (!post) throw new NotFoundException('존재하지 않는 게시물입니다.');
+    return post;
   }
 
-  async findAll(): Promise<Post[]> {
-    const posts = await this.postsRepository.findAll();
-    posts.map((post) => {
-      post['commentCount'] = post.comments?.length;
-      delete post.comments;
-      return post;
-    });
+  // private existCategory(category: Category | null): Category {
+  //   if (!category) {
+  //     throw new NotFoundException('존재하지 않는 카테고리입니다.');
+  //   }
+  //   return category;
+  // }
 
-    return posts;
+  async findAll(): Promise<ListPost[]> {
+    return await this.postsRepository.findAll();
   }
 
-  async findOne(id: number): Promise<Post> {
-    const findPost = this.existPost(await this.postsRepository.findOneById(id));
+  async findOne(id: number): Promise<PostDetailResponseDto> {
+    const findPost = await this.postsRepository.findDetailById(id);
+
+    if (!findPost) throw new NotFoundException('존재하지 않는 게시물입니다.');
 
     return findPost;
   }
 
-  async findByCategoryId(categoryId: number): Promise<Post[]> {
-    const posts = await this.postsRepository.findByCategoryId(categoryId);
-    posts.map((post) => {
-      post['commentCount'] = post.comments?.length;
-      delete post.comments;
-      return post;
-    });
-
-    return posts;
+  async findByCategoryId(categoryId: number): Promise<PostResponseDto[]> {
+    return await this.postsRepository.findByCategoryId(categoryId);
   }
 
-  async findByCategoryName(categoryName: string): Promise<Post[]> {
-    const posts = await this.postsRepository.findByCategoryName(categoryName);
-    posts.map((post) => {
-      post['commentCount'] = post.comments?.length;
-      delete post.comments;
-      return post;
-    });
-
-    return posts;
+  async findByCategoryName(categoryName: string): Promise<PostResponseDto[]> {
+    return await this.postsRepository.findByCategoryName(categoryName);
   }
 
   async like(postId: number, userId: number) {
-    // user, post 존재 확인.
-    const user = this.existUser(await this.usersRepository.findOneById(userId));
-    const post = this.existPost(await this.postsRepository.findOneById(postId));
+    const user = this.validateUser(
+      await this.usersRepository.findOneById(userId),
+    );
+    const post = this.validatePost(
+      await this.postsRepository.findOneById(postId),
+    );
 
     const liked = await this.postLikeRepository.findOne({
       where: {
@@ -156,38 +151,33 @@ export class PostsService {
   }
 
   async likeCount(postId: number) {
-    const post = this.existPost(await this.postsRepository.findOneById(postId));
+    const post = this.validatePost(
+      await this.postsRepository.findOneById(postId),
+    );
+
     const count = post.likes;
     return count;
   }
 
-  async getOtherPosts(id: number): Promise<[Post | null, Post | null]> {
+  async getOtherPosts(id: number): Promise<OtherPostResponseDto> {
     const prevPost = await this.postsRepository.findPrevious(id);
     const nextPost = await this.postsRepository.findNext(id);
 
     return [prevPost, nextPost];
   }
 
-  private existPost(post: Post | null): Post {
-    if (!post) {
-      throw new NotFoundException('존재하지 않는 게시물입니다.');
-    }
-    return post;
-  }
-
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
-    let post = this.existPost(
+    let post = this.validatePost(
       await this.postsRepository.findOne({
         where: { id },
         relations: ['category'],
       }),
     );
 
-    const category = this.existCategory(
-      await this.categoryRepository.findOne({
-        where: { categoryName: updatePostDto.categoryName },
-      }),
-    );
+    const category = await this.categoryRepository.findOne({
+      where: { categoryName: updatePostDto.categoryName },
+    });
+    if (!category) throw new NotFoundException('존재하지 않는 카테고리입니다.');
 
     post = {
       ...post,
@@ -199,7 +189,7 @@ export class PostsService {
   }
 
   async remove(id: number): Promise<void> {
-    this.existPost(await this.postsRepository.findOneById(id));
+    this.validatePost(await this.postsRepository.findOneById(id));
     await this.postsRepository.delete(id);
   }
 }

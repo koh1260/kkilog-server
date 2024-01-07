@@ -30,6 +30,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CacheControlIntercepter } from '../../common/interceptors/cache-control.intercepter';
+import {
+  PostDetailResponseDto,
+  PostResponseDto,
+} from './dto/response/post-response.dto';
 
 @Controller('posts')
 @UseInterceptors(CacheControlIntercepter)
@@ -73,7 +77,7 @@ export class PostsController {
     description: '게시글 목록을 조회한다',
     type: [PostEntity],
   })
-  async findAll(): Promise<ResponseEntity<PostEntity[]>> {
+  async findAll(): Promise<ResponseEntity<PostResponseDto[]>> {
     const posts = await this.postsService.findAll();
 
     return ResponseEntity.create(HttpStatus.OK, '게시글 전체 조회.', posts);
@@ -90,7 +94,7 @@ export class PostsController {
   })
   async findByCategoryName(
     @Query('categoryName') categoryName: string,
-  ): Promise<ResponseEntity<PostEntity[]>> {
+  ): Promise<ResponseEntity<PostResponseDto[]>> {
     const posts = await this.postsService.findByCategoryName(categoryName);
 
     return ResponseEntity.create(
@@ -120,7 +124,7 @@ export class PostsController {
   @ApiCreatedResponse({ description: '게시글을 조회한다.', type: PostEntity })
   async findOne(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ResponseEntity<PostEntity>> {
+  ): Promise<ResponseEntity<PostDetailResponseDto>> {
     const post = await this.postsService.findOne(id);
 
     return ResponseEntity.create(HttpStatus.OK, '게시글 상세 조회', post);
@@ -137,7 +141,7 @@ export class PostsController {
   })
   async findByCategoryId(
     @Query('categoryName') categoryId: number,
-  ): Promise<ResponseEntity<PostEntity[]>> {
+  ): Promise<ResponseEntity<PostResponseDto[]>> {
     const posts = await this.postsService.findByCategoryId(categoryId);
 
     return ResponseEntity.create(
