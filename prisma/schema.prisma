@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Categorie {
+  id              Int         @id @default(autoincrement())
+  createAt       DateTime    @default(now()) @db.DateTime(6) @map("create_at")
+  updateAt       DateTime    @default(now()) @db.DateTime(6) @map("update_at")
+  categoryName   String      @unique(map: "IDX_3b4285082d36cc95b36eb7b682") @db.VarChar(20) @map("category_name")
+  icon            String?     @db.Text
+  parentId       Int?        @map("parent_id")
+  categorie       Categorie?  @relation("categorieTocategorie", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_d12ceff0fef09517a40bb59c7a6")
+  other_categorie Categorie[] @relation("categorieTocategorie") 
+  post            Post[]
+
+  @@map("categorie")
+  @@index([parentId], map: "FK_d12ceff0fef09517a40bb59c7a6")
+}
+
+model Comment {
+  id           Int            @id @default(autoincrement())
+  createAt    DateTime       @default(now()) @db.DateTime(6) @map("create_at")
+  updateAt    DateTime       @default(now()) @db.DateTime(6) @map("update_at")
+  content      String         @db.Text
+  parent       Int?
+  writerId    Int            @map("writer_id")
+  postId      Int            @map("post_id")
+  post         Post           @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_8aa21186314ce53c5b61a0e8c93")
+  user         User           @relation(fields: [writerId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_c91a52757c962864d1c93bb85b5")
+  comment_like CommentLike[]
+
+  
+  @@index([postId], map: "FK_8aa21186314ce53c5b61a0e8c93")
+  @@index([writerId], map: "FK_c91a52757c962864d1c93bb85b5")
+  @@map("comment")
+}
+
+model CommentLike {
+  commentId Int      @map("comment_id")
+  userId    Int      @map("user_id")
+  comment    Comment @relation(fields: [commentId], references: [id], onDelete: Cascade, map: "FK_4a0c128374ff87d4641cab920f0")
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "FK_fd7207639a77fa0f1fea8943b78")
+
+  @@id([commentId, userId])
+  @@index([commentId], map: "IDX_4a0c128374ff87d4641cab920f")
+  @@index([userId], map: "IDX_fd7207639a77fa0f1fea8943b7")
+  @@map("comment_like")
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement())
+  timestamp BigInt
+  name      String @db.VarChar(255)
+}
+
+model Post {
+  id           Int          @id @default(autoincrement())
+  createAt    DateTime     @default(now()) @db.DateTime(6) @map("create_at")
+  updateAt    DateTime     @default(now()) @db.DateTime(6) @map("update_at")
+  title        String       @db.VarChar(255)
+  content      String       @db.Text
+  publicScope String       @default("PUBLIC") @db.VarChar(255) @map("public_scope")
+  introduction String       @db.VarChar(255)
+  thumbnail    String       @db.Text
+  likes        Int          @default(0)
+  writerId    Int          @map("writer_id")
+  categoryId  Int?         @map("category_id")
+  comment      Comment[]
+  categorie    Categorie?   @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_388636ba602c312da6026dc9dbc")
+  user         User         @relation(fields: [writerId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_90d79dc6b2cb6d222af76d876a3")
+  post_image   PostImage[]
+  post_like    PostLike[]
+
+  @@index([categoryId], map: "FK_388636ba602c312da6026dc9dbc")
+  @@index([writerId], map: "FK_90d79dc6b2cb6d222af76d876a3")
+  @@map("post")
+}
+
+model PostImage {
+  id        Int      @id @default(autoincrement())
+  createAt DateTime @default(now()) @db.DateTime(6) @map("create_at")
+  updateAt DateTime @default(now()) @db.DateTime(6) @map("update_at")
+  imageUrl String   @db.Text @map("image_url")
+  postId   Int      @map("post_id")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_c75a6b8c090482abc8597fd7dfc")
+
+  @@index([postId], map: "FK_c75a6b8c090482abc8597fd7dfc")
+  @@map("post_image")
+}
+
+model PostLike {
+  id        Int      @id @default(autoincrement())
+  createAt DateTime @default(now()) @db.DateTime(6) @map("create_at")
+  updateAt DateTime @default(now()) @db.DateTime(6) @map("update_at")
+  userId   Int?     @map("user_id")
+  postId   Int?     @map("post_id")
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_a7ec6ac3dc7a05a9648c418f1ad")
+  user      User?    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_c635b15915984c8cdb520a1fef3")
+
+  @@index([postId], map: "FK_a7ec6ac3dc7a05a9648c418f1ad")
+  @@index([userId], map: "FK_c635b15915984c8cdb520a1fef3")
+  @@map("post_like")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  createAt     DateTime       @default(now()) @db.DateTime(6) @map("create_at")
+  updateAt     DateTime       @default(now()) @db.DateTime(6) @map("update_at")
+  email         String         @unique(map: "IDX_e12875dfb3b1d92d7d7c5377e2") @db.VarChar(50)
+  nickname      String         @db.VarChar(20)
+  role          String         @db.VarChar(5)
+  profileImage String?        @db.Text @map("profile_image")
+  password      String         @db.VarChar(255)
+  refreshToken String?        @db.Text @map("refresh_token")
+  comment       Comment[]
+  comment_like  CommentLike[]
+  posts         Post[]
+  postLike     PostLike[]
+
+  @@map("user")
+}
