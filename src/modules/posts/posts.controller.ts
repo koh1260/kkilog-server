@@ -77,7 +77,7 @@ export class PostsController {
     description: '게시글 목록을 조회한다',
     type: [PostEntity],
   })
-  async findAll(): Promise<ResponseEntity<PostResponseDto[]>> {
+  async findAll() {
     const posts = await this.postsService.findAll();
 
     return ResponseEntity.create(HttpStatus.OK, '게시글 전체 조회.', posts);
@@ -113,7 +113,7 @@ export class PostsController {
   async likeCount(@Query('post', ParseIntPipe) postId: number) {
     const likeCount = await this.postsService.likeCount(postId);
 
-    return ResponseEntity.create(HttpStatus.OK, '좋아요 개수', { likeCount });
+    return ResponseEntity.create(HttpStatus.OK, '좋아요 개수.', { likeCount });
   }
 
   @Get(':id')
@@ -122,12 +122,10 @@ export class PostsController {
     description: '게시글을 조회한다,',
   })
   @ApiCreatedResponse({ description: '게시글을 조회한다.', type: PostEntity })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ResponseEntity<PostDetailResponseDto>> {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     const post = await this.postsService.findOne(id);
 
-    return ResponseEntity.create(HttpStatus.OK, '게시글 상세 조회', post);
+    return ResponseEntity.create(HttpStatus.OK, '게시글 상세 조회.', post);
   }
 
   @Get('category/:categoryId')
@@ -164,7 +162,7 @@ export class PostsController {
   ) {
     const likeCount = await this.postsService.like(postId, user.id);
 
-    return ResponseEntity.create(HttpStatus.OK, '좋아요', { likeCount });
+    return ResponseEntity.create(HttpStatus.OK, '좋아요.', { likeCount });
   }
 
   @Get('/like-check/:postId')
@@ -180,7 +178,7 @@ export class PostsController {
   ) {
     const liked = await this.postsService.likeCheck(postId, id);
 
-    return ResponseEntity.create(HttpStatus.OK, '좋아요 확인', { liked });
+    return ResponseEntity.create(HttpStatus.OK, '좋아요 여부 확인.', { liked });
   }
 
   @Get('/other/:postId')
@@ -213,13 +211,15 @@ export class PostsController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePostDto: UpdatePostDto,
+    @LoginUser() user: UserInfo,
   ): Promise<ResponseEntity<never>> {
-    await this.postsService.update(id, updatePostDto);
+    await this.postsService.update(id, updatePostDto, user.id);
 
     return ResponseEntity.create(HttpStatus.NO_CONTENT, '게시글 수정 완료.');
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '게시글 삭제 API',
     description: '게시글을 삭제한다.',
@@ -229,8 +229,9 @@ export class PostsController {
   })
   async remove(
     @Param('id', ParseIntPipe) id: number,
+    @LoginUser() user: UserInfo,
   ): Promise<ResponseEntity<never>> {
-    await this.postsService.remove(id);
+    await this.postsService.remove(id, user.id);
 
     return ResponseEntity.create(HttpStatus.NO_CONTENT, '게시글 삭제 완료.');
   }

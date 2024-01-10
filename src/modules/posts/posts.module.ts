@@ -9,6 +9,8 @@ import { Category } from '../categorys/entities/category.entity';
 import { UsersRepository } from '../users/users.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { PostLike } from './entities/post-like.entity';
+import { PostsPrismaRepository } from './posts-prisma.repository';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
   imports: [
@@ -18,8 +20,9 @@ import { PostLike } from './entities/post-like.entity';
       UsersRepository,
       CategorysRepository,
     ]),
+    PrismaModule,
   ],
   controllers: [PostsController],
-  providers: [Logger, PostsService],
+  providers: [Logger, PostsService, PostsPrismaRepository],
 })
 export class PostsModule {}

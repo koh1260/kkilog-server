@@ -15,10 +15,9 @@ import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   OtherPostResponseDto,
-  PostDetailResponseDto,
   PostResponseDto,
 } from './dto/response/post-response.dto';
-import { ListPost } from './type';
+import { PostsPrismaRepository } from './posts-prisma.repository';
 
 @Injectable()
 export class PostsService {
@@ -29,16 +28,16 @@ export class PostsService {
     private readonly usersRepository: UsersRepository,
     private readonly categoryRepository: CategorysRepository,
     private readonly postsRepository: PostsRepository,
+    private readonly postsPrismaRepo: PostsPrismaRepository,
   ) {}
 
   async createPost(
     createPostDto: CreatePostDto,
     loginedUserId: number,
   ): Promise<Post> {
-    const user = this.validateUser(
-      await this.usersRepository.findOneById(loginedUserId),
-    );
+    const user = await this.usersRepository.findOneById(loginedUserId);
 
+    this.validateUser(user);
     this.validateRole(user.role);
 
     const category = await this.categoryRepository.findOneByName(
@@ -63,14 +62,17 @@ export class PostsService {
       throw new UnauthorizedException('관리자 권한이 없습니다.');
   }
 
-  private validateUser(user: User | null): User {
+  // private validateUser(user: User | null): User {
+  //   if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
+  //   return user;
+  // }
+
+  private validateUser(user: User | null): asserts user is User {
     if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
-    return user;
   }
 
-  private validatePost(post: Post | null): Post {
+  private validatePost(post: Post | null): asserts post is Post {
     if (!post) throw new NotFoundException('존재하지 않는 게시물입니다.');
-    return post;
   }
 
   // private existCategory(category: Category | null): Category {
@@ -80,16 +82,38 @@ export class PostsService {
   //   return category;
   // }
 
-  async findAll(): Promise<ListPost[]> {
-    return await this.postsRepository.findAll();
+  // async findAll(): Promise<ListPost[]> {
+  //   return await this.postsRepository.findAll();
+  // }
+
+  async findAll() {
+    return (await this.postsPrismaRepo.findAll()).map((p) => {
+      const { _count, ...rest } = p;
+      return {
+        ...rest,
+        commentCount: _count.comment,
+      };
+    });
   }
 
-  async findOne(id: number): Promise<PostDetailResponseDto> {
-    const findPost = await this.postsRepository.findDetailById(id);
+  async findOne(id: number) {
+    // const findPost = await this.postsRepository.findDetailById(id);
+    const findPost = await this.postsPrismaRepo.findDetailById(id);
 
     if (!findPost) throw new NotFoundException('존재하지 않는 게시물입니다.');
 
-    return findPost;
+    const { comment, user, ...rest } = findPost;
+    const writer = { ...user };
+    const comments =
+      comment.length > 0
+        ? comment.map((c) => {
+            const { user, ...rest } = c;
+            const writer = { ...user };
+            return { ...rest, writer };
+          })
+        : [];
+
+    return { ...rest, writer, comments };
   }
 
   async findByCategoryId(categoryId: number): Promise<PostResponseDto[]> {
@@ -101,12 +125,11 @@ export class PostsService {
   }
 
   async like(postId: number, userId: number) {
-    const user = this.validateUser(
-      await this.usersRepository.findOneById(userId),
-    );
-    const post = this.validatePost(
-      await this.postsRepository.findOneById(postId),
-    );
+    const user = await this.usersRepository.findOneById(userId);
+    this.validateUser(user);
+
+    const post = await this.postsRepository.findOneById(postId);
+    this.validatePost(post);
 
     const liked = await this.postLikeRepository.findOne({
       where: {
@@ -151,9 +174,8 @@ export class PostsService {
   }
 
   async likeCount(postId: number) {
-    const post = this.validatePost(
-      await this.postsRepository.findOneById(postId),
-    );
+    const post = await this.postsRepository.findOneById(postId);
+    this.validatePost(post);
 
     const count = post.likes;
     return count;
@@ -166,13 +188,20 @@ export class PostsService {
     return [prevPost, nextPost];
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
-    let post = this.validatePost(
-      await this.postsRepository.findOne({
-        where: { id },
-        relations: ['category'],
-      }),
-    );
+  async update(
+    id: number,
+    updatePostDto: UpdatePostDto,
+    userId: number,
+  ): Promise<Post> {
+    const user = await this.usersRepository.findOneById(userId);
+    this.validateUser(user);
+    this.validateRole(user.role);
+
+    let post = await this.postsRepository.findOne({
+      where: { id },
+      relations: ['category'],
+    });
+    this.validatePost(post);
 
     const category = await this.categoryRepository.findOne({
       where: { categoryName: updatePostDto.categoryName },
@@ -188,7 +217,11 @@ export class PostsService {
     return this.postsRepository.save(post);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number, userId: number): Promise<void> {
+    const user = await this.usersRepository.findOneById(userId);
+    if (!user) throw new UnauthorizedException('관리자 권한이 없습니다.');
+
+    this.validateRole(user.role);
     this.validatePost(await this.postsRepository.findOneById(id));
     await this.postsRepository.delete(id);
   }
