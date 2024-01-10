@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   Post,
   Res,
@@ -35,8 +36,9 @@ export class UsersController {
   @Post()
   @ApiOperation({ summary: '회원가입 API', description: '회원을 생성한다.' })
   @ApiCreatedResponse({ description: '회원을 생성한다', type: User })
-  async createUser(@Body() dto: CreateUserDto): Promise<User> {
-    return this.usersService.createUser(dto);
+  async createUser(@Body() dto: CreateUserDto) {
+    await this.usersService.createUser(dto);
+    return ResponseEntity.create(HttpStatus.CREATED, '회원가입 완료.');
   }
 
   @UseGuards(LocalAuthGuard)
@@ -52,7 +54,7 @@ export class UsersController {
 
     return res
       .status(200)
-      .json(ResponseEntity.create(HttpStatus.OK, '로그인 완료', userInfo));
+      .json(ResponseEntity.create(HttpStatus.OK, '로그인 완료.', userInfo));
   }
 
   @UseGuards(JwtAuthGuard)
@@ -68,10 +70,11 @@ export class UsersController {
 
     return res
       .status(200)
-      .json(ResponseEntity.create(HttpStatus.OK, '로그아웃'));
+      .json(ResponseEntity.create(HttpStatus.OK, '로그아웃 완료.'));
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '회원 정보 조회 API',
     description: 'Access Token을 해석해 회원 정보를 조회한다.',
@@ -82,6 +85,7 @@ export class UsersController {
   })
   @ApiBearerAuth()
   async getProfile(@LoginUser() user: UserInfo) {
-    return await this.usersService.getProfile(user.id);
+    const profile = await this.usersService.getProfile(user.id);
+    return ResponseEntity.create(HttpStatus.OK, '회원 정보 조회', profile);
   }
 }
