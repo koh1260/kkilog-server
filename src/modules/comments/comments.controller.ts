@@ -10,6 +10,8 @@ import {
   ParseIntPipe,
   HttpStatus,
   Query,
+  UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -24,6 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { Comment } from './entities/comment.entity';
 import { CommentsService } from './comments.service';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('comments')
 @ApiTags('댓글 API')
@@ -34,6 +37,10 @@ export class CommentsController {
     private readonly commentsService: CommentsService,
   ) {}
 
+  /**
+  TODO
+  userId를 받지 않고, token에서 추출하도록 수정 예정.
+   */
   @Post()
   @ApiOperation({ summary: '댓글 작성 API', description: '댓글을 작성한다.' })
   @ApiCreatedResponse({ description: '댓글을 작성한다.', type: Comment })
@@ -71,6 +78,8 @@ export class CommentsController {
   }
 
   @Patch(':id')
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '댓글 수정 API', description: '댓글을 수정한다.' })
   @ApiCreatedResponse({ description: '댓글을 수정한다.', type: Comment })
   async update(
