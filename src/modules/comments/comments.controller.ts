@@ -11,7 +11,6 @@ import {
   HttpStatus,
   Query,
   UseGuards,
-  HttpCode,
 } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -78,7 +77,6 @@ export class CommentsController {
   }
 
   @Patch(':id')
-  @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '댓글 수정 API', description: '댓글을 수정한다.' })
   @ApiCreatedResponse({ description: '댓글을 수정한다.', type: Comment })
