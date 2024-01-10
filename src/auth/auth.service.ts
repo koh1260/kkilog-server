@@ -37,7 +37,7 @@ export class AuthService {
     password: string,
   ): Promise<UserInfo | null> {
     const user = await this.usersRepository.findOneByEmail(email);
-    if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
     if (!(user && (await comparePassword(password, user.password))))
       throw new BadRequestException('비밀번호가 일치하지 않습니다.');
 
