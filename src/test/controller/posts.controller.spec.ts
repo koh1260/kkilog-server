@@ -3,7 +3,7 @@ import { PostsController } from '../../modules/posts/posts.controller';
 import { PostsService } from '../../modules/posts/posts.service';
 import { PostsRepository } from '../../modules/posts/posts.repository';
 import { HttpStatus } from '@nestjs/common';
-import { UsersRepository } from '../../modules/users/users.repository';
+import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { CategorysRepository } from '../../modules/categorys/categorys.repository';
 import { UserInfo } from '../../auth/jwt.strategy';
 import { Post } from '../../modules/posts/entities/post.entity';

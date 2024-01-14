@@ -7,7 +7,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentsRepository } from './comments.repository';
 import { Comment } from './entities/comment.entity';
-import { UsersRepository } from '../users/users.repository';
+import { UsersTypeormRepository } from '../users/users-typeorm.repository';
 import { PostsRepository } from '../posts/posts.repository';
 import { Post } from '../posts/entities/post.entity';
 import { User } from '../users/entities/user.entity';
@@ -16,7 +16,7 @@ import { User } from '../users/entities/user.entity';
 export class CommentsService {
   constructor(
     private readonly commentsRepository: CommentsRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly UsersTypeormRepository: UsersTypeormRepository,
     private readonly postsRepository: PostsRepository,
   ) {}
 
@@ -26,7 +26,7 @@ export class CommentsService {
     );
 
     const writer = this.existUser(
-      await this.usersRepository.findOneById(+createCommentDto.userId),
+      await this.UsersTypeormRepository.findOneById(+createCommentDto.userId),
     );
 
     const comment = Comment.create(createCommentDto.content, post, writer);

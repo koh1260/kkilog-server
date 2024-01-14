@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from '../modules/users/users.repository';
+import { UsersTypeormRepository } from '../modules/users/users-typeorm.repository';
 import { comparePassword } from '../utils/password';
 import { UserInfo } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
@@ -21,7 +21,7 @@ export interface DecodedToken {
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly UsersTypeormRepository: UsersTypeormRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -36,7 +36,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<UserInfo | null> {
-    const user = await this.usersRepository.findOneByEmail(email);
+    const user = await this.UsersTypeormRepository.findOneByEmail(email);
     if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
     if (!(user && (await comparePassword(password, user.password))))
       throw new BadRequestException('비밀번호가 일치하지 않습니다.');
@@ -78,7 +78,7 @@ export class AuthService {
    * @returns Access Token
    */
   async regenerateAccessToken(userId: number) {
-    const user = await this.usersRepository.findOneById(userId);
+    const user = await this.UsersTypeormRepository.findOneById(userId);
     this.assertUserExist(user);
     const userInfo: UserInfo = {
       id: user.id,
@@ -97,7 +97,7 @@ export class AuthService {
   async setRefreshToken(userId: number, refreshToken: string) {
     const hashedRefreshToken = await this.gethashedRefreshToken(refreshToken);
     // const refreshTokenExp = await this.getCurrentRefreshTokenExp();
-    await this.usersRepository.update(userId, {
+    await this.UsersTypeormRepository.update(userId, {
       refreshToken: hashedRefreshToken,
       // refreshTokenExp: refreshTokenExp,
     });
@@ -123,7 +123,7 @@ export class AuthService {
   async verifyRefreshToken(refreshToken: string) {
     try {
       const decodedToken = this.jwtService.verify<DecodedToken>(refreshToken);
-      const user = await this.usersRepository.findOneById(decodedToken.id);
+      const user = await this.UsersTypeormRepository.findOneById(decodedToken.id);
       this.assertUserExist(user);
       await this.valideteRefreshToken(user.refreshToken, refreshToken);
 
@@ -163,7 +163,7 @@ export class AuthService {
   }
 
   async validateEmail(email: string): Promise<Partial<User>> {
-    const user = await this.usersRepository.findOneByEmail(email);
+    const user = await this.UsersTypeormRepository.findOneByEmail(email);
     this.assertUserExist(user);
     const se: Partial<User> = {
       id: user.id,

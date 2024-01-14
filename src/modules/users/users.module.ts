@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UsersRepository } from './users.repository';
+import { UsersTypeormRepository } from './users-typeorm.repository';
 import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -10,7 +10,7 @@ import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module'
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    CustomTypeOrmModule.forCustomRepository([UsersRepository]),
+    CustomTypeOrmModule.forCustomRepository([UsersTypeormRepository]),
     AuthModule,
   ],
   providers: [UsersService],

@@ -6,7 +6,7 @@ import { User } from '../../modules/users/entities/user.entity';
 import { CreatePostDto } from '../../modules/posts/dto/create-post.dto';
 import { Category } from '../../modules/categorys/entities/category.entity';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { UsersRepository } from '../../modules/users/users.repository';
+import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { CategorysRepository } from '../../modules/categorys/categorys.repository';
 import { Post } from '../../modules/posts/entities/post.entity';
 import { UpdatePostDto } from '../../modules/posts/dto/update-post.dto';

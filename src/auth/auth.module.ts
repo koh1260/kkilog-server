@@ -7,14 +7,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
-import { UsersRepository } from '../modules/users/users.repository';
+import { UsersTypeormRepository } from '../modules/users/users-typeorm.repository';
 import { User } from '../modules/users/entities/user.entity';
 import { CustomTypeOrmModule } from '../config/typeorm/custom-typeorm-module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    CustomTypeOrmModule.forCustomRepository([UsersRepository]),
+    CustomTypeOrmModule.forCustomRepository([UsersTypeormRepository]),
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],

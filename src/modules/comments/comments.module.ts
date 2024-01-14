@@ -7,7 +7,7 @@ import { CommentsService } from './comments.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { CommentsRepository } from './comments.repository';
-import { UsersRepository } from '../users/users.repository';
+import { UsersTypeormRepository } from '../users/users-typeorm.repository';
 import { PostsRepository } from '../posts/posts.repository';
 
 @Module({
@@ -15,7 +15,7 @@ import { PostsRepository } from '../posts/posts.repository';
     TypeOrmModule.forFeature([User, Post, Comment]),
     CustomTypeOrmModule.forCustomRepository([
       CommentsRepository,
-      UsersRepository,
+      UsersTypeormRepository,
       PostsRepository,
     ]),
   ],

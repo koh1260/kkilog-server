@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommentsService } from '../../modules/comments/comments.service';
-import { UsersRepository } from '../../modules/users/users.repository';
+import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { PostsRepository } from '../../modules/posts/posts.repository';
 import { CommentsRepository } from '../../modules/comments/comments.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';

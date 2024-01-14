@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UsersRepository } from './users.repository';
+import { UsersTypeormRepository } from './users-typeorm.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { hashPassword } from '../../utils/password';
@@ -8,30 +8,34 @@ import { ConflictEmailException } from './exception/conflictEmail.exception';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly UsersTypeormRepository: UsersTypeormRepository,
+  ) {}
 
-  async createUser(dto: CreateUserDto): Promise<User> {
+  async createUser(dto: CreateUserDto): Promise<void> {
     const { email, nickname, password } = dto;
 
-    const findUserByEmail = await this.usersRepository.findOneByEmail(email);
+    const findUserByEmail = await this.UsersTypeormRepository.findOneByEmail(
+      email,
+    );
     if (findUserByEmail) {
       throw new ConflictEmailException();
     }
 
-    const findUserByNickname = await this.usersRepository.findOneByNickname(
-      nickname,
-    );
+    const findUserByNickname =
+      await this.UsersTypeormRepository.findOneByNickname(nickname);
     if (findUserByNickname) {
       throw new ConflictNicknameException();
     }
 
     const user = User.create(email, nickname, await hashPassword(password));
 
-    return this.usersRepository.save(user);
+    await this.UsersTypeormRepository.save(user);
   }
 
   async getProfile(userId: number): Promise<Partial<User>> {
-    const user = await this.usersRepository.findOneById(userId);
+    // userId가 undefined면 다른 데이터를 가져옴 (typeorm)
+    const user = await this.UsersTypeormRepository.findOneById(userId);
     this.existUser(user);
     const profile: Partial<User> = {
       id: user.id,
