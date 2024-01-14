@@ -123,7 +123,9 @@ export class AuthService {
   async verifyRefreshToken(refreshToken: string) {
     try {
       const decodedToken = this.jwtService.verify<DecodedToken>(refreshToken);
-      const user = await this.UsersTypeormRepository.findOneById(decodedToken.id);
+      const user = await this.UsersTypeormRepository.findOneById(
+        decodedToken.id,
+      );
       this.assertUserExist(user);
       await this.valideteRefreshToken(user.refreshToken, refreshToken);
 
