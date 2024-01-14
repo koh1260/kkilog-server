@@ -27,10 +27,10 @@ export const generatePost = async (postNum: number) => {
   const user = await generateUser();
   const postList: Post[] = [];
 
-  for (let i = 1; i <= postNum; i++) {
+  for (let i = 0; i < postNum; i++) {
     const post = await prisma.post.create({
       data: {
-        title: `Test title ${i}`,
+        title: `Test Title ${i}`,
         content: `Test Content ${i}`,
         introduction: `Test Introduction ${i}`,
         thumbnail: `test.image${i}.png`,
