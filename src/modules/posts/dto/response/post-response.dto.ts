@@ -1,5 +1,5 @@
-import { DetailPost, ListPost, OtherPost } from '../../type';
+import { FindOneDto, ListPost, OtherPost } from '../../type';
 
 export type PostResponseDto = ListPost;
-export type PostDetailResponseDto = DetailPost;
+export type PostDetailResponseDto = FindOneDto;
 export type OtherPostResponseDto = [OtherPost | null, OtherPost | null];
