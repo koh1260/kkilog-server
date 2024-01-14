@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { UsersTypeormRepository } from '../users/users-typeorm.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { OtherPostResponseDto } from './dto/response/post-response.dto';
 import { PostsRepository } from './posts.repository';
@@ -21,9 +20,8 @@ export class PostsService {
   constructor(
     private readonly postsLikeRepository: PostsLikeRepository,
     private readonly usersRepository: UsersRepository,
-    private readonly UsersTypeormRepository: UsersTypeormRepository,
     private readonly categoryRepository: CategorysRepository,
-    private readonly postsPrismaRepo: PostsRepository,
+    private readonly postsRepository: PostsRepository,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -47,14 +45,14 @@ export class PostsService {
       categoryId: category.id,
     };
 
-    await this.postsPrismaRepo.create(postCreateEntity);
+    await this.postsRepository.create(postCreateEntity);
   }
 
   /**
    * @returns 게시글 리스트
    */
   async findAll() {
-    const postList = await this.postsPrismaRepo.findAll();
+    const postList = await this.postsRepository.findAll();
     return postList.map((p) => PostResponseDto.from(p));
   }
 
@@ -63,7 +61,7 @@ export class PostsService {
    * @returns 게시글 상세 정보
    */
   async findOne(id: number) {
-    const findPost = await this.postsPrismaRepo.findDetailById(id);
+    const findPost = await this.postsRepository.findDetailById(id);
 
     if (!findPost) throw new NotFoundException('존재하지 않는 게시물입니다.');
 
@@ -86,7 +84,7 @@ export class PostsService {
    * @returns 해당 카테고리의 게시글 리스트
    */
   async findByCategoryId(categoryId: number) {
-    const postList = await this.postsPrismaRepo.findByCategoryId(categoryId);
+    const postList = await this.postsRepository.findByCategoryId(categoryId);
     return postList.map((p) => PostResponseDto.from(p));
   }
 
@@ -95,7 +93,7 @@ export class PostsService {
    * @returns 해당 카테고리의 게시글 리스트
    */
   async findByCategoryName(categoryName: string) {
-    const postList = await this.postsPrismaRepo.findByCategoryName(
+    const postList = await this.postsRepository.findByCategoryName(
       categoryName,
     );
     return postList.map((p) => PostResponseDto.from(p));
@@ -110,7 +108,7 @@ export class PostsService {
     const user = await this.usersRepository.findOneById(userId);
     if (!user) throw new BadRequestException('존재하지 않는 회원입니다');
 
-    const post = await this.postsPrismaRepo.findOneById(postId);
+    const post = await this.postsRepository.findOneById(postId);
     if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
 
     const liked = await this.postsLikeRepository.findOne(postId, userId);
@@ -159,7 +157,7 @@ export class PostsService {
    * @returns 해당 게시글의 좋아요 수
    */
   async likeCount(postId: number) {
-    const post = await this.postsPrismaRepo.findOneById(postId);
+    const post = await this.postsRepository.findOneById(postId);
     if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
 
     const count = post.likes;
@@ -172,8 +170,8 @@ export class PostsService {
    * @returns 이전, 다음 게시글 정보
    */
   async getOtherPosts(id: number): Promise<OtherPostResponseDto> {
-    const prevPost = await this.postsPrismaRepo.findPrevious(id);
-    const nextPost = await this.postsPrismaRepo.findNext(id);
+    const prevPost = await this.postsRepository.findPrevious(id);
+    const nextPost = await this.postsRepository.findNext(id);
 
     return [prevPost, nextPost];
   }
@@ -185,15 +183,15 @@ export class PostsService {
    * @returns 변경된 게시글 정보
    */
   async update(id: number, userId: number, updatePostDto: UpdatePostDto) {
-    const user = await this.UsersTypeormRepository.findOneById(userId);
+    const user = await this.usersRepository.findOneById(userId);
     if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
     if (user.role != 'ADMIN')
       throw new UnauthorizedException('권한이 없습니다.');
 
-    const post = await this.postsPrismaRepo.findOneById(id);
+    const post = await this.postsRepository.findOneById(id);
     if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
 
-    return await this.postsPrismaRepo.update(id, updatePostDto);
+    return await this.postsRepository.update(id, updatePostDto);
   }
 
   /**
@@ -206,8 +204,8 @@ export class PostsService {
     if (user.role !== 'ADMIN')
       throw new UnauthorizedException('권한이 없습니다.');
 
-    const post = await this.postsPrismaRepo.findOneById(id);
+    const post = await this.postsRepository.findOneById(id);
     if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
-    await this.postsPrismaRepo.delete(id);
+    await this.postsRepository.delete(id);
   }
 }
