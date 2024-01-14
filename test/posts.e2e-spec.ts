@@ -10,6 +10,9 @@ import { CreateUserDto } from '../src/modules/users/dto/create-user.dto';
 import * as cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
 import { UpdatePostDto } from '../src/modules/posts/dto/update-post.dto';
+import { PostResponseDto } from '../src/modules/posts/entities/post-entity';
+import { PostDetailResponseDto } from '../src/modules/posts/dto/response/post-response.dto';
+import { PostOtherResponseDto } from '../src/modules/posts/dto/response/post-other-response.dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -48,6 +51,7 @@ describe('AppController (e2e)', () => {
 
   afterEach(async () => {
     await prisma.postLike.deleteMany({});
+    await prisma.comment.deleteMany({});
     await prisma.post.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.categorie.deleteMany({
@@ -126,11 +130,29 @@ describe('AppController (e2e)', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.result.length).toBe(4);
+    const postList: PostResponseDto[] = response.body.result;
+    postList.forEach((p) => {
+      expect(p.id).not.toBeNull();
+      expect(p.title).toContain(`Test Title`);
+      expect(p.introduction).toContain(`Test Introduction`);
+      expect(p.thumbnail).toContain(`test.image`);
+      expect(p.createAt).not.toBeNull();
+      expect(p.commentCount).toBe(0);
+      expect(p.likes).toBe(0);
+    });
   });
 
   it('게시글_상세_조회', async () => {
     const { postList } = await generatePost(1);
     const post = postList[0];
+
+    await prisma.comment.createMany({
+      data: [
+        { content: 'Test Content 1', writerId: post.writerId, postId: post.id },
+        { content: 'Test Content 2', writerId: post.writerId, postId: post.id },
+        { content: 'Test Content 3', writerId: post.writerId, postId: post.id },
+      ],
+    });
 
     const response = await request(app.getHttpServer()).get(
       `/posts/${post.id}`,
@@ -141,9 +163,16 @@ describe('AppController (e2e)', () => {
     });
 
     expect(response.status).toBe(200);
-    expect(response.body.result.title).toBe(post.title);
-    expect(response.body.result.content).toBe(post.content);
-    expect(response.body.result.writer.nickname).toBe(writer?.nickname);
+    const postDetail: PostDetailResponseDto = response.body.result;
+    expect(postDetail.id).toBeTruthy();
+    expect(postDetail.title).toContain('Test Title');
+    expect(postDetail.content).toContain('Test Content');
+    expect(postDetail.publicScope).toBe('PUBLIC');
+    expect(postDetail.introduction).toContain('Test Introduction');
+    expect(postDetail.categorie.categoryName).toContain('Front-end');
+    expect(postDetail.createAt).toBeTruthy();
+    expect(postDetail.writer.nickname).toBe(writer?.nickname);
+    expect(postDetail.comments.length).toBe(3);
   });
 
   it('카테고리_이름별_조회', async () => {
@@ -154,6 +183,16 @@ describe('AppController (e2e)', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.result.length).toBe(5);
+    const postList: PostResponseDto[] = response.body.result;
+    postList.forEach((p) => {
+      expect(p.id).not.toBeNull();
+      expect(p.title).toContain(`Test Title`);
+      expect(p.introduction).toContain(`Test Introduction`);
+      expect(p.thumbnail).toContain(`test.image`);
+      expect(p.createAt).not.toBeNull();
+      expect(p.commentCount).toBe(0);
+      expect(p.likes).toBe(0);
+    });
   });
 
   it('이전_다음_게시글_조회', async () => {
@@ -163,8 +202,14 @@ describe('AppController (e2e)', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(response.body.result[0].id).toBe(postList[1].id);
-    expect(response.body.result[1].id).toBe(postList[3].id);
+    const otherPosts: [
+      PostOtherResponseDto | null,
+      PostOtherResponseDto | null,
+    ] = response.body.result;
+    expect(otherPosts[0]?.id).toBe(postList[2].id - 1);
+    expect(otherPosts[0]?.title).toContain('Test Title');
+    expect(otherPosts[1]?.id).toBe(postList[2].id + 1);
+    expect(otherPosts[1]?.title).toContain('Test Title');
   });
 
   it('게시글_업데이트', async () => {
@@ -228,13 +273,19 @@ describe('AppController (e2e)', () => {
   it('게시글_삭제', async () => {
     await login('ADMIN');
     const { postList } = await generatePost(1);
+    const post = postList[0];
 
     const response = await request(app.getHttpServer())
       .delete(`/posts/${postList[0].id}`)
       .set('Cookie', accessToken);
 
+    const deletedPost = await prisma.post.findUnique({
+      where: { id: post.id },
+    });
+
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('게시글 삭제 완료.');
+    expect(deletedPost).toBeNull();
   });
 
   it('일반_회원_게시글_삭제_예외', async () => {
