@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PostCreateEntity } from './entities/post-create.entity';
+import { Post } from '@prisma/client';
 
 @Injectable()
 export class PostsPrismaRepository {
@@ -99,6 +100,7 @@ export class PostsPrismaRepository {
         likes: true,
         categorie: {
           select: {
+            id: true,
             categoryName: true,
           },
         },
@@ -156,6 +158,19 @@ export class PostsPrismaRepository {
       orderBy: {
         id: 'asc',
       },
+    });
+  }
+
+  async update(postId: number, data: Partial<Post>) {
+    return await this.prisma.post.update({
+      where: { id: postId },
+      data,
+    });
+  }
+
+  async delete(postId: number) {
+    await this.prisma.post.delete({
+      where: { id: postId },
     });
   }
 }
