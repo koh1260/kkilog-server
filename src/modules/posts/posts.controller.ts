@@ -64,7 +64,6 @@ export class PostsController {
     @LoginUser() user: UserInfo,
   ): Promise<ResponseEntity<never>> {
     await this.postsService.createPost(createPostDto, user.id);
-
     return ResponseEntity.create(HttpStatus.CREATED, '게시글 작성 완료.');
   }
 
@@ -79,7 +78,6 @@ export class PostsController {
   })
   async findAll() {
     const posts = await this.postsService.findAll();
-
     return ResponseEntity.create(HttpStatus.OK, '게시글 전체 조회.', posts);
   }
 
@@ -92,9 +90,7 @@ export class PostsController {
     description: '카테고리별로 게시글 목록을 조회한다.',
     type: [PostEntity],
   })
-  async findByCategoryName(
-    @Query('categoryName') categoryName: string,
-  ): Promise<ResponseEntity<PostResponseDto[]>> {
+  async findByCategoryName(@Query('categoryName') categoryName: string) {
     const posts = await this.postsService.findByCategoryName(categoryName);
 
     return ResponseEntity.create(
@@ -137,9 +133,7 @@ export class PostsController {
     description: '카테고리별로 게시글 목록을 조회한다.',
     type: [PostEntity],
   })
-  async findByCategoryId(
-    @Query('categoryName') categoryId: number,
-  ): Promise<ResponseEntity<PostResponseDto[]>> {
+  async findByCategoryId(@Query('categoryName') categoryId: number) {
     const posts = await this.postsService.findByCategoryId(categoryId);
 
     return ResponseEntity.create(
@@ -190,8 +184,8 @@ export class PostsController {
     description: '이전, 다음 게시글을 조회한다.',
     type: PostEntity,
   })
-  async getOtherPost(@Param('postId') id: number) {
-    const posts = await this.postsService.getOtherPosts(id);
+  async getOtherPost(@Param('postId') id: string) {
+    const posts = await this.postsService.getOtherPosts(+id);
     return ResponseEntity.create(
       HttpStatus.OK,
       '이전 다음 게시글 제목.',
@@ -210,10 +204,10 @@ export class PostsController {
   })
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updatePostDto: UpdatePostDto,
     @LoginUser() user: UserInfo,
+    @Body() updatePostDto: UpdatePostDto,
   ): Promise<ResponseEntity<never>> {
-    await this.postsService.update(id, updatePostDto, user.id);
+    await this.postsService.update(id, user.id, updatePostDto);
 
     return ResponseEntity.create(HttpStatus.NO_CONTENT, '게시글 수정 완료.');
   }
