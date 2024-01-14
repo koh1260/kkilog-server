@@ -9,7 +9,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { UsersTypeormRepository } from '../users/users-typeorm.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { OtherPostResponseDto } from './dto/response/post-response.dto';
-import { PostsPrismaRepository } from './posts-prisma.repository';
+import { PostsPrismaRepository } from './posts.repository';
 import { PostResponseDto } from './entities/post-entity';
 import { PostCreateEntity } from './entities/post-create.entity';
 import { UsersRepository } from '../users/users.repository';

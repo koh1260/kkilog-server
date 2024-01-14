@@ -9,7 +9,7 @@ import { Category } from '../categorys/entities/category.entity';
 import { UsersTypeormRepository } from '../users/users-typeorm.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { PostLike } from './entities/post-like.entity';
-import { PostsPrismaRepository } from './posts-prisma.repository';
+import { PostsPrismaRepository } from './posts.repository';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { UsersRepository } from '../users/users.repository';
 import { PostsLikeRepository } from './posts-like.repository';
