@@ -1,13 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { PostCreateEntity } from './entities/post-create.entity';
 
 @Injectable()
 export class PostsPrismaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async create(post: PostCreateEntity) {
+    await this.prisma.post.create({
+      data: post,
+    });
+  }
+
   async findByCategoryId(categoryId: number) {
     return this.prisma.post.findMany({
-      where: { categoryId },
+      where: {
+        categorie: {
+          id: categoryId,
+        },
+      },
       select: {
         id: true,
         title: true,
@@ -27,6 +38,11 @@ export class PostsPrismaRepository {
 
   async findByCategoryName(categoryName: string) {
     return this.prisma.post.findMany({
+      where: {
+        categorie: {
+          categoryName: categoryName,
+        },
+      },
       select: {
         id: true,
         title: true,
@@ -36,9 +52,6 @@ export class PostsPrismaRepository {
         likes: true,
         _count: {
           select: { comment: true },
-        },
-        categorie: {
-          where: { categoryName },
         },
       },
       orderBy: {
@@ -63,6 +76,12 @@ export class PostsPrismaRepository {
       orderBy: {
         createAt: 'desc',
       },
+    });
+  }
+
+  async findOneById(id: number) {
+    return await this.prisma.post.findUnique({
+      where: { id },
     });
   }
 
@@ -102,6 +121,40 @@ export class PostsPrismaRepository {
             },
           },
         },
+      },
+    });
+  }
+
+  async findPrevious(id: number) {
+    return await this.prisma.post.findFirst({
+      where: {
+        id: {
+          lt: id,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
+  }
+
+  async findNext(id: number) {
+    return await this.prisma.post.findFirst({
+      where: {
+        id: {
+          gt: id,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+      },
+      orderBy: {
+        id: 'asc',
       },
     });
   }
