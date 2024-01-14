@@ -86,10 +86,11 @@ export class CommentsController {
     @LoginUser() user: UserInfo,
   ) {
     await this.commentsService.update(id, user.email, updateCommentDto);
-    return ResponseEntity.create(HttpStatus.NO_CONTENT, '댓글 수정 완료.');
+    return ResponseEntity.create(HttpStatus.OK, '댓글 수정 완료.');
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '댓글 삭제 API', description: '댓글을 삭제한다.' })
   @ApiCreatedResponse({ description: '댓글을 삭제한다.', type: Comment })
   async remove(
@@ -97,6 +98,6 @@ export class CommentsController {
     @LoginUser() user: UserInfo,
   ) {
     await this.commentsService.remove(id, user.email);
-    return ResponseEntity.create(HttpStatus.NO_CONTENT, '댓글 삭제 완료.');
+    return ResponseEntity.create(HttpStatus.OK, '댓글 삭제 완료.');
   }
 }
