@@ -113,7 +113,7 @@ model User {
   updateAt     DateTime       @default(now()) @db.DateTime(6) @map("update_at")
   email         String         @unique(map: "IDX_e12875dfb3b1d92d7d7c5377e2") @db.VarChar(50)
   nickname      String         @db.VarChar(20)
-  role          String         @db.VarChar(5)
+  role          String        @default("USER") @db.VarChar(5)
   profileImage String?        @db.Text @map("profile_image")
   password      String         @db.VarChar(255)
   refreshToken String?        @db.Text @map("refresh_token")
