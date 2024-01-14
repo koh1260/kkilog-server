@@ -4,7 +4,7 @@ import { PostCreateEntity } from './entities/post-create.entity';
 import { Post } from '@prisma/client';
 
 @Injectable()
-export class PostsPrismaRepository {
+export class PostsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(post: PostCreateEntity) {

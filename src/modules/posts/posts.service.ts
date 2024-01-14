@@ -9,7 +9,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { UsersTypeormRepository } from '../users/users-typeorm.repository';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { OtherPostResponseDto } from './dto/response/post-response.dto';
-import { PostsPrismaRepository } from './posts.repository';
+import { PostsRepository } from './posts.repository';
 import { PostResponseDto } from './entities/post-entity';
 import { PostCreateEntity } from './entities/post-create.entity';
 import { UsersRepository } from '../users/users.repository';
@@ -23,7 +23,7 @@ export class PostsService {
     private readonly usersRepository: UsersRepository,
     private readonly UsersTypeormRepository: UsersTypeormRepository,
     private readonly categoryRepository: CategorysRepository,
-    private readonly postsPrismaRepo: PostsPrismaRepository,
+    private readonly postsPrismaRepo: PostsRepository,
     private readonly prisma: PrismaService,
   ) {}
 
