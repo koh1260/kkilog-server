@@ -1,23 +1,28 @@
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { CustomRepository } from '../../config/typeorm/custom-repository';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
 
-@CustomRepository(User)
-export class UsersRepository extends Repository<User> {
+@Injectable()
+export class UsersRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
   async findOneById(id: number) {
-    return await this.findOne({
+    return await this.prisma.user.findUnique({
       where: { id },
     });
   }
 
   async findOneByEmail(email: string) {
-    return await this.findOne({
+    return await this.prisma.user.findUnique({
       where: { email },
     });
   }
 
+  /**
+   * TODO
+   * nickname 컬럼 unique로 변경, findFirst -> findUnique
+   */
   async findOneByNickname(nickname: string) {
-    return await this.findOne({
+    return await this.prisma.user.findFirst({
       where: { nickname },
     });
   }
