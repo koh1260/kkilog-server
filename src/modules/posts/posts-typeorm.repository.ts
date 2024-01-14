@@ -1,7 +1,8 @@
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { CustomRepository } from '../../config/typeorm/custom-repository';
-import { DetailPost, ListPost, OtherPost } from './type';
+import { ListPost, OtherPost } from './type';
+import { DetailPostEntity } from './entities/post-detail.entity';
 
 @CustomRepository(Post)
 export class PostsRepository extends Repository<Post> {
@@ -68,7 +69,7 @@ export class PostsRepository extends Repository<Post> {
     return this.findOne({ where: { id } });
   }
 
-  async findDetailById(id: number): Promise<DetailPost | undefined> {
+  async findDetailById(id: number): Promise<DetailPostEntity | undefined> {
     return await this.createQueryBuilder('post')
       .select([
         'post.id AS id',
@@ -99,7 +100,7 @@ export class PostsRepository extends Repository<Post> {
       .leftJoin('post.category', 'category')
       .leftJoin('comment.writer', 'commentUser')
       .where('post.id=:id', { id })
-      .getRawOne<DetailPost>();
+      .getRawOne<DetailPostEntity>();
   }
 
   async findPrevious(id: number): Promise<OtherPost | null> {

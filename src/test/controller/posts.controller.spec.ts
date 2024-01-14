@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from '../../modules/posts/posts.controller';
 import { PostsService } from '../../modules/posts/posts.service';
-import { PostsRepository } from '../../modules/posts/posts.repository';
+import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
 import { HttpStatus } from '@nestjs/common';
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { CategorysRepository } from '../../modules/categorys/categorys.repository';

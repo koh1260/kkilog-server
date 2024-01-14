@@ -8,7 +8,7 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentsRepository } from './comments.repository';
 import { Comment } from './entities/comment.entity';
 import { UsersTypeormRepository } from '../users/users-typeorm.repository';
-import { PostsRepository } from '../posts/posts.repository';
+import { PostsRepository } from '../posts/posts-typeorm.repository';
 import { Post } from '../posts/entities/post.entity';
 import { User } from '../users/entities/user.entity';
 

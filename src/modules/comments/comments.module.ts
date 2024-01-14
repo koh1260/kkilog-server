@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { CommentsRepository } from './comments.repository';
 import { UsersTypeormRepository } from '../users/users-typeorm.repository';
-import { PostsRepository } from '../posts/posts.repository';
+import { PostsRepository } from '../posts/posts-typeorm.repository';
 
 @Module({
   imports: [

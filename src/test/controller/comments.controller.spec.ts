@@ -4,7 +4,7 @@ import { CommentsController } from '../../modules/comments/comments.controller';
 import { CommentsService } from '../../modules/comments/comments.service';
 import { CommentsRepository } from '../../modules/comments/comments.repository';
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';
-import { PostsRepository } from '../../modules/posts/posts.repository';
+import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
 
 describe('CommentsController', () => {
   let controller: CommentsController;
