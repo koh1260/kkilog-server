@@ -6,7 +6,7 @@ import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';
-import { CategorysRepository } from '../../modules/categorys/categorys.repository';
+import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 
 describe('PostsRepository', () => {
   let postsRepository: PostsRepository;

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CategorysController } from '../../modules/categorys/categorys.controller';
 import { CategorysService } from '../../modules/categorys/categorys.service';
-import { CategorysRepository } from '../../modules/categorys/categorys.repository';
+import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 
 describe('CategorysController', () => {
   const mockService = {};

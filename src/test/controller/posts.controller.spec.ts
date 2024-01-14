@@ -4,7 +4,7 @@ import { PostsService } from '../../modules/posts/posts.service';
 import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
 import { HttpStatus } from '@nestjs/common';
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';
-import { CategorysRepository } from '../../modules/categorys/categorys.repository';
+import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 import { UserInfo } from '../../auth/jwt.strategy';
 import { Post } from '../../modules/posts/entities/post.entity';
 import { Category } from '../../modules/categorys/entities/category.entity';

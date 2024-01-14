@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { CategorysRepository } from '../categorys/categorys.repository';
+import { CategorysRepository } from '../categorys/categorys-typeorm.repository';
 import { OtherPostResponseDto } from './dto/response/post-response.dto';
 import { PostsRepository } from './posts.repository';
 import { PostResponseDto } from './entities/post-entity';

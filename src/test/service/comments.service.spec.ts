@@ -11,7 +11,7 @@ import { Post } from '../../modules/posts/entities/post.entity';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
 import { CreateCommentDto } from '../../modules/comments/dto/create-comment.dto';
 import { UserInfo } from '../../auth/jwt.strategy';
-import { CategorysRepository } from '../../modules/categorys/categorys.repository';
+import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { UpdateCommentDto } from '../../modules/comments/dto/update-comment.dto';
 
