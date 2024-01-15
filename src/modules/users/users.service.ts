@@ -1,43 +1,44 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { UsersTypeormRepository } from './users-typeorm.repository';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
 import { hashPassword } from '../../utils/password';
 import { ConflictNicknameException } from './exception/conflictNickname.exception';
 import { ConflictEmailException } from './exception/conflictEmail.exception';
+import { UsersRepository } from './users.repository';
+import { CreateUserData, Profile } from './type';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private readonly UsersTypeormRepository: UsersTypeormRepository,
-  ) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async createUser(dto: CreateUserDto): Promise<void> {
     const { email, nickname, password } = dto;
 
-    const findUserByEmail = await this.UsersTypeormRepository.findOneByEmail(
-      email,
-    );
+    const findUserByEmail = await this.usersRepository.findOneByEmail(email);
     if (findUserByEmail) {
       throw new ConflictEmailException();
     }
 
-    const findUserByNickname =
-      await this.UsersTypeormRepository.findOneByNickname(nickname);
+    const findUserByNickname = await this.usersRepository.findOneByNickname(
+      nickname,
+    );
     if (findUserByNickname) {
       throw new ConflictNicknameException();
     }
 
-    const user = User.create(email, nickname, await hashPassword(password));
+    const userData: CreateUserData = {
+      email,
+      nickname,
+      password: await hashPassword(password),
+    };
 
-    await this.UsersTypeormRepository.save(user);
+    await this.usersRepository.create(userData);
   }
 
-  async getProfile(userId: number): Promise<Partial<User>> {
-    // userId가 undefined면 다른 데이터를 가져옴 (typeorm)
-    const user = await this.UsersTypeormRepository.findOneById(userId);
-    this.existUser(user);
-    const profile: Partial<User> = {
+  async getProfile(userId: number) {
+    const user = await this.usersRepository.findOneById(userId);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+
+    const profile: Profile = {
       id: user.id,
       email: user.email,
       nickname: user.nickname,
@@ -47,9 +48,5 @@ export class UsersService {
     };
 
     return profile;
-  }
-
-  private existUser(user: User | null): asserts user is User {
-    if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
   }
 }
