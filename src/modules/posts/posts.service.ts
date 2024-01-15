@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { CategorysRepository } from '../categorys/categorys-typeorm.repository';
 import { OtherPostResponseDto } from './dto/response/post-response.dto';
 import { PostsRepository } from './posts.repository';
 import { PostResponseDto } from './entities/post-entity';
@@ -14,13 +13,14 @@ import { PostCreateEntity } from './entities/post-create.entity';
 import { UsersRepository } from '../users/users.repository';
 import { PostsLikeRepository } from './posts-like.repository';
 import { PrismaService } from '../../prisma/prisma.service';
+import { CategorysRepository } from '../categorys/categorys.repository';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly postsLikeRepository: PostsLikeRepository,
     private readonly usersRepository: UsersRepository,
-    private readonly categoryRepository: CategorysRepository,
+    private readonly categorysRepository: CategorysRepository,
     private readonly postsRepository: PostsRepository,
     private readonly prisma: PrismaService,
   ) {}
@@ -36,7 +36,7 @@ export class PostsService {
       throw new UnauthorizedException('권한이 없습니다.');
 
     const { categoryName, ...rest } = createPostDto;
-    const category = await this.categoryRepository.findOneByName(categoryName);
+    const category = await this.categorysRepository.findOneByName(categoryName);
     if (!category) throw new NotFoundException('존재하지 않는 카테고리입니다.');
 
     const postCreateEntity: PostCreateEntity = {

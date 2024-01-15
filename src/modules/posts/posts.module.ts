@@ -7,12 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Category } from '../categorys/entities/category-typeorm.entity';
 import { UsersTypeormRepository } from '../users/users-typeorm.repository';
-import { CategorysRepository } from '../categorys/categorys-typeorm.repository';
 import { PostLike } from './entities/post-like.entity';
 import { PostsRepository } from './posts.repository';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { UsersRepository } from '../users/users.repository';
 import { PostsLikeRepository } from './posts-like.repository';
+import { CategorysRepository } from '../categorys/categorys.repository';
 
 @Module({
   imports: [
@@ -20,7 +20,6 @@ import { PostsLikeRepository } from './posts-like.repository';
     CustomTypeOrmModule.forCustomRepository([
       PostTypeormRepo,
       UsersTypeormRepository,
-      CategorysRepository,
     ]),
     PrismaModule,
   ],
@@ -31,6 +30,7 @@ import { PostsLikeRepository } from './posts-like.repository';
     PostsRepository,
     UsersRepository,
     PostsLikeRepository,
+    CategorysRepository,
   ],
 })
 export class PostsModule {}
