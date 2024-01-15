@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CategorysRepository } from './categorys-typeorm.repository';
+import { CategorysRepository } from './categorys.repository';
+import { CategoryResponseDto } from './dto/response/category-response.dto';
 
 @Injectable()
 export class CategorysService {
-  constructor(private readonly categoryRepository: CategorysRepository) {}
+  constructor(private readonly categorysRepository: CategorysRepository) {}
 
   async findAll() {
-    return await this.categoryRepository.findAll();
+    return (await this.categorysRepository.findAll()).map((c) =>
+      CategoryResponseDto.from(c),
+    );
   }
 }
