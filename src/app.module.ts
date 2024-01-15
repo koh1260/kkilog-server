@@ -37,9 +37,8 @@ import { PrismaModule } from './prisma/prisma.module';
       database: process.env.DATABASE_NAME,
       synchronize: false,
       entities: [__dirname + '/modules/**/entities/*.entity{.ts,.js}'],
-      migrationsRun: true,
+      migrationsRun: false,
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
-      logging: true,
     }),
     WinstonModule.forRoot({
       level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
