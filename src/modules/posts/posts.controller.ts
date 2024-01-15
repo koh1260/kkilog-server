@@ -18,7 +18,6 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { PostsService } from './posts.service';
-import { Post as PostEntity } from './entities/post.entity';
 import { ResponseEntity } from '../../common/response/response';
 import { LoginUser } from '../../common/decorators/user.decorator';
 import { UserInfo } from '../../auth/jwt.strategy';
@@ -53,7 +52,7 @@ export class PostsController {
     summary: '게시글 등록 API',
     description: '게시글을 생성한다.',
   })
-  @ApiCreatedResponse({ description: '게시글을 생성한다', type: PostEntity })
+  @ApiCreatedResponse({ description: '게시글을 생성한다' })
   @ApiBearerAuth()
   async createPost(
     @Body() createPostDto: CreatePostDto,
@@ -70,7 +69,6 @@ export class PostsController {
   })
   @ApiCreatedResponse({
     description: '게시글 목록을 조회한다',
-    type: [PostEntity],
   })
   async findAll() {
     const posts = await this.postsService.findAll();
@@ -84,7 +82,6 @@ export class PostsController {
   })
   @ApiCreatedResponse({
     description: '카테고리별로 게시글 목록을 조회한다.',
-    type: [PostEntity],
   })
   async findByCategoryName(@Query('categoryName') categoryName: string) {
     const posts = await this.postsService.findByCategoryName(categoryName);
@@ -113,7 +110,7 @@ export class PostsController {
     summary: '게시글 조회 API',
     description: '게시글을 조회한다,',
   })
-  @ApiCreatedResponse({ description: '게시글을 조회한다.', type: PostEntity })
+  @ApiCreatedResponse({ description: '게시글을 조회한다.' })
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const post = await this.postsService.findOne(id);
 
@@ -127,7 +124,6 @@ export class PostsController {
   })
   @ApiCreatedResponse({
     description: '카테고리별로 게시글 목록을 조회한다.',
-    type: [PostEntity],
   })
   async findByCategoryId(@Query('categoryName') categoryId: number) {
     const posts = await this.postsService.findByCategoryId(categoryId);
@@ -178,7 +174,6 @@ export class PostsController {
   })
   @ApiCreatedResponse({
     description: '이전, 다음 게시글을 조회한다.',
-    type: PostEntity,
   })
   async getOtherPost(@Param('postId') id: string) {
     const posts = await this.postsService.getOtherPosts(+id);

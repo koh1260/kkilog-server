@@ -23,7 +23,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Comment } from './entities/comment-typeorm.entity';
 import { CommentsService } from './comments.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CommentsResponseDto } from './dto/response/comment-response.dto';
@@ -43,7 +42,7 @@ export class CommentsController {
    */
   @Post()
   @ApiOperation({ summary: '댓글 작성 API', description: '댓글을 작성한다.' })
-  @ApiCreatedResponse({ description: '댓글을 작성한다.', type: Comment })
+  @ApiCreatedResponse({ description: '댓글을 작성한다.' })
   async createComment(@Body() createCommentDto: CreateCommentDto) {
     await this.commentsService.createComment(createCommentDto);
     return ResponseEntity.create(HttpStatus.CREATED, '댓글 작성 완료.');
@@ -70,7 +69,6 @@ export class CommentsController {
   })
   @ApiCreatedResponse({
     description: '특정 댓글의 자식 댓글을 조회한다.',
-    type: [Comment],
   })
   async findChildComment(@Query('parent', ParseIntPipe) parentId: number) {
     const comments = await this.commentsService.findChildComment(parentId);
@@ -80,7 +78,7 @@ export class CommentsController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '댓글 수정 API', description: '댓글을 수정한다.' })
-  @ApiCreatedResponse({ description: '댓글을 수정한다.', type: Comment })
+  @ApiCreatedResponse({ description: '댓글을 수정한다.' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCommentDto: UpdateCommentDto,
@@ -93,7 +91,7 @@ export class CommentsController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '댓글 삭제 API', description: '댓글을 삭제한다.' })
-  @ApiCreatedResponse({ description: '댓글을 삭제한다.', type: Comment })
+  @ApiCreatedResponse({ description: '댓글을 삭제한다.' })
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @LoginUser() user: UserInfo,

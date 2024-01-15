@@ -11,8 +11,8 @@ import * as cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
 import { UpdatePostDto } from '../src/modules/posts/dto/update-post.dto';
 import { PostResponseDto } from '../src/modules/posts/entities/post-entity';
-import { PostDetailResponseDto } from '../src/modules/posts/dto/response/post-response.dto';
 import { PostOtherResponseDto } from '../src/modules/posts/dto/response/post-other-response.dto';
+import { PostDetailResponseDto } from '../src/modules/posts/dto/response/post-detail-response.dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { OtherPostResponseDto } from './dto/response/post-response.dto';
 import { PostsRepository } from './posts.repository';
 import { PostResponseDto } from './entities/post-entity';
 import { PostCreateEntity } from './entities/post-create.entity';
@@ -169,7 +168,7 @@ export class PostsService {
    * @param id 게시글 번호
    * @returns 이전, 다음 게시글 정보
    */
-  async getOtherPosts(id: number): Promise<OtherPostResponseDto> {
+  async getOtherPosts(id: number) {
     const prevPost = await this.postsRepository.findPrevious(id);
     const nextPost = await this.postsRepository.findNext(id);
 

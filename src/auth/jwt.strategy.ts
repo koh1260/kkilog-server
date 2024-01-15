@@ -2,8 +2,8 @@ import { Inject } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { User } from '../modules/users/entities/user.entity';
 import jwtConfig from '../config/jwtConfig';
+import { User } from '@prisma/client';
 
 export type UserInfo = Pick<User, 'id' | 'email' | 'nickname'>;
 

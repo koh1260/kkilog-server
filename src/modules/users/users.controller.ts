@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
   HttpStatus,
   Post,
   Res,
@@ -10,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
 import { AuthService } from '../../auth/auth.service';
 import { LocalAuthGuard } from '../../auth/local-auth.guard';
 import { UserInfo } from '../../auth/jwt.strategy';
@@ -35,7 +33,7 @@ export class UsersController {
 
   @Post()
   @ApiOperation({ summary: '회원가입 API', description: '회원을 생성한다.' })
-  @ApiCreatedResponse({ description: '회원을 생성한다', type: User })
+  @ApiCreatedResponse({ description: '회원을 생성한다' })
   async createUser(@Body() dto: CreateUserDto) {
     await this.usersService.createUser(dto);
     return ResponseEntity.create(HttpStatus.CREATED, '회원가입 완료.');
@@ -81,7 +79,6 @@ export class UsersController {
   })
   @ApiCreatedResponse({
     description: 'Access Token을 해석해 회원 정보를 조회한다.',
-    type: User,
   })
   @ApiBearerAuth()
   async getProfile(@LoginUser() user: UserInfo) {
