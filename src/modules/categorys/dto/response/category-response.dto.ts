@@ -9,7 +9,7 @@ export class CategoryResponseDto {
   private readonly categoryName: string;
 
   @ApiProperty()
-  private readonly childrenCategories: {
+  private readonly childCategories: {
     id: number;
     categoryName: string;
   }[];
@@ -17,7 +17,7 @@ export class CategoryResponseDto {
   constructor(category: Category) {
     this.id = category.id;
     this.categoryName = category.categoryName;
-    this.childrenCategories = category.childrenCategories;
+    this.childCategories = category.childCategories;
   }
 
   static from(category: Category) {

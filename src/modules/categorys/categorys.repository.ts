@@ -12,7 +12,7 @@ export class CategorysRepository {
       select: {
         id: true,
         categoryName: true,
-        childrenCategories: {
+        childCategories: {
           select: {
             id: true,
             categoryName: true,
