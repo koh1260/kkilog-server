@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { CommentsRepository } from './comments.repository';
+import { CommentsRepository } from './comments-typeorm.repository';
 import { Comment } from './entities/comment.entity';
 import { UsersTypeormRepository } from '../users/users-typeorm.repository';
 import { PostsRepository } from '../posts/posts-typeorm.repository';

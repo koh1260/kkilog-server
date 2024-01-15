@@ -6,7 +6,7 @@ import { Comment } from './entities/comment.entity';
 import { CommentsService } from './comments.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
-import { CommentsRepository } from './comments.repository';
+import { CommentsRepository } from './comments-typeorm.repository';
 import { UsersTypeormRepository } from '../users/users-typeorm.repository';
 import { PostsRepository } from '../posts/posts-typeorm.repository';
 
