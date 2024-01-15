@@ -30,10 +30,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CacheControlIntercepter } from '../../common/interceptors/cache-control.intercepter';
-import {
-  PostDetailResponseDto,
-  PostResponseDto,
-} from './dto/response/post-response.dto';
 
 @Controller('posts')
 @UseInterceptors(CacheControlIntercepter)

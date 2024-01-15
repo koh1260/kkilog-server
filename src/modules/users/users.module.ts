@@ -8,7 +8,7 @@ import { UsersRepository } from './users.repository';
 import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), AuthModule, PrismaModule],
+  imports: [AuthModule, PrismaModule],
   providers: [UsersService, UsersRepository],
   controllers: [UsersController],
   exports: [UsersService],
