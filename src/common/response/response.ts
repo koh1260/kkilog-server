@@ -1,8 +1,14 @@
 import { HttpStatus } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ResponseEntity<T> {
+  @ApiProperty()
   statusCode: HttpStatus;
+
+  @ApiProperty()
   message: string;
+
+  @ApiProperty()
   result?: T;
 
   constructor(statusCode: HttpStatus, message: string, result?: T) {
