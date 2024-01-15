@@ -3,18 +3,14 @@ import { AuthService } from './auth.service';
 import { LocalStrategy } from './local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
-import { UsersTypeormRepository } from '../modules/users/users-typeorm.repository';
-import { User } from '../modules/users/entities/user.entity';
-import { CustomTypeOrmModule } from '../config/typeorm/custom-typeorm-module';
+import { PrismaModule } from '../prisma/prisma.module';
+import { UsersRepository } from '../modules/users/users.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
-    CustomTypeOrmModule.forCustomRepository([UsersTypeormRepository]),
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -27,8 +23,15 @@ import { CustomTypeOrmModule } from '../config/typeorm/custom-typeorm-module';
         };
       },
     }),
+    PrismaModule,
   ],
-  providers: [ConfigService, AuthService, LocalStrategy, JwtStrategy],
+  providers: [
+    ConfigService,
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    UsersRepository,
+  ],
   exports: [AuthService],
   controllers: [AuthController],
 })
