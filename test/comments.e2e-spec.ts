@@ -168,7 +168,7 @@ describe('AppController (e2e)', () => {
       .set('Cookie', accessToken)
       .send(updateDto);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(401);
   });
 
   it('댓글_삭제', async () => {
@@ -211,7 +211,7 @@ describe('AppController (e2e)', () => {
       .delete(`/comments/${comment.id}`)
       .set('Cookie', accessToken);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(401);
   });
 
   afterAll(async () => {
