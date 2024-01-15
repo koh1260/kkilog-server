@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { Category } from './entities/category.entity';
+import { Category } from './entities/category-typeorm.entity';
 import { CustomRepository } from '../../config/typeorm/custom-repository';
 
 @CustomRepository(Category)

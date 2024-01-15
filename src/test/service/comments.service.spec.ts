@@ -6,7 +6,7 @@ import { CommentsRepository } from '../../modules/comments/comments.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';
 import { Comment } from '../../modules/comments/entities/comment.entity';
 import { User } from '../../modules/users/entities/user.entity';
-import { Category } from '../../modules/categorys/entities/category.entity';
+import { Category } from '../../modules/categorys/entities/category-typeorm.entity';
 import { Post } from '../../modules/posts/entities/post.entity';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
 import { CreateCommentDto } from '../../modules/comments/dto/create-comment.dto';

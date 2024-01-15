@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
-import { Category } from '../../modules/categorys/entities/category.entity';
+import { Category } from '../../modules/categorys/entities/category-typeorm.entity';
 import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';
 

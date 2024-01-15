@@ -7,7 +7,7 @@ import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 import { UserInfo } from '../../auth/jwt.strategy';
 import { Post } from '../../modules/posts/entities/post.entity';
-import { Category } from '../../modules/categorys/entities/category.entity';
+import { Category } from '../../modules/categorys/entities/category-typeorm.entity';
 import { User } from '../../modules/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';

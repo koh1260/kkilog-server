@@ -4,7 +4,7 @@ import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
 import { User } from '../../modules/users/entities/user.entity';
 // import { PostsService } from '../../modules/posts/posts.service';
 import { CreatePostDto } from '../../modules/posts/dto/create-post.dto';
-import { Category } from '../../modules/categorys/entities/category.entity';
+import { Category } from '../../modules/categorys/entities/category-typeorm.entity';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';

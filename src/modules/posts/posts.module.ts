@@ -5,7 +5,7 @@ import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module'
 import { PostsRepository as PostTypeormRepo } from './posts-typeorm.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
-import { Category } from '../categorys/entities/category.entity';
+import { Category } from '../categorys/entities/category-typeorm.entity';
 import { UsersTypeormRepository } from '../users/users-typeorm.repository';
 import { CategorysRepository } from '../categorys/categorys-typeorm.repository';
 import { PostLike } from './entities/post-like.entity';
