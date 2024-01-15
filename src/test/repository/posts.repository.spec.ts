@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Category } from '../../modules/categorys/entities/category-typeorm.entity';
 import { User } from '../../modules/users/entities/user.entity';
 import { Post } from '../../modules/posts/entities/post.entity';
-import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
+import { PostsRepository } from '../../modules/posts/type/posts-typeorm.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';

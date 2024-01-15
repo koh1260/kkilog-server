@@ -14,8 +14,8 @@ import {
   UploadedFile,
   Query,
 } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { CreatePostDto } from './dto/request/create-post.dto';
+import { UpdatePostDto } from './dto/request/update-post.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { PostsService } from './posts.service';
 import { ResponseEntity } from '../../common/response/response';

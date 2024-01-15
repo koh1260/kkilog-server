@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaClient } from '@prisma/client';
-import { CreateUserDto } from '../src/modules/users/dto/create-user.dto';
+import { CreateUserDto } from '../src/modules/users/dto/request/create-user.dto';
 import * as cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
 

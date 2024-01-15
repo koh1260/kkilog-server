@@ -4,15 +4,15 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaClient } from '@prisma/client';
 import { generatePost } from './helper/generate-post';
-import { CreatePostDto } from '../src/modules/posts/dto/create-post.dto';
+import { CreatePostDto } from '../src/modules/posts/dto/request/create-post.dto';
 import { generateCategory } from './helper/generate-category';
-import { CreateUserDto } from '../src/modules/users/dto/create-user.dto';
+import { CreateUserDto } from '../src/modules/users/dto/request/create-user.dto';
 import * as cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
-import { UpdatePostDto } from '../src/modules/posts/dto/update-post.dto';
-import { PostResponseDto } from '../src/modules/posts/entities/post-entity';
+import { UpdatePostDto } from '../src/modules/posts/dto/request/update-post.dto';
 import { PostOtherResponseDto } from '../src/modules/posts/dto/response/post-other-response.dto';
 import { PostDetailResponseDto } from '../src/modules/posts/dto/response/post-detail-response.dto';
+import { PostResponseDto } from '../src/modules/posts/dto/response/post-response.dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

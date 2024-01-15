@@ -1,15 +1,19 @@
-import { OtherPostEntity } from '../../entities/post-other.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { OtherPost } from '../../type';
 
 export class PostOtherResponseDto {
+  @ApiProperty()
   id: number;
+
+  @ApiProperty()
   title: string;
 
-  constructor(otherPost: OtherPostEntity) {
+  constructor(otherPost: OtherPost) {
     this.id = otherPost.id;
     this.title = otherPost.title;
   }
 
-  static from(otherPost: OtherPostEntity) {
+  static from(otherPost: OtherPost) {
     return new PostOtherResponseDto(otherPost);
   }
 }

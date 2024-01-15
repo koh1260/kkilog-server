@@ -4,15 +4,15 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { CreatePostDto } from './dto/request/create-post.dto';
+import { UpdatePostDto } from './dto/request/update-post.dto';
 import { PostsRepository } from './posts.repository';
-import { PostResponseDto } from './entities/post-entity';
-import { PostCreateEntity } from './entities/post-create.entity';
 import { UsersRepository } from '../users/users.repository';
 import { PostsLikeRepository } from './posts-like.repository';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CategorysRepository } from '../categorys/categorys.repository';
+import { CreatePostData } from './type';
+import { PostResponseDto } from './dto/response/post-response.dto';
 
 @Injectable()
 export class PostsService {
@@ -38,7 +38,7 @@ export class PostsService {
     const category = await this.categorysRepository.findOneByName(categoryName);
     if (!category) throw new NotFoundException('존재하지 않는 카테고리입니다.');
 
-    const postCreateEntity: PostCreateEntity = {
+    const postCreateEntity: CreatePostData = {
       ...rest,
       writerId: loginedUserId,
       categoryId: category.id,

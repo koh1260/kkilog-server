@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CategorysRepository } from './categorys.repository';
-import { CategoryResponseDto } from './dto/response/category-response.dto';
+import { CategoryResponseDto } from './dto/request/category-response.dto';
 
 @Injectable()
 export class CategorysService {

@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/request/create-user.dto';
 import { hashPassword } from '../../utils/password';
 import { ConflictNicknameException } from './exception/conflictNickname.exception';
 import { ConflictEmailException } from './exception/conflictEmail.exception';

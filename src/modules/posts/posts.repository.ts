@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { PostCreateEntity } from './entities/post-create.entity';
 import { Post } from '@prisma/client';
+import { CreatePostData } from './type';
 
 @Injectable()
 export class PostsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(post: PostCreateEntity) {
+  async create(post: CreatePostData) {
     await this.prisma.post.create({
       data: post,
     });

@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommentsService } from '../../modules/comments/comments.service';
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';
-import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
-import { CommentsRepository } from '../../modules/comments/comments-typeorm.repository';
+import { PostsRepository } from '../../modules/posts/type/posts-typeorm.repository';
+import { CommentsRepository } from '../../modules/comments/type/comments-typeorm.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';
-import { Comment } from '../../modules/comments/entities/comment-typeorm.entity';
+import { Comment } from '../../modules/comments/dto/response/comment-typeorm.entity';
 import { User } from '../../modules/users/entities/user.entity';
 import { Category } from '../../modules/categorys/entities/category-typeorm.entity';
 import { Post } from '../../modules/posts/entities/post.entity';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
-import { CreateCommentDto } from '../../modules/comments/dto/create-comment.dto';
+import { CreateCommentDto } from '../../modules/comments/dto/request/create-comment.dto';
 import { UserInfo } from '../../auth/jwt.strategy';
 import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { UpdateCommentDto } from '../../modules/comments/dto/update-comment.dto';
+import { UpdateCommentDto } from '../../modules/comments/dto/request/update-comment.dto';
 
 describe('CommentsService', () => {
   let commentsService: CommentsService;

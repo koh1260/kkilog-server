@@ -3,14 +3,14 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaClient } from '@prisma/client';
-import { CreateUserDto } from '../src/modules/users/dto/create-user.dto';
+import { CreateUserDto } from '../src/modules/users/dto/request/create-user.dto';
 import * as cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
 import { generatePost } from './helper/generate-post';
-import { CreateCommentDto } from '../src/modules/comments/dto/create-comment.dto';
+import { CreateCommentDto } from '../src/modules/comments/dto/request/create-comment.dto';
 import { generateComment } from './helper/generate-comment';
 import { UserInfo } from '../src/auth/jwt.strategy';
-import { UpdateCommentDto } from '../src/modules/comments/dto/update-comment.dto';
+import { UpdateCommentDto } from '../src/modules/comments/dto/request/update-comment.dto';
 import { generateUser } from './helper/generate-user';
 
 describe('AppController (e2e)', () => {

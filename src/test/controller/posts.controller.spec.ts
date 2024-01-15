@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from '../../modules/posts/posts.controller';
 import { PostsService } from '../../modules/posts/posts.service';
-import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
+import { PostsRepository } from '../../modules/posts/type/posts-typeorm.repository';
 import { HttpStatus } from '@nestjs/common';
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
@@ -13,8 +13,8 @@ import { DataSource } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PostLike } from '../../modules/posts/entities/post-like.entity';
 import { repositoryMockFactory } from '../mock-data-sourec';
-import { CreatePostDto } from '../../modules/posts/dto/create-post.dto';
-import { UpdatePostDto } from '../../modules/posts/dto/update-post.dto';
+import { CreatePostDto } from '../../modules/posts/dto/request/create-post.dto';
+import { UpdatePostDto } from '../../modules/posts/dto/request/update-post.dto';
 import { DetailPost, ListPost } from '../../modules/posts/type';
 
 const mockDataSource = {};

@@ -12,8 +12,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CreateCommentDto } from './dto/request/create-comment.dto';
+import { UpdateCommentDto } from './dto/request/update-comment.dto';
 import { LoginUser } from '../../common/decorators/user.decorator';
 import { UserInfo } from '../../auth/jwt.strategy';
 import { ResponseEntity } from '../../common/response/response';

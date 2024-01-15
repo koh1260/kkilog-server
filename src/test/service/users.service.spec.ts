@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../../modules/users/users.service';
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';
-import { CreateUserDto } from '../../modules/users/dto/create-user.dto';
+import { CreateUserDto } from '../../modules/users/dto/request/create-user.dto';
 import { User } from '../../modules/users/entities/user.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { TestTypeOrmModule } from '../db/test-db.module';
