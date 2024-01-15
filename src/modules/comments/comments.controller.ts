@@ -26,6 +26,7 @@ import {
 import { Comment } from './entities/comment-typeorm.entity';
 import { CommentsService } from './comments.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { CommentsResponseDto } from './dto/response/comment-response.dto';
 
 @Controller('comments')
 @ApiTags('댓글 API')
@@ -55,7 +56,7 @@ export class CommentsController {
   })
   @ApiCreatedResponse({
     description: '특정 게시글의 모든 댓글을 조회한다.',
-    type: [Comment],
+    type: [ResponseEntity<CommentsResponseDto[]>],
   })
   async findAll(@Query('post', ParseIntPipe) postId: number) {
     const comments = await this.commentsService.findAll(postId);
@@ -85,7 +86,7 @@ export class CommentsController {
     @Body() updateCommentDto: UpdateCommentDto,
     @LoginUser() user: UserInfo,
   ) {
-    await this.commentsService.update(id, user.email, updateCommentDto);
+    await this.commentsService.update(id, user.id, updateCommentDto);
     return ResponseEntity.create(HttpStatus.OK, '댓글 수정 완료.');
   }
 
@@ -97,7 +98,7 @@ export class CommentsController {
     @Param('id', ParseIntPipe) id: number,
     @LoginUser() user: UserInfo,
   ) {
-    await this.commentsService.remove(id, user.email);
+    await this.commentsService.remove(id, user.id);
     return ResponseEntity.create(HttpStatus.OK, '댓글 삭제 완료.');
   }
 }
