@@ -15,7 +15,7 @@ model Categorie {
   icon            String?     @db.Text
   parentId       Int?        @map("parent_id")
   categorie       Categorie?  @relation("categorieTocategorie", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_d12ceff0fef09517a40bb59c7a6")
-  other_categorie Categorie[] @relation("categorieTocategorie") 
+  childrenCategories Categorie[] @relation("categorieTocategorie") 
   post            Post[]
 
   @@map("categorie")
