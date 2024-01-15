@@ -23,7 +23,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Comment } from './entities/comment.entity';
+import { Comment } from './entities/comment-typeorm.entity';
 import { CommentsService } from './comments.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 

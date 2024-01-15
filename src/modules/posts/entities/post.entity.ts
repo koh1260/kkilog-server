@@ -3,7 +3,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { BaseModel } from '../../../config/typeorm/base.entity';
 import { Category } from '../../categorys/entities/category-typeorm.entity';
-import { Comment } from '../../comments/entities/comment.entity';
+import { Comment } from '../../comments/entities/comment-typeorm.entity';
 import { PostImage } from './post-images.entity';
 
 @Entity('post')

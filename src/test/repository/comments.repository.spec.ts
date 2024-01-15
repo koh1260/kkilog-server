@@ -4,7 +4,7 @@ import { CommentsRepository } from '../../modules/comments/comments-typeorm.repo
 import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';
 import { User } from '../../modules/users/entities/user.entity';
-import { Comment } from '../../modules/comments/entities/comment.entity';
+import { Comment } from '../../modules/comments/entities/comment-typeorm.entity';
 import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
 import { Post } from '../../modules/posts/entities/post.entity';
 

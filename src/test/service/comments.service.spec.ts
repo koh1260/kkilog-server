@@ -4,7 +4,7 @@ import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { PostsRepository } from '../../modules/posts/posts-typeorm.repository';
 import { CommentsRepository } from '../../modules/comments/comments-typeorm.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';
-import { Comment } from '../../modules/comments/entities/comment.entity';
+import { Comment } from '../../modules/comments/entities/comment-typeorm.entity';
 import { User } from '../../modules/users/entities/user.entity';
 import { Category } from '../../modules/categorys/entities/category-typeorm.entity';
 import { Post } from '../../modules/posts/entities/post.entity';

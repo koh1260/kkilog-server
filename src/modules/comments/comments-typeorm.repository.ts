@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { CustomRepository } from '../../config/typeorm/custom-repository';
-import { Comment } from './entities/comment.entity';
+import { Comment } from './entities/comment-typeorm.entity';
 
 @CustomRepository(Comment)
 export class CommentsRepository extends Repository<Comment> {
