@@ -5,12 +5,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from '../modules/users/users.repository';
 import { comparePassword } from '../utils/password';
 import { UserInfo } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { User } from '../modules/users/entities/user.entity';
+import { UsersRepository } from '../modules/users/users.repository';
+import { User } from '@prisma/client';
 
 export interface DecodedToken {
   id: number;
@@ -37,7 +37,7 @@ export class AuthService {
     password: string,
   ): Promise<UserInfo | null> {
     const user = await this.usersRepository.findOneByEmail(email);
-    if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
     if (!(user && (await comparePassword(password, user.password))))
       throw new BadRequestException('비밀번호가 일치하지 않습니다.');
 
@@ -79,7 +79,8 @@ export class AuthService {
    */
   async regenerateAccessToken(userId: number) {
     const user = await this.usersRepository.findOneById(userId);
-    this.assertUserExist(user);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+
     const userInfo: UserInfo = {
       id: user.id,
       email: user.email,
@@ -88,7 +89,7 @@ export class AuthService {
 
     return await this.generateAccessToken(userInfo);
   }
-
+  // TODO
   /**
    * Refresh Token을 DB에 저장.
    * @param userId 회원 번호
@@ -96,10 +97,9 @@ export class AuthService {
    */
   async setRefreshToken(userId: number, refreshToken: string) {
     const hashedRefreshToken = await this.gethashedRefreshToken(refreshToken);
-    // const refreshTokenExp = await this.getCurrentRefreshTokenExp();
+
     await this.usersRepository.update(userId, {
       refreshToken: hashedRefreshToken,
-      // refreshTokenExp: refreshTokenExp,
     });
   }
 
@@ -124,7 +124,8 @@ export class AuthService {
     try {
       const decodedToken = this.jwtService.verify<DecodedToken>(refreshToken);
       const user = await this.usersRepository.findOneById(decodedToken.id);
-      this.assertUserExist(user);
+      if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+
       await this.valideteRefreshToken(user.refreshToken, refreshToken);
 
       return decodedToken;
@@ -137,12 +138,8 @@ export class AuthService {
     }
   }
 
-  private assertUserExist(user: User | null): asserts user is User {
-    if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
-  }
-
   private async valideteRefreshToken(
-    usersRefresh: string | undefined,
+    usersRefresh: string | null,
     refresh: string,
   ) {
     if (!usersRefresh)
@@ -164,7 +161,8 @@ export class AuthService {
 
   async validateEmail(email: string): Promise<Partial<User>> {
     const user = await this.usersRepository.findOneByEmail(email);
-    this.assertUserExist(user);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+
     const se: Partial<User> = {
       id: user.id,
       email: user.email,

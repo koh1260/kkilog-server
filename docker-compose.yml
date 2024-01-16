@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: mariadb:10.6
+    restart: always
+    ports:
+      - 3307:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: test
+      MARIADB_DATABASE: kkilog

@@ -11,7 +11,7 @@ import { Request, Response } from 'express';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { string } from 'joi';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { CustomResponse } from '../common/response/custom-reponse';
+import { ResponseEntity } from '../common/response/response';
 import { LoginUser } from '../common/decorators/user.decorator';
 import { UserInfo } from './jwt.strategy';
 
@@ -40,7 +40,7 @@ export class AuthController {
 
     return res
       .status(200)
-      .json(CustomResponse.create(HttpStatus.OK, 'Access Token 재발급 성공'));
+      .json(ResponseEntity.create(HttpStatus.OK, 'Access Token 재발급 성공'));
   }
 
   @ApiOperation({
@@ -55,6 +55,6 @@ export class AuthController {
   @Get('/login-validate')
   async loginValidate(@LoginUser() user: UserInfo) {
     const loginedUser = await this.authService.validateEmail(user.email);
-    return CustomResponse.create(HttpStatus.OK, '인증 성공', loginedUser);
+    return ResponseEntity.create(HttpStatus.OK, '인증 성공', loginedUser);
   }
 }

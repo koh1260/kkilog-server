@@ -1,100 +1,176 @@
-import { Repository } from 'typeorm';
-import { Post } from './entities/post.entity';
-import { CustomRepository } from '../../config/typeorm/custom-repository';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { Post } from '@prisma/client';
+import { CreatePostData } from './type';
 
-@CustomRepository(Post)
-export class PostsRepository extends Repository<Post> {
-  async findByCategoryId(categoryId: number): Promise<Post[]> {
-    return await this.createQueryBuilder('post')
-      .select([
-        'post.id',
-        'post.title',
-        'post.introduction',
-        'post.thumbnail',
-        'post.createAt',
-      ])
-      .leftJoinAndSelect('post.comments', 'comment')
-      .where('post.category = :categoryId', { categoryId: categoryId })
-      .getMany();
+@Injectable()
+export class PostsRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(post: CreatePostData) {
+    await this.prisma.post.create({
+      data: post,
+    });
   }
 
-  async findByCategoryName(categoryName: string): Promise<Post[]> {
-    return await this.createQueryBuilder('post')
-      .select([
-        'post.id',
-        'post.title',
-        'post.introduction',
-        'post.thumbnail',
-        'post.createAt',
-        'post.likes',
-      ])
-      .leftJoinAndSelect('post.comments', 'comment')
-      .leftJoin('post.category', 'category')
-      .leftJoin('category.parentCategory', 'parentCategory')
-      .where('category.categoryName = :categoryName', {
-        categoryName: categoryName,
-      })
-      .orWhere('parentCategory.categoryName = :categoryName', {
-        categoryName: categoryName,
-      })
-      .orderBy('post.createAt', 'DESC')
-      .getMany();
+  async findByCategoryId(categoryId: number) {
+    return this.prisma.post.findMany({
+      where: {
+        categorie: {
+          id: categoryId,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        introduction: true,
+        thumbnail: true,
+        createAt: true,
+        likes: true,
+        _count: {
+          select: { comment: true },
+        },
+      },
+      orderBy: {
+        createAt: 'desc',
+      },
+    });
+  }
+
+  async findByCategoryName(categoryName: string) {
+    return this.prisma.post.findMany({
+      where: {
+        categorie: {
+          categoryName: categoryName,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        introduction: true,
+        thumbnail: true,
+        createAt: true,
+        likes: true,
+        _count: {
+          select: { comment: true },
+        },
+      },
+      orderBy: {
+        createAt: 'desc',
+      },
+    });
   }
 
   async findAll() {
-    return await this.createQueryBuilder('post')
-      .select([
-        'post.id',
-        'post.title',
-        'post.introduction',
-        'post.thumbnail',
-        'post.createAt',
-        'post.likes',
-      ])
-      .leftJoinAndSelect('post.comments', 'comment')
-      .orderBy('post.createAt', 'DESC')
-      .getMany();
+    return this.prisma.post.findMany({
+      select: {
+        id: true,
+        title: true,
+        introduction: true,
+        thumbnail: true,
+        createAt: true,
+        likes: true,
+        _count: {
+          select: { comment: true },
+        },
+      },
+      orderBy: {
+        createAt: 'desc',
+      },
+    });
   }
 
   async findOneById(id: number) {
-    return await this.createQueryBuilder('post')
-      .select([
-        'post.id',
-        'post.title',
-        'post.content',
-        'post.thumbnail',
-        'post.introduction',
-        'post.publicScope',
-        'post.createAt',
-        'post.likes',
-      ])
-      .addSelect(['comment.id', 'comment.content', 'comment.createAt'])
-      .addSelect(['postUser.nickname', 'postUser.profileImage'])
-      .addSelect(['category.categoryName'])
-      .addSelect(['commentUser.nickname', 'commentUser.profileImage'])
-      .leftJoin('post.comments', 'comment')
-      .leftJoin('post.writer', 'postUser')
-      .leftJoin('post.category', 'category')
-      .leftJoin('comment.writer', 'commentUser')
-      .where('post.id=:id', { id })
-      .getOne();
+    return await this.prisma.post.findUnique({
+      where: { id },
+    });
+  }
+
+  async findDetailById(id: number) {
+    return await this.prisma.post.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        thumbnail: true,
+        introduction: true,
+        publicScope: true,
+        createAt: true,
+        likes: true,
+        categorie: {
+          select: {
+            id: true,
+            categoryName: true,
+          },
+        },
+        user: {
+          select: {
+            nickname: true,
+            profileImage: true,
+          },
+        },
+        comment: {
+          select: {
+            id: true,
+            content: true,
+            createAt: true,
+            user: {
+              select: {
+                nickname: true,
+                profileImage: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async findPrevious(id: number) {
-    return await this.createQueryBuilder('post')
-      .select(['post.id', 'post.title'])
-      .where('post.id<:id', { id })
-      .orderBy('post.id', 'DESC')
-      .limit(1)
-      .getOne();
+    return await this.prisma.post.findFirst({
+      where: {
+        id: {
+          lt: id,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
   }
 
   async findNext(id: number) {
-    return await this.createQueryBuilder('post')
-      .select(['post.id', 'post.title'])
-      .where('post.id>:id', { id })
-      .orderBy('post.id', 'ASC')
-      .limit(1)
-      .getOne();
+    return await this.prisma.post.findFirst({
+      where: {
+        id: {
+          gt: id,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+      },
+      orderBy: {
+        id: 'asc',
+      },
+    });
+  }
+
+  async update(postId: number, data: Partial<Post>) {
+    return await this.prisma.post.update({
+      where: { id: postId },
+      data,
+    });
+  }
+
+  async delete(postId: number) {
+    await this.prisma.post.delete({
+      where: { id: postId },
+    });
   }
 }

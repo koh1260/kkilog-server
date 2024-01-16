@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '../../modules/users/entities/user.entity';
-import { UsersRepository } from '../../modules/users/users.repository';
+import { UsersRepository } from '../../modules/users/users-typeorm.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
 import { Post } from '../../modules/posts/entities/post.entity';

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
-import { Category } from '../../modules/categorys/entities/category.entity';
-import { CategorysRepository } from '../../modules/categorys/categorys.repository';
+import { Category } from '../../modules/categorys/entities/category-typeorm.entity';
+import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 import { TestTypeOrmModule } from '../db/test-db.module';
 
 describe('CategoryRepository', () => {
@@ -27,13 +27,8 @@ describe('CategoryRepository', () => {
     const childCategory2 = createCategory(5, 'Express.js');
     childCategory1.parentCategory = category1;
     childCategory2.parentCategory = category1;
-    await repository.save([
-      category1,
-      category2,
-      category3,
-      childCategory1,
-      childCategory2,
-    ]);
+    await repository.save([category1, category2, category3]);
+    await repository.save([childCategory1, childCategory2, category3]);
 
     // when
     const foundCategorys = await repository.findAll();

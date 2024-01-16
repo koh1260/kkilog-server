@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { CustomTypeOrmModule } from '../../config/typeorm/custom-typeorm-module';
-import { CategorysRepository } from './categorys.repository';
 import { CategorysController } from './categorys.controller';
 import { CategorysService } from './categorys.service';
+import { PrismaModule } from '../../prisma/prisma.module';
+import { CategorysRepository } from './categorys.repository';
 
 @Module({
-  imports: [CustomTypeOrmModule.forCustomRepository([CategorysRepository])],
+  imports: [PrismaModule],
   controllers: [CategorysController],
-  providers: [CategorysService],
+  providers: [CategorysService, CategorysRepository],
 })
 export class CategorysModule {}

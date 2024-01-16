@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { UsersRepository } from './users.repository';
+import { UsersController } from '../../modules/users/users.controller';
+import { UsersService } from '../../modules/users/users.service';
+import { UsersRepository } from './users-typeorm.repository';
 import { AuthService } from '../../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { CreateUserDto } from '../../modules/users/dto/request/create-user.dto';
+import { User } from '../../modules/users/entities/user.entity';
 import { UserInfo } from '../../auth/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';

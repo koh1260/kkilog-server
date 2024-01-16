@@ -1,38 +1,68 @@
-import { Repository } from 'typeorm';
-import { CustomRepository } from '../../config/typeorm/custom-repository';
-import { Comment } from './entities/comment.entity';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { CreateCommentData, UpdateCommentData } from './type';
 
-@CustomRepository(Comment)
-export class CommentsRepository extends Repository<Comment> {
+@Injectable()
+export class CommentsRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(data: CreateCommentData) {
+    await this.prisma.comment.create({
+      data,
+    });
+  }
+
   async findAll(postId: number) {
-    return await this.createQueryBuilder('comment')
-      .select(['comment.id', 'comment.content', 'comment.createAt'])
-      .addSelect(['user.nickname', 'user.profileImage'])
-      .leftJoin('comment.writer', 'user')
-      .where('comment.post=:postId', { postId })
-      .andWhere('comment.parent IS NULL')
-      .getMany();
+    return await this.prisma.comment.findMany({
+      where: { postId, parent: null },
+      select: {
+        id: true,
+        content: true,
+        createAt: true,
+        user: {
+          select: {
+            nickname: true,
+            profileImage: true,
+          },
+        },
+      },
+    });
   }
 
   async findOneById(id: number) {
-    return await this.createQueryBuilder('comments')
-      .select(['comments', 'users.email'])
-      .leftJoin('comments.writer', 'users')
-      .where('comments.id=:id', { id: id })
-      .getOne();
+    return await this.prisma.comment.findUnique({
+      where: { id },
+    });
   }
 
   async findChildCommentByParentId(parentId: number) {
-    return this.createQueryBuilder('comment')
-      .select([
-        'comment.id',
-        'comment.content',
-        'comment.createAt',
-        'user.nickname',
-        'user.profileImage',
-      ])
-      .leftJoin('comment.writer', 'user')
-      .where('comment.parent=:id', { id: parentId })
-      .getMany();
+    return await this.prisma.comment.findMany({
+      where: { parent: parentId },
+      select: {
+        id: true,
+        content: true,
+        createAt: true,
+        user: {
+          select: {
+            nickname: true,
+            profileImage: true,
+          },
+        },
+      },
+    });
+  }
+
+  async update(data: UpdateCommentData) {
+    const { id, ...rest } = data;
+    await this.prisma.comment.update({
+      where: { id },
+      data: { ...rest },
+    });
+  }
+
+  async delete(id: number) {
+    await this.prisma.comment.delete({
+      where: { id },
+    });
   }
 }

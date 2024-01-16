@@ -8,7 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileService } from './file.service';
-import { CustomResponse } from '../common/response/custom-reponse';
+import { ResponseEntity } from '../common/response/response';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('file')
@@ -27,6 +27,6 @@ export class FileController {
   ) {
     console.log('파일: ' + file);
     const image = this.fileService.uploadFile(file);
-    return CustomResponse.create(HttpStatus.OK, '이미지 업로드 완료', image);
+    return ResponseEntity.create(HttpStatus.OK, '이미지 업로드 완료', image);
   }
 }

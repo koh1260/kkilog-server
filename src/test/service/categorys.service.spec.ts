@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CategorysService } from '../../modules/categorys/categorys.service';
-import { CategorysRepository } from '../../modules/categorys/categorys.repository';
+import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 
 describe('CategorysService', () => {
   const mockRepsitory = {};

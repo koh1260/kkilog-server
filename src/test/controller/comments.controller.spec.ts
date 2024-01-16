@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommentsController } from '../../modules/comments/comments.controller';
 // import { CommentsService } from '../../modules/comments/comment.service';
 import { CommentsService } from '../../modules/comments/comments.service';
-import { CommentsRepository } from '../../modules/comments/comments.repository';
-import { UsersRepository } from '../../modules/users/users.repository';
-import { PostsRepository } from '../../modules/posts/posts.repository';
+import { CommentsRepository } from '../../modules/comments/type/comments-typeorm.repository';
+import { UsersRepository } from '../../modules/users/users-typeorm.repository';
+import { PostsRepository } from '../../modules/posts/type/posts-typeorm.repository';
 
 describe('CommentsController', () => {
   let controller: CommentsController;

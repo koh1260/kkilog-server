@@ -1,7 +1,7 @@
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { CategorysService } from './categorys.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CustomResponse } from '../../common/response/custom-reponse';
+import { ResponseEntity } from '../../common/response/response';
 
 @Controller('categorys')
 @ApiTags('카테고리 API')
@@ -17,6 +17,6 @@ export class CategorysController {
   async findAll() {
     const categorys = await this.categoryService.findAll();
 
-    return CustomResponse.create(HttpStatus.OK, '카테고리 조회', categorys);
+    return ResponseEntity.create(HttpStatus.OK, '카테고리 조회', categorys);
   }
 }

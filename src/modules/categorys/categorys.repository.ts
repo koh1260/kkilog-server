@@ -1,25 +1,30 @@
-import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
 import { Category } from './entities/category.entity';
-import { CustomRepository } from '../../config/typeorm/custom-repository';
 
-@CustomRepository(Category)
-export class CategorysRepository extends Repository<Category> {
-  async findAll() {
-    return await this.createQueryBuilder('category')
-      .select(['category.id', 'category.categoryName', 'category.icon'])
-      .addSelect([
-        'childCategories.id',
-        'childCategories.categoryName',
-        'childCategories.icon',
-      ])
-      .leftJoin('category.childCategories', 'childCategories')
-      .where('category.parentCategory IS NULL')
-      .getMany();
+@Injectable()
+export class CategorysRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findAll(): Promise<Category[]> {
+    return await this.prisma.categorie.findMany({
+      where: { parentId: null },
+      select: {
+        id: true,
+        categoryName: true,
+        childCategories: {
+          select: {
+            id: true,
+            categoryName: true,
+          },
+        },
+      },
+    });
   }
 
   async findOneByName(categoryName: string) {
-    return await this.findOneBy({
-      categoryName: categoryName,
+    return await this.prisma.categorie.findUnique({
+      where: { categoryName },
     });
   }
 }

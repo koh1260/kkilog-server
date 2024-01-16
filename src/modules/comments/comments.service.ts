@@ -1,16 +1,16 @@
 import {
-  ForbiddenException,
+  BadRequestException,
   Injectable,
-  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CreateCommentDto } from './dto/request/create-comment.dto';
+import { UpdateCommentDto } from './dto/request/update-comment.dto';
 import { CommentsRepository } from './comments.repository';
-import { Comment } from './entities/comment.entity';
 import { UsersRepository } from '../users/users.repository';
 import { PostsRepository } from '../posts/posts.repository';
-import { Post } from '../posts/entities/post.entity';
-import { User } from '../users/entities/user.entity';
+import { CreateCommentData, UpdateCommentData } from './type';
+import { CommentsResponseDto } from './dto/response/comment-response.dto';
+import { ChildCommentsResponseDto } from './dto/response/comment-child-response.dto';
 
 @Injectable()
 export class CommentsService {
@@ -21,103 +21,68 @@ export class CommentsService {
   ) {}
 
   async createComment(createCommentDto: CreateCommentDto) {
-    const post = this.existPost(
-      await this.postsRepository.findOneById(+createCommentDto.postId),
-    );
+    const { postId, userId, parentId, content } = createCommentDto;
 
-    const writer = this.existUser(
-      await this.usersRepository.findOneById(+createCommentDto.userId),
-    );
+    const post = await this.postsRepository.findOneById(postId);
+    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
 
-    const comment = Comment.create(createCommentDto.content, post, writer);
+    const writer = await this.usersRepository.findOneById(userId);
+    if (!writer) throw new BadRequestException('존재하지 않는 회원입니다.');
 
-    if (createCommentDto.parentId) {
-      comment.parent = createCommentDto.parentId;
-    }
+    const commentData: CreateCommentData = {
+      writerId: userId,
+      postId,
+      content,
+      parent: parentId,
+    };
 
-    return await this.commentsRepository.save(comment);
+    return await this.commentsRepository.create(commentData);
   }
 
   async findAll(postId: number) {
-    this.existPost(await this.postsRepository.findOneById(postId));
+    const post = await this.postsRepository.findOneById(postId);
+    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
 
-    return await this.commentsRepository.findAll(postId);
-  }
-
-  async findChildComment(parentId: number): Promise<Comment[]> {
-    return this.commentsRepository.findChildCommentByParentId(parentId);
-  }
-
-  async update(
-    id: number,
-    email: string,
-    updateCommentDto: UpdateCommentDto,
-  ): Promise<Comment> {
-    const comment = this.existComment(
-      await this.commentsRepository.findOneById(id),
+    return (await this.commentsRepository.findAll(postId)).map((c) =>
+      CommentsResponseDto.from(c),
     );
-    await this.validateWriter(comment, email);
-    const updatedPost = {
-      ...comment,
-      ...updateCommentDto,
+  }
+
+  async findChildComment(parentId: number) {
+    return (
+      await this.commentsRepository.findChildCommentByParentId(parentId)
+    ).map((c) => ChildCommentsResponseDto.from(c));
+  }
+
+  async update(id: number, userId: number, updateCommentDto: UpdateCommentDto) {
+    const { content } = updateCommentDto;
+
+    const comment = await this.commentsRepository.findOneById(id);
+    if (!comment) throw new BadRequestException('존재하지 않는 댓글입니다.');
+
+    const user = await this.usersRepository.findOneById(userId);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+    if (comment.writerId !== user.id)
+      throw new UnauthorizedException('권한이 없습니다.');
+
+    const updateData: UpdateCommentData = {
+      id,
+      content,
+      writerId: userId,
     };
 
-    return this.commentsRepository.save(updatedPost);
+    await this.commentsRepository.update(updateData);
   }
 
-  /**
-   * 작성자인지 검증.
-   * @param comment 검증할 댓글
-   * @param email 작성자와 비교할 이메일
-   */
-  private async validateWriter(comment: Comment, email: string) {
-    const writerEmail = comment.writer.email;
-    if (writerEmail !== email) {
-      throw new ForbiddenException('작성자가 아닙니다.');
-    }
-  }
+  async remove(id: number, userId: number) {
+    const comment = await this.commentsRepository.findOneById(id);
+    if (!comment) throw new BadRequestException('존재하지 않는 댓글입니다.');
 
-  async remove(id: number, email: string) {
-    const comment = await this.existComment(
-      await this.commentsRepository.findOneById(id),
-    );
-    await this.validateWriter(comment, email);
+    const user = await this.usersRepository.findOneById(userId);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+    if (comment.writerId !== user.id)
+      throw new UnauthorizedException('권한이 없습니다.');
+
     await this.commentsRepository.delete(id);
-  }
-
-  /**
-   * User 존재 여부 검사.
-   * @param user 검사할 회원
-   * @returns 검사를 통과한 User 객체
-   */
-  private existUser(user: User | null): User {
-    if (!user) {
-      throw new NotFoundException('존재하지 않는 회원입니다.');
-    }
-    return user;
-  }
-
-  /**
-   * Post 존재 여부 검사.
-   * @param post 검사할 게시글
-   * @returns 검사를 통과한 Post 객체
-   */
-  private existPost(post: Post | null): Post {
-    if (!post) {
-      throw new NotFoundException('존재하지 않는 게시글입니다.');
-    }
-    return post;
-  }
-
-  /**
-   * Comment 존재 여부 검사.
-   * @param comment 검사할 댓글
-   * @returns 검사를 통과한 Comment 객체
-   */
-  private existComment(comment: Comment | null): Comment {
-    if (!comment) {
-      throw new NotFoundException('존재하지 않는 댓글입니다.');
-    }
-    return comment;
   }
 }

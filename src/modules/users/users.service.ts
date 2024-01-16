@@ -1,16 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { UsersRepository } from './users.repository';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CreateUserDto } from './dto/request/create-user.dto';
 import { hashPassword } from '../../utils/password';
 import { ConflictNicknameException } from './exception/conflictNickname.exception';
 import { ConflictEmailException } from './exception/conflictEmail.exception';
+import { UsersRepository } from './users.repository';
+import { CreateUserData, Profile } from './type';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async createUser(dto: CreateUserDto): Promise<User> {
+  async createUser(dto: CreateUserDto): Promise<void> {
     const { email, nickname, password } = dto;
 
     const findUserByEmail = await this.usersRepository.findOneByEmail(email);
@@ -25,15 +25,20 @@ export class UsersService {
       throw new ConflictNicknameException();
     }
 
-    const user = User.create(email, nickname, await hashPassword(password));
+    const userData: CreateUserData = {
+      email,
+      nickname,
+      password: await hashPassword(password),
+    };
 
-    return this.usersRepository.save(user);
+    await this.usersRepository.create(userData);
   }
 
-  async getProfile(userId: number): Promise<Partial<User>> {
+  async getProfile(userId: number) {
     const user = await this.usersRepository.findOneById(userId);
-    this.existUser(user);
-    const profile: Partial<User> = {
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+
+    const profile: Profile = {
       id: user.id,
       email: user.email,
       nickname: user.nickname,
@@ -43,9 +48,5 @@ export class UsersService {
     };
 
     return profile;
-  }
-
-  private existUser(user: User | null): asserts user is User {
-    if (!user) throw new NotFoundException('존재하지 않는 회원입니다.');
   }
 }

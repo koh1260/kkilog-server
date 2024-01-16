@@ -9,6 +9,6 @@ export class AppController {
   @Get('/health')
   @ApiOperation({ summary: '테스트용 hello kkilog', description: '테스트용' })
   helloKkilog() {
-    return '🐘KKilog!!🐘';
+    return { message: '🐘KKilog!!🐘' };
   }
 }

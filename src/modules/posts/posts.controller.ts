@@ -14,12 +14,11 @@ import {
   UploadedFile,
   Query,
 } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { CreatePostDto } from './dto/request/create-post.dto';
+import { UpdatePostDto } from './dto/request/update-post.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { PostsService } from './posts.service';
-import { Post as PostEntity } from './entities/post.entity';
-import { CustomResponse } from '../../common/response/custom-reponse';
+import { ResponseEntity } from '../../common/response/response';
 import { LoginUser } from '../../common/decorators/user.decorator';
 import { UserInfo } from '../../auth/jwt.strategy';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -53,15 +52,14 @@ export class PostsController {
     summary: '게시글 등록 API',
     description: '게시글을 생성한다.',
   })
-  @ApiCreatedResponse({ description: '게시글을 생성한다', type: PostEntity })
+  @ApiCreatedResponse({ description: '게시글을 생성한다' })
   @ApiBearerAuth()
   async createPost(
     @Body() createPostDto: CreatePostDto,
     @LoginUser() user: UserInfo,
-  ): Promise<CustomResponse<never>> {
+  ): Promise<ResponseEntity<never>> {
     await this.postsService.createPost(createPostDto, user.id);
-
-    return CustomResponse.create(HttpStatus.CREATED, '게시글 작성 완료.');
+    return ResponseEntity.create(HttpStatus.CREATED, '게시글 작성 완료.');
   }
 
   @Get()
@@ -71,12 +69,10 @@ export class PostsController {
   })
   @ApiCreatedResponse({
     description: '게시글 목록을 조회한다',
-    type: [PostEntity],
   })
-  async findAll(): Promise<CustomResponse<PostEntity[]>> {
+  async findAll() {
     const posts = await this.postsService.findAll();
-
-    return CustomResponse.create(HttpStatus.OK, '게시글 전체 조회.', posts);
+    return ResponseEntity.create(HttpStatus.OK, '게시글 전체 조회.', posts);
   }
 
   @Get('category')
@@ -86,14 +82,11 @@ export class PostsController {
   })
   @ApiCreatedResponse({
     description: '카테고리별로 게시글 목록을 조회한다.',
-    type: [PostEntity],
   })
-  async findByCategoryName(
-    @Query('categoryName') categoryName: string,
-  ): Promise<CustomResponse<PostEntity[]>> {
+  async findByCategoryName(@Query('categoryName') categoryName: string) {
     const posts = await this.postsService.findByCategoryName(categoryName);
 
-    return CustomResponse.create(
+    return ResponseEntity.create(
       HttpStatus.OK,
       '카테고리별 게시글 조회.',
       posts,
@@ -109,7 +102,7 @@ export class PostsController {
   async likeCount(@Query('post', ParseIntPipe) postId: number) {
     const likeCount = await this.postsService.likeCount(postId);
 
-    return CustomResponse.create(HttpStatus.OK, '좋아요 개수', { likeCount });
+    return ResponseEntity.create(HttpStatus.OK, '좋아요 개수.', { likeCount });
   }
 
   @Get(':id')
@@ -117,13 +110,11 @@ export class PostsController {
     summary: '게시글 조회 API',
     description: '게시글을 조회한다,',
   })
-  @ApiCreatedResponse({ description: '게시글을 조회한다.', type: PostEntity })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<CustomResponse<PostEntity>> {
+  @ApiCreatedResponse({ description: '게시글을 조회한다.' })
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     const post = await this.postsService.findOne(id);
 
-    return CustomResponse.create(HttpStatus.OK, '게시글 상세 조회', post);
+    return ResponseEntity.create(HttpStatus.OK, '게시글 상세 조회.', post);
   }
 
   @Get('category/:categoryId')
@@ -133,14 +124,11 @@ export class PostsController {
   })
   @ApiCreatedResponse({
     description: '카테고리별로 게시글 목록을 조회한다.',
-    type: [PostEntity],
   })
-  async findByCategoryId(
-    @Query('categoryName') categoryId: number,
-  ): Promise<CustomResponse<PostEntity[]>> {
+  async findByCategoryId(@Query('categoryName') categoryId: number) {
     const posts = await this.postsService.findByCategoryId(categoryId);
 
-    return CustomResponse.create(
+    return ResponseEntity.create(
       HttpStatus.OK,
       '카테고리별 게시글 조회.',
       posts,
@@ -160,7 +148,7 @@ export class PostsController {
   ) {
     const likeCount = await this.postsService.like(postId, user.id);
 
-    return CustomResponse.create(HttpStatus.OK, '좋아요', { likeCount });
+    return ResponseEntity.create(HttpStatus.OK, '좋아요.', { likeCount });
   }
 
   @Get('/like-check/:postId')
@@ -176,7 +164,7 @@ export class PostsController {
   ) {
     const liked = await this.postsService.likeCheck(postId, id);
 
-    return CustomResponse.create(HttpStatus.OK, '좋아요 확인', { liked });
+    return ResponseEntity.create(HttpStatus.OK, '좋아요 여부 확인.', { liked });
   }
 
   @Get('/other/:postId')
@@ -186,11 +174,10 @@ export class PostsController {
   })
   @ApiCreatedResponse({
     description: '이전, 다음 게시글을 조회한다.',
-    type: PostEntity,
   })
-  async getOtherPost(@Param('postId') id: number) {
-    const posts = await this.postsService.getOtherPosts(id);
-    return CustomResponse.create(
+  async getOtherPost(@Param('postId') id: string) {
+    const posts = await this.postsService.getOtherPosts(+id);
+    return ResponseEntity.create(
       HttpStatus.OK,
       '이전 다음 게시글 제목.',
       posts,
@@ -208,14 +195,16 @@ export class PostsController {
   })
   async update(
     @Param('id', ParseIntPipe) id: number,
+    @LoginUser() user: UserInfo,
     @Body() updatePostDto: UpdatePostDto,
-  ): Promise<CustomResponse<never>> {
-    await this.postsService.update(id, updatePostDto);
+  ): Promise<ResponseEntity<never>> {
+    await this.postsService.update(id, user.id, updatePostDto);
 
-    return CustomResponse.create(HttpStatus.NO_CONTENT, '게시글 수정 완료.');
+    return ResponseEntity.create(HttpStatus.NO_CONTENT, '게시글 수정 완료.');
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '게시글 삭제 API',
     description: '게시글을 삭제한다.',
@@ -225,9 +214,10 @@ export class PostsController {
   })
   async remove(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<CustomResponse<never>> {
-    await this.postsService.remove(id);
+    @LoginUser() user: UserInfo,
+  ): Promise<ResponseEntity<never>> {
+    await this.postsService.remove(id, user.id);
 
-    return CustomResponse.create(HttpStatus.NO_CONTENT, '게시글 삭제 완료.');
+    return ResponseEntity.create(HttpStatus.NO_CONTENT, '게시글 삭제 완료.');
   }
 }

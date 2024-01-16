@@ -1,205 +1,210 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { CreatePostDto } from './dto/request/create-post.dto';
+import { UpdatePostDto } from './dto/request/update-post.dto';
 import { PostsRepository } from './posts.repository';
-import { User } from '../users/entities/user.entity';
-import { Post } from './entities/post.entity';
-import { Category } from '../categorys/entities/category.entity';
 import { UsersRepository } from '../users/users.repository';
+import { PostsLikeRepository } from './posts-like.repository';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CategorysRepository } from '../categorys/categorys.repository';
-import { PostLike } from './entities/post-like.entity';
-import { DataSource, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { CreatePostData } from './type';
+import { PostResponseDto } from './dto/response/post-response.dto';
 
 @Injectable()
 export class PostsService {
   constructor(
-    private readonly dataSource: DataSource,
-    @InjectRepository(PostLike)
-    private readonly postLikeRepository: Repository<PostLike>,
+    private readonly postsLikeRepository: PostsLikeRepository,
     private readonly usersRepository: UsersRepository,
-    private readonly categoryRepository: CategorysRepository,
+    private readonly categorysRepository: CategorysRepository,
     private readonly postsRepository: PostsRepository,
+    private readonly prisma: PrismaService,
   ) {}
 
-  async createPost(
-    createPostDto: CreatePostDto,
-    loginedUserId: number,
-  ): Promise<Post> {
-    const user = this.existUser(
-      await this.usersRepository.findOneById(loginedUserId),
+  /**
+   * @param createPostDto 게시글 작성 DTO
+   * @param loginedUserId accessToken에서 추출한 userId
+   */
+  async createPost(createPostDto: CreatePostDto, loginedUserId: number) {
+    const user = await this.usersRepository.findOneById(loginedUserId);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+    if (user.role != 'ADMIN')
+      throw new UnauthorizedException('권한이 없습니다.');
+
+    const { categoryName, ...rest } = createPostDto;
+    const category = await this.categorysRepository.findOneByName(categoryName);
+    if (!category) throw new NotFoundException('존재하지 않는 카테고리입니다.');
+
+    const postCreateEntity: CreatePostData = {
+      ...rest,
+      writerId: loginedUserId,
+      categoryId: category.id,
+    };
+
+    await this.postsRepository.create(postCreateEntity);
+  }
+
+  /**
+   * @returns 게시글 리스트
+   */
+  async findAll() {
+    const postList = await this.postsRepository.findAll();
+    return postList.map((p) => PostResponseDto.from(p));
+  }
+
+  /**
+   * @param id 게시글 번호
+   * @returns 게시글 상세 정보
+   */
+  async findOne(id: number) {
+    const findPost = await this.postsRepository.findDetailById(id);
+
+    if (!findPost) throw new NotFoundException('존재하지 않는 게시물입니다.');
+
+    const { comment, user, ...rest } = findPost;
+    const writer = { ...user };
+    const comments =
+      comment.length > 0
+        ? comment.map((c) => {
+            const { user, ...rest } = c;
+            const writer = { ...user };
+            return { ...rest, writer };
+          })
+        : [];
+
+    return { ...rest, writer, comments };
+  }
+
+  /**
+   * @param categoryId 카테고리 번호
+   * @returns 해당 카테고리의 게시글 리스트
+   */
+  async findByCategoryId(categoryId: number) {
+    const postList = await this.postsRepository.findByCategoryId(categoryId);
+    return postList.map((p) => PostResponseDto.from(p));
+  }
+
+  /**
+   * @param categoryName 카테고리 이름
+   * @returns 해당 카테고리의 게시글 리스트
+   */
+  async findByCategoryName(categoryName: string) {
+    const postList = await this.postsRepository.findByCategoryName(
+      categoryName,
     );
-    this.validateRole(user.role);
-    const category = this.existCategory(
-      await this.categoryRepository.findOneByName(createPostDto.categoryName),
-    );
-
-    return this.postsRepository.save(
-      Post.of(
-        createPostDto.title,
-        createPostDto.content,
-        createPostDto.introduction,
-        createPostDto.thumbnail,
-        user,
-        category,
-      ),
-    );
+    return postList.map((p) => PostResponseDto.from(p));
   }
 
-  private validateRole(role: 'USER' | 'ADMIN') {
-    if (role !== 'ADMIN')
-      throw new UnauthorizedException('관리자 권한이 없습니다.');
-  }
-
-  private existUser(user: User | null): User {
-    if (!user) {
-      throw new NotFoundException('존재하지 않는 회원입니다.');
-    }
-    return user;
-  }
-
-  private existCategory(category: Category | null): Category {
-    if (!category) {
-      throw new NotFoundException('존재하지 않는 카테고리입니다.');
-    }
-    return category;
-  }
-
-  async findAll(): Promise<Post[]> {
-    const posts = await this.postsRepository.findAll();
-    posts.map((post) => {
-      post['commentCount'] = post.comments?.length;
-      delete post.comments;
-      return post;
-    });
-
-    return posts;
-  }
-
-  async findOne(id: number): Promise<Post> {
-    const findPost = this.existPost(await this.postsRepository.findOneById(id));
-
-    return findPost;
-  }
-
-  async findByCategoryId(categoryId: number): Promise<Post[]> {
-    const posts = await this.postsRepository.findByCategoryId(categoryId);
-    posts.map((post) => {
-      post['commentCount'] = post.comments?.length;
-      delete post.comments;
-      return post;
-    });
-
-    return posts;
-  }
-
-  async findByCategoryName(categoryName: string): Promise<Post[]> {
-    const posts = await this.postsRepository.findByCategoryName(categoryName);
-    posts.map((post) => {
-      post['commentCount'] = post.comments?.length;
-      delete post.comments;
-      return post;
-    });
-
-    return posts;
-  }
-
+  /**
+   * 좋아요 토글 기능.
+   * @param postId 게시글 번호
+   * @param userId 회원 번호
+   */
   async like(postId: number, userId: number) {
-    // user, post 존재 확인.
-    const user = this.existUser(await this.usersRepository.findOneById(userId));
-    const post = this.existPost(await this.postsRepository.findOneById(postId));
+    const user = await this.usersRepository.findOneById(userId);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다');
 
-    const liked = await this.postLikeRepository.findOne({
-      where: {
-        post: { id: postId },
-        user: { id: userId },
-      },
-    });
+    const post = await this.postsRepository.findOneById(postId);
+    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
 
-    const likeCount = await this.postLikeRepository.count({
-      where: {
-        post: { id: postId },
-      },
-    });
+    const liked = await this.postsLikeRepository.findOne(postId, userId);
+    let likeCount = await this.postsLikeRepository.count(postId);
 
-    await this.dataSource.transaction(async (manager) => {
+    await this.prisma.$transaction(async (prisma) => {
       if (liked) {
-        await manager.delete(PostLike, liked.id);
-        post.likes = likeCount - 1;
+        await prisma.postLike.deleteMany({
+          where: { postId },
+        });
+        likeCount--;
       } else {
-        const like = new PostLike();
-        like.user = user;
-        like.post = post;
-        await manager.save(PostLike, like);
-        post.likes = likeCount + 1;
+        await prisma.postLike.create({
+          data: {
+            postId,
+            userId,
+          },
+        });
+        likeCount++;
       }
-      await manager.save(Post, post);
+      await prisma.post.update({
+        where: { id: postId },
+        data: {
+          likes: likeCount,
+        },
+      });
     });
 
-    return post.likes;
+    return likeCount;
   }
 
+  /**
+   * 좋아요 여부 조회.
+   * @param postId 게시글 번호
+   * @param userId 회원 번호
+   * @returns 회원의 해당 게시글 좋아요 여부
+   */
   async likeCheck(postId: number, userId: number) {
-    const liked = await this.postLikeRepository.findOne({
-      where: {
-        post: { id: postId },
-        user: { id: userId },
-      },
-    });
-
-    if (liked) return true;
+    if (await this.postsLikeRepository.findOne(postId, userId)) return true;
     return false;
   }
 
+  /**
+   * 좋아요 수 조회.
+   * @param postId 게시글 번호
+   * @returns 해당 게시글의 좋아요 수
+   */
   async likeCount(postId: number) {
-    const post = this.existPost(await this.postsRepository.findOneById(postId));
+    const post = await this.postsRepository.findOneById(postId);
+    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
+
     const count = post.likes;
     return count;
   }
 
-  async getOtherPosts(id: number): Promise<[Post | null, Post | null]> {
+  /**
+   * 이전, 다음 게시글 정보 간단 조회.
+   * @param id 게시글 번호
+   * @returns 이전, 다음 게시글 정보
+   */
+  async getOtherPosts(id: number) {
     const prevPost = await this.postsRepository.findPrevious(id);
     const nextPost = await this.postsRepository.findNext(id);
 
     return [prevPost, nextPost];
   }
 
-  private existPost(post: Post | null): Post {
-    if (!post) {
-      throw new NotFoundException('존재하지 않는 게시물입니다.');
-    }
-    return post;
+  /**
+   * @param id 게시글 번호
+   * @param userId 회원 번호
+   * @param updatePostDto 업데이트 DTO
+   * @returns 변경된 게시글 정보
+   */
+  async update(id: number, userId: number, updatePostDto: UpdatePostDto) {
+    const user = await this.usersRepository.findOneById(userId);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+    if (user.role != 'ADMIN')
+      throw new UnauthorizedException('권한이 없습니다.');
+
+    const post = await this.postsRepository.findOneById(id);
+    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
+
+    return await this.postsRepository.update(id, updatePostDto);
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
-    let post = this.existPost(
-      await this.postsRepository.findOne({
-        where: { id },
-        relations: ['category'],
-      }),
-    );
+  /**
+   * @param id 게시글 번호
+   * @param userId 회원 번호
+   */
+  async remove(id: number, userId: number): Promise<void> {
+    const user = await this.usersRepository.findOneById(userId);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+    if (user.role !== 'ADMIN')
+      throw new UnauthorizedException('권한이 없습니다.');
 
-    const category = this.existCategory(
-      await this.categoryRepository.findOne({
-        where: { categoryName: updatePostDto.categoryName },
-      }),
-    );
-
-    post = {
-      ...post,
-      ...updatePostDto,
-      category,
-    };
-
-    return this.postsRepository.save(post);
-  }
-
-  async remove(id: number): Promise<void> {
-    this.existPost(await this.postsRepository.findOneById(id));
+    const post = await this.postsRepository.findOneById(id);
+    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
     await this.postsRepository.delete(id);
   }
 }

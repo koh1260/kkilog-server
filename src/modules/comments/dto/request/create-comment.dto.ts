@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export class CreateCommentDto {
   @IsString()
@@ -8,21 +15,21 @@ export class CreateCommentDto {
   @ApiProperty({ description: '내용' })
   readonly content: string;
 
-  @MinLength(1)
-  @IsString()
+  @Min(0)
+  @IsInt()
   @ApiProperty({ description: '게시글 번호' })
   readonly postId: number;
 
   @IsOptional()
-  @MinLength(1)
-  @IsString()
+  @Min(0)
+  @IsInt()
   @ApiProperty({ description: '작성자 회원 번호' })
   readonly userId: number;
 
-  @MinLength(1)
+  @Min(0)
   @IsOptional()
   @ApiProperty({ description: '부모 댓글 번호' })
-  readonly parentId?: number;
+  readonly parentId: number | null = null;
 
   constructor(
     content: string,
@@ -33,7 +40,7 @@ export class CreateCommentDto {
     this.content = content;
     this.postId = postId;
     this.userId = userId;
-    this.parentId = parentId;
+    if (parentId) this.parentId = parentId;
   }
 
   static create(

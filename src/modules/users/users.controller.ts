@@ -8,8 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/request/create-user.dto';
 import { AuthService } from '../../auth/auth.service';
 import { LocalAuthGuard } from '../../auth/local-auth.guard';
 import { UserInfo } from '../../auth/jwt.strategy';
@@ -21,7 +20,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { CustomResponse } from '../../common/response/custom-reponse';
+import { ResponseEntity } from '../../common/response/response';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('users')
@@ -34,9 +33,10 @@ export class UsersController {
 
   @Post()
   @ApiOperation({ summary: '회원가입 API', description: '회원을 생성한다.' })
-  @ApiCreatedResponse({ description: '회원을 생성한다', type: User })
-  async createUser(@Body() dto: CreateUserDto): Promise<User> {
-    return this.usersService.createUser(dto);
+  @ApiCreatedResponse({ description: '회원을 생성한다' })
+  async createUser(@Body() dto: CreateUserDto) {
+    await this.usersService.createUser(dto);
+    return ResponseEntity.create(HttpStatus.CREATED, '회원가입 완료.');
   }
 
   @UseGuards(LocalAuthGuard)
@@ -52,7 +52,7 @@ export class UsersController {
 
     return res
       .status(200)
-      .json(CustomResponse.create(HttpStatus.OK, '로그인 완료', userInfo));
+      .json(ResponseEntity.create(HttpStatus.OK, '로그인 완료.', userInfo));
   }
 
   @UseGuards(JwtAuthGuard)
@@ -68,20 +68,21 @@ export class UsersController {
 
     return res
       .status(200)
-      .json(CustomResponse.create(HttpStatus.OK, '로그아웃'));
+      .json(ResponseEntity.create(HttpStatus.OK, '로그아웃 완료.'));
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '회원 정보 조회 API',
     description: 'Access Token을 해석해 회원 정보를 조회한다.',
   })
   @ApiCreatedResponse({
     description: 'Access Token을 해석해 회원 정보를 조회한다.',
-    type: User,
   })
   @ApiBearerAuth()
   async getProfile(@LoginUser() user: UserInfo) {
-    return await this.usersService.getProfile(user.id);
+    const profile = await this.usersService.getProfile(user.id);
+    return ResponseEntity.create(HttpStatus.OK, '회원 정보 조회', profile);
   }
 }

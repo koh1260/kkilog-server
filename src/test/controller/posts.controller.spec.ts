@@ -1,20 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from '../../modules/posts/posts.controller';
 import { PostsService } from '../../modules/posts/posts.service';
-import { PostsRepository } from '../../modules/posts/posts.repository';
+import { PostsRepository } from '../../modules/posts/type/posts-typeorm.repository';
 import { HttpStatus } from '@nestjs/common';
-import { UsersRepository } from '../../modules/users/users.repository';
-import { CategorysRepository } from '../../modules/categorys/categorys.repository';
+import { UsersRepository } from '../../modules/users/users-typeorm.repository';
+import { CategorysRepository } from '../../modules/categorys/categorys-typeorm.repository';
 import { UserInfo } from '../../auth/jwt.strategy';
 import { Post } from '../../modules/posts/entities/post.entity';
-import { Category } from '../../modules/categorys/entities/category.entity';
+import { Category } from '../../modules/categorys/entities/category-typeorm.entity';
 import { User } from '../../modules/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PostLike } from '../../modules/posts/entities/post-like.entity';
 import { repositoryMockFactory } from '../mock-data-sourec';
-import { CreatePostDto } from '../../modules/posts/dto/create-post.dto';
-import { UpdatePostDto } from '../../modules/posts/dto/update-post.dto';
+import { CreatePostDto } from '../../modules/posts/dto/request/create-post.dto';
+import { UpdatePostDto } from '../../modules/posts/dto/request/update-post.dto';
+import { DetailPost, ListPost } from '../../modules/posts/type';
 
 const mockDataSource = {};
 
@@ -81,9 +82,10 @@ describe('PostsController', () => {
 
   it('전체 조회', async () => {
     // given
-    const mockPost1 = createPost(1, 'title1', user, category);
-    const mockPost2 = createPost(2, 'title2', user, category);
-    const mockPost3 = createPost(3, 'title3', user, category);
+    const mockPost1 = createListPost(1, 'title', 'introduction');
+    const mockPost2 = createListPost(2, 'title', 'introduction');
+    const mockPost3 = createListPost(3, 'title', 'introduction');
+
     jest
       .spyOn(postsService, 'findAll')
       .mockResolvedValue([mockPost1, mockPost2, mockPost3]);
@@ -102,7 +104,9 @@ describe('PostsController', () => {
   it('한 건 조회', async () => {
     // given
     const mockPost = createPost(3, 'title', user, category);
-    jest.spyOn(postsService, 'findOne').mockResolvedValue(mockPost);
+    jest
+      .spyOn(postsService, 'findOne')
+      .mockResolvedValue(mockPost as DetailPost);
 
     // when
     const response = await postsController.findOne(3);
@@ -115,9 +119,10 @@ describe('PostsController', () => {
 
   it('카테고리 번호로 조회', async () => {
     // given
-    const mockPost1 = createPost(1, 'title1', user, category);
-    const mockPost2 = createPost(2, 'title2', user, category);
-    const mockPost3 = createPost(3, 'title3', user, category);
+    const mockPost1 = createListPost(1, 'title', 'introduction');
+    const mockPost2 = createListPost(2, 'title', 'introduction');
+    const mockPost3 = createListPost(3, 'title', 'introduction');
+
     jest
       .spyOn(postsService, 'findByCategoryId')
       .mockImplementation(async (categoryId: number) => [
@@ -182,6 +187,22 @@ const createPostDtoFactory = (categoryName: string) => {
     'thumbnail',
     categoryName,
   );
+};
+
+const createListPost = (
+  id: number,
+  title: string,
+  introduction: string,
+): ListPost => {
+  return {
+    id,
+    title,
+    introduction,
+    likes: 3,
+    thumbnail: 'thumbnail.png',
+    createAt: new Date(),
+    commentCount: 10,
+  };
 };
 
 const createPost = (
