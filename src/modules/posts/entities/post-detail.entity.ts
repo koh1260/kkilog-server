@@ -6,22 +6,22 @@ export interface DetailPostEntity {
   content: string;
   thumbnail: string;
   introduction: string;
-  publicScope: 'PUBLIC' | 'PRIVATE';
+  publicScope: string;
   createAt: Date;
   likes: number;
   categorie: Category;
-  writer: Writer;
-  comments: PostComment[];
+  user: Writer;
+  comment: PostComment[];
 }
 
 export interface PostComment
   extends Pick<Comment, 'id' | 'content' | 'createAt'> {
-  writer: Writer;
+  user: Writer;
 }
 
 export interface Writer extends Pick<User, 'nickname' | 'profileImage'> {
   nickname: string;
-  profileImage: string;
+  profileImage: string | null;
 }
 
 export type Category = Pick<Categorie, 'categoryName'>;

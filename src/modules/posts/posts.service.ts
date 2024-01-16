@@ -13,6 +13,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CategorysRepository } from '../categorys/categorys.repository';
 import { CreatePostData } from './type';
 import { PostResponseDto } from './dto/response/post-response.dto';
+import { PostDetailResponseDto } from './dto/response/post-detail-response.dto';
 
 @Injectable()
 export class PostsService {
@@ -61,21 +62,9 @@ export class PostsService {
    */
   async findOne(id: number) {
     const findPost = await this.postsRepository.findDetailById(id);
-
     if (!findPost) throw new NotFoundException('존재하지 않는 게시물입니다.');
 
-    const { comment, user, ...rest } = findPost;
-    const writer = { ...user };
-    const comments =
-      comment.length > 0
-        ? comment.map((c) => {
-            const { user, ...rest } = c;
-            const writer = { ...user };
-            return { ...rest, writer };
-          })
-        : [];
-
-    return { ...rest, writer, comments };
+    return PostDetailResponseDto.from(findPost);
   }
 
   /**

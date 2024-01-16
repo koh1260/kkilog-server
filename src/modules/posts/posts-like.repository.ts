@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { PostLikeEntity } from './entities/post-like.entity';
 
 @Injectable()
 export class PostsLikeRepository {

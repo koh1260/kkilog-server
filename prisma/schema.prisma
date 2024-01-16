@@ -69,9 +69,9 @@ model Post {
   thumbnail    String       @db.Text
   likes        Int          @default(0)
   writerId    Int          @map("writer_id")
-  categoryId  Int?         @map("category_id")
+  categoryId  Int         @map("category_id")
   comment      Comment[]
-  categorie    Categorie?   @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_388636ba602c312da6026dc9dbc")
+  categorie    Categorie   @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_388636ba602c312da6026dc9dbc")
   user         User         @relation(fields: [writerId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_90d79dc6b2cb6d222af76d876a3")
   post_image   PostImage[]
   post_like    PostLike[]
@@ -97,8 +97,8 @@ model PostLike {
   id        Int      @id @default(autoincrement())
   createAt DateTime @default(now()) @db.DateTime(6) @map("create_at")
   updateAt DateTime @default(now()) @db.DateTime(6) @map("update_at")
-  userId   Int?     @map("user_id")
-  postId   Int?     @map("post_id")
+  userId   Int     @map("user_id")
+  postId   Int     @map("post_id")
   post      Post?    @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_a7ec6ac3dc7a05a9648c418f1ad")
   user      User?    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_c635b15915984c8cdb520a1fef3")
 

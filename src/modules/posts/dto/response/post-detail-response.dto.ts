@@ -2,9 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   Category,
   DetailPostEntity,
-  PostComment,
   Writer,
 } from '../../entities/post-detail.entity';
+import { Comment } from '@prisma/client';
+
+interface ConvertedComment
+  extends Pick<Comment, 'id' | 'content' | 'createAt'> {
+  writer: Writer;
+}
 
 export class PostDetailResponseDto {
   @ApiProperty()
@@ -23,7 +28,7 @@ export class PostDetailResponseDto {
   introduction: string;
 
   @ApiProperty()
-  publicScope: 'PUBLIC' | 'PRIVATE';
+  publicScope: string;
 
   @ApiProperty()
   createAt: Date;
@@ -38,9 +43,13 @@ export class PostDetailResponseDto {
   writer: Writer;
 
   @ApiProperty()
-  comments: PostComment[];
+  comments: ConvertedComment[];
 
-  constructor(postDetail: DetailPostEntity) {
+  constructor(
+    postDetail: Omit<DetailPostEntity, 'comment'> & {
+      comments: ConvertedComment[];
+    },
+  ) {
     this.id = postDetail.id;
     this.title = postDetail.title;
     this.content = postDetail.content;
@@ -50,11 +59,19 @@ export class PostDetailResponseDto {
     this.createAt = postDetail.createAt;
     this.likes = postDetail.likes;
     this.categorie = postDetail.categorie;
-    this.writer = postDetail.writer;
+    this.writer = postDetail.user;
     this.comments = postDetail.comments;
   }
 
   static from(postDetail: DetailPostEntity) {
-    return new PostDetailResponseDto(postDetail);
+    const { comment, ...rest } = postDetail;
+    const comments =
+      comment.length !== 0
+        ? comment.map((c) => {
+            const { user, ...rest } = c;
+            return { writer: { ...user }, ...rest };
+          })
+        : [];
+    return new PostDetailResponseDto({ ...rest, comments });
   }
 }
