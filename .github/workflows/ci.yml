@@ -26,17 +26,15 @@ jobs:
       with:
         node-version: 18
         cache: 'npm'
-    - run: npm install
-
-    - name: Run E2E Test
       env:
           DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-      run: |
-        npm run docker:up
-        npm prisma:test
-        npm run test:e2e
-        npm run docker:down
-        npm run build
+      
+    - run: npm install
+    - run: npm run docker:up
+    - run: npm prisma:test
+    - run: npm run test:e2e
+    - run: npm run docker:down
+    - run: npm run build
 
     # - name: Prisma Migrate
     
