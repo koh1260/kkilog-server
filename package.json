@@ -24,7 +24,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:local": "NODE_ENV=test && dotenv -e ./src/config/env/.test.env -- jest --verbose --detectOpenHandles --config ./test/jest-e2e.json",
-    "test:e2e": "NODE_ENV=test && npm run docker:up && npx prisma db push && jest --verbose --detectOpenHandles --config ./test/jest-e2e.json",
+    "test:e2e": "NODE_ENV=test && npm run docker:up && sleep 5 && npx prisma db push && jest --verbose --config ./test/jest-e2e.json",
     "seed:test": "dotenv -e ./src/config/env/.test.env -- npx prisma db seed",
     "typeorm": "node -r ts-node/register ./node_modules/typeorm/cli.js",
     "prisma:test": "npx prisma db push && npx prisma generate",
