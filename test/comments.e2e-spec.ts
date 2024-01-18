@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
 import { PrismaClient } from '@prisma/client';
-import { CreateUserDto } from '../src/modules/users/dto/request/create-user.dto';
+
+import * as request from 'supertest';
 import * as cookieParser from 'cookie-parser';
+
+import { AppModule } from '../src/app.module';
+import { CreateUserDto } from '../src/modules/users/dto/request/create-user.dto';
 import { json, urlencoded } from 'express';
 import { generatePost } from './helper/generate-post';
 import { CreateCommentDto } from '../src/modules/comments/dto/request/create-comment.dto';

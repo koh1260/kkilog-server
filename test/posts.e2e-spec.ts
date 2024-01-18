@@ -1,18 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
 import { PrismaClient } from '@prisma/client';
-import { generatePost } from './helper/generate-post';
-import { CreatePostDto } from '../src/modules/posts/dto/request/create-post.dto';
-import { generateCategory } from './helper/generate-category';
-import { CreateUserDto } from '../src/modules/users/dto/request/create-user.dto';
+
+import * as request from 'supertest';
 import * as cookieParser from 'cookie-parser';
+
+import { AppModule } from '../src/app.module';
+import { CreatePostDto } from '../src/modules/posts/dto/request/create-post.dto';
+import { CreateUserDto } from '../src/modules/users/dto/request/create-user.dto';
 import { json, urlencoded } from 'express';
 import { UpdatePostDto } from '../src/modules/posts/dto/request/update-post.dto';
 import { PostOtherResponseDto } from '../src/modules/posts/dto/response/post-other-response.dto';
 import { PostDetailResponseDto } from '../src/modules/posts/dto/response/post-detail-response.dto';
 import { PostResponseDto } from '../src/modules/posts/dto/response/post-response.dto';
+import { generateCategory, generatePost } from './helper';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
