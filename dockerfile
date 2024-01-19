@@ -22,10 +22,11 @@ WORKDIR /usr/app
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 
+COPY --from=buildStage /app/package.json ./
 COPY --from=buildStage /app/node_modules ./node_modules
 COPY --from=buildStage /app/dist ./dist
 
 EXPOSE 8080
 
-ENTRYPOINT [ "npx", "prisma", "generate"]
+ENTRYPOINT [ "npx", "prisma", "generate", "--schema", "/usr/app/prisma/schema.prisma"]
 CMD ["node", "dist/main"]
