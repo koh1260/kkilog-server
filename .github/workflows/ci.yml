@@ -33,36 +33,32 @@ jobs:
       run: |
         npm install
         npm run test:e2e
-        npm run build
-
-    # - name: Prisma Migrate
     
-    
-    # - name: Docker Login
-    #   uses: docker/login-action@v3.0.0
-    #   with:
-    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
-    #     password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+    - name: Docker Login
+      uses: docker/login-action@v3.0.0
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
                  
-    # - name: Build and push Docker images
-    #   uses: docker/build-push-action@v5.1.0
-    #   with:
-    #     context: .
-    #     file: dockerfile
-    #     platforms: linux/amd64
-    #     build-args: DATABASE_URL:${{ secrets.DATABASE_URL }}
-    #     push: true
-    #     tags: koh1260/kkilog-server
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v5.1.0
+      with:
+        context: .
+        file: dockerfile
+        platforms: linux/amd64
+        build-args: DATABASE_URL:${{ secrets.DATABASE_URL }}
+        push: true
+        tags: koh1260/kkilog-server
         
-    # - name: SSH Remote Commands
-    #   uses: appleboy/ssh-action@v1.0.1
-    #   with:
-    #     host: ${{ secrets.SSH_HOST }}
-    #     username: ${{ secrets.SSH_USERNAME }}
-    #     key: ${{ secrets.SSH_KEY }}
-    #     script: |
-    #       sudo docker stop kkilog-server
-    #       sudo docker rm kkilog-server
-    #       sudo docker rmi koh1260/kkilog-server
-    #       sudo docker pull koh1260/kkilog-server
-    #       sudo docker run --name kkilog-server -d -p ${{ secrets.DOCKER_PORT }} koh1260/kkilog-server
+    - name: SSH Remote Commands
+      uses: appleboy/ssh-action@v1.0.1
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          sudo docker stop kkilog-server
+          sudo docker rm kkilog-server
+          sudo docker rmi koh1260/kkilog-server
+          sudo docker pull koh1260/kkilog-server
+          sudo docker run --name kkilog-server -d -e DATABASE_URL=${{ secrets.DATABASE_URL }} -p ${{ secrets.DOCKER_PORT }} koh1260/kkilog-server
