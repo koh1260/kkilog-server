@@ -5,6 +5,7 @@ WORKDIR /app
 
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
+ENV NODE_ENV production
 
 COPY . .
 
@@ -21,6 +22,7 @@ WORKDIR /usr/app
 
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
+ENV NODE_ENV production
 
 COPY --from=buildStage /app/package.json ./
 COPY --from=buildStage /app/node_modules ./node_modules
