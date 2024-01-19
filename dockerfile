@@ -28,5 +28,6 @@ COPY --from=buildStage /app/dist ./dist
 
 EXPOSE 8080
 
-ENTRYPOINT [ "npx", "prisma", "generate", "--schema", "/usr/app/dist/prisma/schema.prisma"]
-CMD ["node", "dist/main"]
+ADD start.sh ./
+RUN chmod +x /start.sh
+CMD ["./start.sh"]
