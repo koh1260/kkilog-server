@@ -37,7 +37,7 @@ jobs:
     - name: Run Prisma Migration
       env:
         DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-      run: npx prisma migrate resolve --applied 0_init
+      run: npx prisma migrate deploy
     
     - name: Docker Login
       uses: docker/login-action@v3.0.0
