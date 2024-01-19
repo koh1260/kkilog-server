@@ -6,6 +6,10 @@
   "compilerOptions": {
     "assets": [
       {
+        "include": "../prisma/schema.prisma",
+        "outDir": "./dist/prisma"
+      },
+      {
         "include": "./config/env/*.env",
         "outDir": "./dist/src"
       }
