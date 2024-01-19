@@ -19,10 +19,14 @@ RUN mkdir -p /usr/app
 
 WORKDIR /usr/app
 
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 COPY --from=buildStage /app/package.json ./
 COPY --from=buildStage /app/node_modules ./node_modules
 COPY --from=buildStage /app/dist ./dist
 
 EXPOSE 8080
 
-CMD ["npm", "run", "start:prod"]
+ENTRYPOINT [ "npx", "prisma", "migrate", "deploy" ]
+CMD ["node", "dist/main"]
