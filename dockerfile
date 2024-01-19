@@ -28,5 +28,5 @@ COPY --from=buildStage /app/dist ./dist
 
 EXPOSE 8080
 
-ENTRYPOINT [ "npx", "prisma", "generate"]
+ENTRYPOINT [ "npx", "prisma", "migrate", "resolve", "--applied", "0_init"]
 CMD ["node", "dist/main"]
