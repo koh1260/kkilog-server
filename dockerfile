@@ -28,5 +28,5 @@ COPY --from=buildStage /app/dist ./dist
 
 EXPOSE 8080
 
-ENTRYPOINT [ "npx", "prisma", "generate", "--schema", "/usr/app/prisma/schema.prisma"]
+ENTRYPOINT [ "npx", "prisma", "generate", "--schema", "/usr/app/dist/prisma/schema.prisma"]
 CMD ["node", "dist/main"]
