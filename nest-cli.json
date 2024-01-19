@@ -7,7 +7,7 @@
     "assets": [
       {
         "include": "../prisma/schema.prisma",
-        "outDir": "./dist/src/prisma"
+        "outDir": "./dist/prisma"
       },
       {
         "include": "./config/env/*.env",
