@@ -40,9 +40,20 @@ export class PostsRepository {
   async findByCategoryName(categoryName: string) {
     return this.prisma.post.findMany({
       where: {
-        categorie: {
-          categoryName: categoryName,
-        },
+        OR: [
+          {
+            categorie: {
+              categoryName,
+            },
+          },
+          {
+            categorie: {
+              categorie: {
+                categoryName,
+              },
+            },
+          },
+        ],
       },
       select: {
         id: true,

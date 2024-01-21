@@ -84,6 +84,7 @@ export class PostsService {
     const postList = await this.postsRepository.findByCategoryName(
       categoryName,
     );
+
     return postList.map((p) => PostResponseDto.from(p));
   }
 
