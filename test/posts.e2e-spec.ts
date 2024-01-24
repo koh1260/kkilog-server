@@ -15,7 +15,7 @@ import { PostDetailResponseDto } from '../src/modules/posts/dto/response/post-de
 import { PostResponseDto } from '../src/modules/posts/dto/response/post-response.dto';
 import { generateCategory, generatePost } from './helper';
 
-describe('AppController (e2e)', () => {
+describe('Posts (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaClient;
   let accessToken: string;
@@ -269,6 +269,25 @@ describe('AppController (e2e)', () => {
       .send(updateDto);
 
     expect(response.status).toBe(401);
+  });
+
+  it('존재하지_않는_게시글_업데이트_예외', async () => {
+    await login('ADMIN');
+
+    const post = (await generatePost(1)).postList[0];
+    const nonExistPostId = post.id + 10;
+    const updateDto: UpdatePostDto = {
+      title: 'Updated Title',
+      content: 'Updated Content',
+    };
+
+    const response = await request(app.getHttpServer())
+      .patch(`/posts/${nonExistPostId}`)
+      .set('Cookie', accessToken)
+      .send(updateDto);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('존재하지 않는 게시물입니다.');
   });
 
   it('게시글_삭제', async () => {
