@@ -15,7 +15,7 @@ import { UserInfo } from '../src/auth/jwt.strategy';
 import { UpdateCommentDto } from '../src/modules/comments/dto/request/update-comment.dto';
 import { generateUser } from './helper/generate-user';
 
-describe('AppController (e2e)', () => {
+describe('Comments (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaClient;
   let accessToken: string;

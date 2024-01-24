@@ -9,7 +9,7 @@ import { AppModule } from '../src/app.module';
 import { CreateUserDto } from '../src/modules/users/dto/request/create-user.dto';
 import { json, urlencoded } from 'express';
 
-describe('AppController (e2e)', () => {
+describe('Users (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaClient;
   let accessToken: string;
