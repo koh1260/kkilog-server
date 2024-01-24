@@ -334,6 +334,19 @@ describe('AppController (e2e)', () => {
     expect(response.status).toBe(401);
   });
 
+  it('존재하지_않는_게시글_좋아요_예외', async () => {
+    await login('USER');
+    const post = (await generatePost(1)).postList[0];
+    const nonExistPostId = post.id + 10;
+
+    const response = await request(app.getHttpServer())
+      .get(`/posts/like/${nonExistPostId}`)
+      .set('Cookie', accessToken);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('존재하지 않는 게시물입니다.');
+  });
+
   it('게시글_좋아요_여부_확인', async () => {
     await login('USER');
     const { postList } = await generatePost(1);
