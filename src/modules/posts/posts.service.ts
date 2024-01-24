@@ -92,13 +92,11 @@ export class PostsService {
    * 좋아요 토글 기능.
    * @param postId 게시글 번호
    * @param userId 회원 번호
+   * @returns 변경된 좋아요 수
    */
   async like(postId: number, userId: number) {
-    const user = await this.usersRepository.findOneById(userId);
-    if (!user) throw new BadRequestException('존재하지 않는 회원입니다');
-
-    const post = await this.postsRepository.findOneById(postId);
-    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
+    await this.getUserByIdOrThrow(userId);
+    await this.getPostByIdOrThrow(postId);
 
     const liked = await this.postsLikeRepository.findOne(postId, userId);
     let likeCount = await this.postsLikeRepository.count(postId);
@@ -136,8 +134,10 @@ export class PostsService {
    * @returns 회원의 해당 게시글 좋아요 여부
    */
   async likeCheck(postId: number, userId: number) {
-    if (await this.postsLikeRepository.findOne(postId, userId)) return true;
-    return false;
+    await this.getPostByIdOrThrow(postId);
+    const liked = await this.postsLikeRepository.findOne(postId, userId);
+
+    return liked ? true : false;
   }
 
   /**
@@ -146,10 +146,7 @@ export class PostsService {
    * @returns 해당 게시글의 좋아요 수
    */
   async likeCount(postId: number) {
-    const post = await this.postsRepository.findOneById(postId);
-    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
-
-    const count = post.likes;
+    const count = (await this.getPostByIdOrThrow(postId)).likes;
     return count;
   }
 
@@ -172,13 +169,11 @@ export class PostsService {
    * @returns 변경된 게시글 정보
    */
   async update(id: number, userId: number, updatePostDto: UpdatePostDto) {
-    const user = await this.usersRepository.findOneById(userId);
-    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+    const user = await this.getUserByIdOrThrow(userId);
     if (user.role != 'ADMIN')
       throw new UnauthorizedException('권한이 없습니다.');
 
-    const post = await this.postsRepository.findOneById(id);
-    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
+    await this.getPostByIdOrThrow(id);
 
     return await this.postsRepository.update(id, updatePostDto);
   }
@@ -193,8 +188,29 @@ export class PostsService {
     if (user.role !== 'ADMIN')
       throw new UnauthorizedException('권한이 없습니다.');
 
-    const post = await this.postsRepository.findOneById(id);
-    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
+    await this.getPostByIdOrThrow(id);
     await this.postsRepository.delete(id);
+  }
+
+  async getUserByIdOrThrow(userId: number) {
+    const user = await this.usersRepository.findOneById(userId);
+    if (!user) throw new BadRequestException('존재하지 않는 회원입니다.');
+
+    return user;
+  }
+
+  async getPostByIdOrThrow(postId: number) {
+    const post = await this.postsRepository.findOneById(postId);
+    if (!post) throw new BadRequestException('존재하지 않는 게시물입니다.');
+
+    return post;
+  }
+
+  async getCategoryByName(categoryName: string) {
+    const category = this.categorysRepository.findOneByName(categoryName);
+    if (!category)
+      throw new BadRequestException('존재하지 않는 카테고리입니다.');
+
+    return category;
   }
 }
